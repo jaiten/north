@@ -74,10 +74,16 @@ h2 { font-size: 21px; margin-bottom: 8px; }
   position: absolute;
   inset: 16px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.55), rgba(45, 212, 191, 0.12) 70%);
-  opacity: 0.25;
-  transform: scale(0.65);
+  background: radial-gradient(circle at 32% 28%, #a5b4fc, #6366f1 48%, #2dd4bf 96%);
+  box-shadow: 0 0 36px rgba(99, 102, 241, 0.55), 0 0 80px rgba(45, 212, 191, 0.3);
+  opacity: 0.55;
+  transform: scale(0.55);
   pointer-events: none;
+  animation: breath-hue 9s linear infinite;
+}
+@keyframes breath-hue {
+  0%, 100% { filter: hue-rotate(0deg); }
+  50% { filter: hue-rotate(40deg); }
 }
 .breath-label {
   font-size: 14px;
@@ -109,6 +115,9 @@ h2 { font-size: 21px; margin-bottom: 8px; }
   display: flex; align-items: center; justify-content: center;
   font-size: 38px; font-weight: 700;
   font-variant-numeric: tabular-nums;
+  /* Sits on the bright breathing orb in both themes */
+  color: #fff;
+  text-shadow: 0 1px 12px rgba(20, 23, 60, 0.55);
 }
 
 .phrase {
@@ -121,7 +130,7 @@ h2 { font-size: 21px; margin-bottom: 8px; }
   margin: 0 0 14px;
   user-select: none;
   -webkit-user-select: none;
-  color: #c7caff;
+  color: var(--accent-text);
 }
 
 #challenge-input { width: 100%; text-align: center; margin-bottom: 6px; }
@@ -145,3 +154,5 @@ h2 { font-size: 21px; margin-bottom: 8px; }
   letter-spacing: 0.04em;
 }
 .brand strong { color: var(--text-dim); }
+
+:root[data-theme="light"] .card { background: rgba(255, 255, 255, 0.92); }

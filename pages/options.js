@@ -20,12 +20,23 @@ async function save() {
   await chrome.runtime.sendMessage({ type: "saveSettings", settings: S });
 }
 
-function toast(msg) {
+/**
+ * Show a toast. Pass `action: { label, fn }` for a clickable follow-up;
+ * action toasts stay up longer so they can actually be read and clicked.
+ */
+function toast(msg, action) {
   const t = $("toast");
-  t.textContent = msg;
+  t.textContent = "";
+  t.append(Object.assign(document.createElement("span"), { textContent: msg }));
+  if (action) {
+    const b = document.createElement("button");
+    b.textContent = action.label;
+    b.addEventListener("click", () => { t.classList.add("hidden"); action.fn(); });
+    t.appendChild(b);
+  }
   t.classList.remove("hidden");
   clearTimeout(toast._t);
-  toast._t = setTimeout(() => t.classList.add("hidden"), 2600);
+  toast._t = setTimeout(() => t.classList.add("hidden"), action ? 10000 : 2600);
 }
 
 // ---------------------------------------------------------------------------
@@ -97,9 +108,9 @@ function startGateBreath() {
   });
   (async () => {
     while (!stopped) {
-      await phase("Breathe in", [{ transform: "scale(0.65)", opacity: 0.25 }, { transform: "scale(1)", opacity: 0.5 }], 4000);
+      await phase("Breathe in", [{ transform: "scale(0.55)", opacity: 0.55 }, { transform: "scale(1.05)", opacity: 1 }], 4000);
       await phase("Hold", null, 4000);
-      await phase("Breathe out", [{ transform: "scale(1)", opacity: 0.5 }, { transform: "scale(0.65)", opacity: 0.25 }], 6000);
+      await phase("Breathe out", [{ transform: "scale(1.05)", opacity: 1 }, { transform: "scale(0.55)", opacity: 0.55 }], 6000);
     }
   })();
   gateBreathStop = () => { stopped = true; };
@@ -182,6 +193,10 @@ async function load() {
 }
 
 function render() {
+  // Theme
+  northApplyTheme(S.theme || "light");
+  $("btn-theme").textContent = (S.theme || "light") === "light" ? "Switch to dark" : "Switch to light";
+
   // Master
   $("master-enabled").checked = S.enabled;
   $("master-label").textContent = S.enabled ? "Protection on" : "Protection OFF";
@@ -215,7 +230,8 @@ function render() {
 }
 
 function describeSite(site) {
-  if (site.mode === "always") return "Blocked 24/7";
+  const dmNote = site.pattern === "instagram.com" ? ", DMs included" : "";
+  if (site.mode === "always") return "Blocked 24/7" + dmNote;
   if (site.mode === "limit") return `${site.limitMins} min/day budget`;
   if (site.mode === "schedule") {
     if (!site.schedule?.length) return "Schedule with no windows yet (never blocked!)";
@@ -275,6 +291,23 @@ async function addSite(pattern) {
   S.sites.unshift({ id: "s_" + Date.now().toString(36), pattern: p, mode: "always", schedule: [], limitMins: 30 });
   await save();
   renderSites();
+
+  // Blocking instagram.com takes the DMs down with it — people are often
+  // surprised by that, so offer the messages-only mode right here.
+  if (p === "instagram.com") {
+    toast("Instagram is fully blocked — DMs included.", {
+      label: "Keep my DMs, block the rest",
+      fn: async () => {
+        S.sites = S.sites.filter(s => s.pattern !== "instagram.com");
+        S.instagramDmOnly = true;
+        await save();
+        render();
+        document.querySelector('.nav-item[data-section="shorts"]').click();
+        toast("Messages-only mode is on. DMs work, the feed doesn't.");
+      }
+    });
+    return;
+  }
   toast(`${p} blocked, always. Click Edit to set a schedule or limit.`);
 }
 
@@ -493,6 +526,13 @@ $("opt-yt-topic").addEventListener("change", async e => {
   }
 });
 
+// Theme toggle — cosmetic, no gate.
+$("btn-theme").addEventListener("click", async () => {
+  S.theme = (S.theme || "light") === "light" ? "dark" : "light";
+  await save();
+  render();
+});
+
 // Buddy
 $("opt-buddy").addEventListener("change", async e => { S.buddy.enabled = e.target.checked; await save(); });
 $("opt-buddy-name").addEventListener("change", async e => {
@@ -502,6 +542,24 @@ $("opt-buddy-name").addEventListener("change", async e => {
 });
 $("tone-kind").addEventListener("click", async () => { S.buddy.tone = "kind"; await save(); render(); });
 $("tone-tough").addEventListener("click", async () => { S.buddy.tone = "tough"; await save(); render(); });
+
+// Clicking the preview orb makes Nori say something else.
+const PREVIEW_LINES = [
+  '"Every blocked tab is a small vote for the person you\'re becoming."',
+  '"The feed misses you. Don\'t text back."',
+  '"I\'d wave, but I\'m a sphere."',
+  '"You bring the goals. I\'ll bring the stubbornness."',
+  '"North is up. I checked."'
+];
+let previewIdx = 0;
+$("buddy-preview-orb").addEventListener("click", () => {
+  previewIdx = (previewIdx + 1) % PREVIEW_LINES.length;
+  $("buddy-preview-line").textContent = PREVIEW_LINES[previewIdx];
+  $("buddy-preview-orb").animate(
+    [{ transform: "scale(1)" }, { transform: "scale(1.15)" }, { transform: "scale(1)" }],
+    { duration: 320, easing: "ease-out" }
+  );
+});
 
 // Strict tuning. Lowering the wait or extending unlocks is a weakening.
 $("opt-wait").addEventListener("change", async e => {

@@ -50,7 +50,7 @@ nav { display: flex; flex-direction: column; gap: 3px; }
 .nav-item:hover { background: var(--bg-elev); color: var(--text); }
 .nav-item.active {
   background: rgba(99, 102, 241, 0.14);
-  color: #c7caff;
+  color: var(--accent-text);
 }
 
 .sidebar-foot { margin-top: auto; display: flex; flex-direction: column; gap: 14px; padding: 0 8px; }
@@ -289,16 +289,25 @@ h1 { font-size: 26px; margin-bottom: 6px; }
   display: flex; align-items: center; justify-content: center;
   font-size: 32px; font-weight: 700;
   font-variant-numeric: tabular-nums;
+  /* Sits on the bright breathing orb in both themes */
+  color: #fff;
+  text-shadow: 0 1px 12px rgba(20, 23, 60, 0.55);
 }
 
 .breath-orb {
   position: absolute;
   inset: 14px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.55), rgba(45, 212, 191, 0.12) 70%);
-  opacity: 0.25;
-  transform: scale(0.65);
+  background: radial-gradient(circle at 32% 28%, #a5b4fc, #6366f1 48%, #2dd4bf 96%);
+  box-shadow: 0 0 36px rgba(99, 102, 241, 0.55), 0 0 80px rgba(45, 212, 191, 0.3);
+  opacity: 0.55;
+  transform: scale(0.55);
   pointer-events: none;
+  animation: breath-hue 9s linear infinite;
+}
+@keyframes breath-hue {
+  0%, 100% { filter: hue-rotate(0deg); }
+  50% { filter: hue-rotate(40deg); }
 }
 .breath-label {
   font-size: 13px;
@@ -344,7 +353,7 @@ h1 { font-size: 26px; margin-bottom: 6px; }
   margin: 0 0 12px;
   user-select: none;
   -webkit-user-select: none;
-  color: #c7caff;
+  color: var(--accent-text);
 }
 #gate-input { width: 100%; text-align: center; margin-bottom: 16px; }
 
@@ -372,7 +381,7 @@ h1 { font-size: 26px; margin-bottom: 6px; }
   font: 700 10.5px var(--font);
   cursor: pointer;
 }
-.day-btn.on { background: rgba(99, 102, 241, 0.25); border-color: var(--accent); color: #c7caff; }
+.day-btn.on { background: rgba(99, 102, 241, 0.25); border-color: var(--accent); color: var(--accent-text); }
 .window-row input[type="time"] { padding: 7px 9px; font-size: 12.5px; }
 .window-row .rm {
   margin-left: auto;
@@ -390,6 +399,10 @@ h1 { font-size: 26px; margin-bottom: 6px; }
   bottom: 28px; left: 50%;
   transform: translateX(-50%);
   z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: min(560px, 92vw);
   background: var(--bg-elev-2);
   border: 1px solid var(--accent);
   color: var(--text);
@@ -400,6 +413,17 @@ h1 { font-size: 26px; margin-bottom: 6px; }
   box-shadow: var(--shadow);
   animation: toast-in 0.3s ease;
 }
+.toast button {
+  flex: none;
+  background: none;
+  border: none;
+  padding: 0;
+  font: 700 13px var(--font);
+  color: var(--accent-text);
+  text-decoration: underline;
+  cursor: pointer;
+  white-space: nowrap;
+}
 @keyframes toast-in { from { transform: translate(-50%, 12px); opacity: 0; } }
 
 @media (max-width: 760px) {
@@ -407,3 +431,12 @@ h1 { font-size: 26px; margin-bottom: 6px; }
   .sidebar { width: auto; border-right: none; border-bottom: 1px solid var(--line); }
   nav { flex-direction: row; flex-wrap: wrap; }
 }
+
+/* ---------- Daylight theme fixes for hardcoded dark-friendly colors ---------- */
+
+:root[data-theme="light"] .banner { background: rgba(251, 191, 36, 0.16); border-color: rgba(180, 83, 9, 0.3); }
+:root[data-theme="light"] .banner strong { color: #b45309; }
+:root[data-theme="light"] .site-badge.always   { background: rgba(220, 38, 38, 0.1);  color: #dc2626; }
+:root[data-theme="light"] .site-badge.schedule { background: rgba(180, 83, 9, 0.1);   color: #b45309; }
+:root[data-theme="light"] .site-badge.limit    { background: rgba(15, 118, 110, 0.1); color: #0f766e; }
+:root[data-theme="light"] .modal-backdrop { background: rgba(64, 68, 110, 0.35); }

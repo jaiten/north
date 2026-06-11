@@ -31,6 +31,7 @@
       </nav>
 
       <div class="sidebar-foot">
+        <button class="btn ghost small" id="btn-theme">Switch to dark</button>
         <div class="master-toggle">
           <label class="switch">
             <input type="checkbox" id="master-enabled" checked>
@@ -65,7 +66,7 @@
           <span class="dur-label">Social:</span>
           <button class="chip" data-site="facebook.com" title="The feed, marketplace, groups, all of it">Facebook</button>
           <button class="chip" data-site="x.com" title="Timeline, trends and arguments with strangers">X / Twitter</button>
-          <button class="chip" data-site="instagram.com" title="Feed, Explore, Reels and profiles. For DMs-only use Shorts and feeds">Instagram</button>
+          <button class="chip" data-site="instagram.com" title="Blocks ALL of Instagram, DMs included. To keep DMs working, use messages-only mode in Shorts &amp; feeds instead">Instagram</button>
           <button class="chip" data-site="reddit.com" title="Front page, subreddits and infinite comment threads">Reddit</button>
           <button class="chip" data-site="tiktok.com" title="The whole app, it is all short videos">TikTok</button>
           <button class="chip" data-site="twitch.tv" title="Live streams that never end">Twitch</button>
@@ -199,7 +200,9 @@
         <p class="lede">A companion that reacts to what you do. It nudges, celebrates, and occasionally calls you out.</p>
         <div class="setting-card">
           <div class="buddy-preview">
-            <div class="orb"><div class="orb-core"></div></div>
+            <div class="orb" id="buddy-preview-orb" title="Click me">
+              <div class="eyes"><span class="eye"></span><span class="eye"></span></div>
+            </div>
             <p id="buddy-preview-line">"Every blocked tab is a small vote for the person you're becoming."</p>
           </div>
           <div class="setting-row">
@@ -406,6 +409,7 @@
   <div class="toast hidden" id="toast"></div>
 
   <script src="dev-shim.js"></script>
+  <script src="nori.js"></script>
   <script src="options.js"></script>
 </body>
 </html>

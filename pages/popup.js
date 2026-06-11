@@ -25,6 +25,7 @@ const GREETINGS = {
 async function load() {
   dash = await chrome.runtime.sendMessage({ type: "getDashboard" });
   const s = dash.settings;
+  northApplyTheme(s.theme || "light");
 
   // Status
   $("toggle-enabled").checked = s.enabled;
@@ -154,6 +155,20 @@ $("toggle-enabled").addEventListener("change", async e => {
 });
 
 $("btn-options").addEventListener("click", () => chrome.runtime.openOptionsPage());
+
+// Poke Nori, get another line.
+$("mini-orb").addEventListener("click", () => {
+  if (!dash?.settings?.buddy?.enabled) return;
+  const tone = dash.settings.buddy.tone === "tough" ? "tough" : "kind";
+  const lines = GREETINGS[tone];
+  const current = $("buddy-msg").textContent;
+  const others = lines.filter(l => l !== current);
+  $("buddy-msg").textContent = others[Math.floor(Math.random() * others.length)] || current;
+  $("mini-orb").animate(
+    [{ transform: "scale(1)" }, { transform: "scale(1.25)" }, { transform: "scale(1)" }],
+    { duration: 300, easing: "ease-out" }
+  );
+});
 
 // Suggest Incognito coverage — the blocks should hold everywhere.
 try {

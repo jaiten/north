@@ -7,6 +7,7 @@
 
 const DEFAULT_SETTINGS = {
   enabled: true,
+  theme: "light",             // "light" | "dark" — cosmetic, applies to all North pages
   strict: {
     enabled: true,
     waitSeconds: 60,          // how long you must wait before the challenge
@@ -175,7 +176,8 @@ function isAdult(url, title = "") {
 // Anti-abuse: a pass lasts PASS_MINUTES, and only one NEW pass can be granted
 // every GRANT_COOLDOWN_MINUTES, persisted in storage so restarting the
 // browser doesn't reset it. You can watch the thing your friend sent. You
-// cannot chain passes into a feed.
+// cannot chain passes into a feed. And a pass dies the moment you navigate
+// away from the item, so pressing Back doesn't replay it.
 // ---------------------------------------------------------------------------
 
 const PASS_MINUTES = 5;
@@ -405,7 +407,25 @@ function blockedPageUrl(verdict, fromUrl) {
 // blocked visit is redirected and counted once.
 const recentBlocks = new Map(); // tabId -> { url, ts }
 
+// A shared-link pass is single-visit: navigating away from the item (to the
+// feed, another item, anywhere) expires it immediately. Without this, Back
+// would replay the reel for the rest of its 5-minute window.
+async function expirePassOnLeave(tabId, url) {
+  const prev = tabNav.get(tabId)?.lastUrl;
+  if (!prev || prev === url) return;
+  const prevItem = shortFormItem(prev);
+  if (!prevItem) return;
+  const cur = shortFormItem(url);
+  if (cur && cur.id === prevItem.id) return; // same item, e.g. a query param changed
+  const pass = await getPassState();
+  if (pass.items[prevItem.id]) {
+    delete pass.items[prevItem.id];
+    await chrome.storage.local.set({ sharePass: pass });
+  }
+}
+
 async function enforceOnTab(tabId, url, title = "") {
+  await expirePassOnLeave(tabId, url);
   const verdict = await evaluate(url, { title, tabId });
   if (!verdict) {
     // Allowed — remember where this tab is, so the shared-link pass can tell

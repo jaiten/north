@@ -10,6 +10,7 @@
   --text-faint: #5d6b88;
   --accent: #6366f1;
   --accent-2: #2dd4bf;
+  --accent-text: #c7caff;
   --grad: linear-gradient(135deg, #6366f1, #2dd4bf);
   --danger: #f87171;
   --ok: #34d399;
@@ -17,6 +18,22 @@
   --radius-sm: 10px;
   --shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
   --font: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* Daylight theme. Toggled from settings, stored per-device. */
+:root[data-theme="light"] {
+  --bg: #f6f7fd;
+  --bg-elev: #ffffff;
+  --bg-elev-2: #eef0fa;
+  --line: rgba(32, 35, 90, 0.12);
+  --text: #20234a;
+  --text-dim: #565b82;
+  --text-faint: #8c90af;
+  --accent-2: #0ea5a0;
+  --accent-text: #4f46e5;
+  --danger: #dc2626;
+  --ok: #0f766e;
+  --shadow: 0 16px 48px rgba(60, 60, 140, 0.16);
 }
 
 * { box-sizing: border-box; }
@@ -80,7 +97,7 @@ h1, h2, h3 { font-weight: 650; letter-spacing: -0.01em; margin: 0; }
 .chip.selected {
   background: rgba(99, 102, 241, 0.18);
   border-color: var(--accent);
-  color: #c7caff;
+  color: var(--accent-text);
 }
 
 /* Inputs */
@@ -152,26 +169,55 @@ input::placeholder { color: var(--text-faint); }
   from { transform: translate3d(-2%, -1%, 0) scale(1); }
   to   { transform: translate3d(2%, 2%, 0) scale(1.06); }
 }
+:root[data-theme="light"] .aurora {
+  background:
+    radial-gradient(40% 35% at 25% 20%, rgba(255, 196, 86, 0.22), transparent 70%),
+    radial-gradient(35% 30% at 75% 70%, rgba(45, 212, 191, 0.14), transparent 70%),
+    radial-gradient(30% 25% at 60% 15%, rgba(99, 102, 241, 0.10), transparent 70%);
+}
 
-/* The Nori orb */
+/* The Nori orb — gradient body, eyes that blink and follow the cursor */
 .orb {
   width: 72px; height: 72px;
   border-radius: 50%;
   background: var(--grad);
   position: relative;
   animation: orb-breathe 4.5s ease-in-out infinite;
-  box-shadow: 0 0 48px rgba(99, 102, 241, 0.45), 0 0 96px rgba(45, 212, 191, 0.18);
-}
-.orb-core {
-  position: absolute; inset: 26%;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.85);
-  filter: blur(6px);
-  animation: orb-breathe 4.5s ease-in-out infinite reverse;
+  box-shadow: 0 0 48px rgba(99, 102, 241, 0.45), 0 0 96px rgba(45, 212, 191, 0.18),
+    inset -6px -8px 16px rgba(40, 40, 120, 0.18);
 }
 @keyframes orb-breathe {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.09); }
+}
+.eyes {
+  position: absolute;
+  top: 36%;
+  left: 0; right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 22%;
+}
+.eye {
+  width: 19%;
+  aspect-ratio: 1;
+  background: #fff;
+  border-radius: 50%;
+  position: relative;
+  animation: blink 4.8s ease-in-out infinite;
+}
+.eye::after {
+  content: "";
+  position: absolute;
+  inset: 22%;
+  background: #20234a;
+  border-radius: 50%;
+  transform: translate(var(--px, 0px), var(--py, 0px));
+  transition: transform 0.18s ease-out;
+}
+@keyframes blink {
+  0%, 91%, 100% { transform: scaleY(1); }
+  94%, 96% { transform: scaleY(0.08); }
 }
 
 /* Scrollbars */
@@ -179,3 +225,5 @@ input::placeholder { color: var(--text-faint); }
 ::-webkit-scrollbar-thumb { background: var(--bg-elev-2); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: #233050; }
 ::-webkit-scrollbar-track { background: transparent; }
+:root[data-theme="light"] ::-webkit-scrollbar-thumb { background: #d6d9ec; }
+:root[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #bcc0da; }

@@ -121,13 +121,16 @@ const PHRASES = [
 
 let dash = null;
 let strict = { waitSeconds: 60, challenge: "phrase", maxUnlockMinutes: 15 };
+let buddyTone = "kind";
 
 async function init() {
   dash = await chrome.runtime.sendMessage({ type: "getDashboard" });
   const s = dash.settings;
   strict = s.strict;
+  northApplyTheme(s.theme || "light");
 
   const tone = s.buddy?.tone === "tough" ? "tough" : "kind";
+  buddyTone = tone;
   const pack = LINES[reason] || LINES.blocklist;
   $("buddy-name").textContent = s.buddy?.enabled ? (s.buddy.name || "Nori") : "North";
   $("headline").textContent = pack.headline;
@@ -167,6 +170,19 @@ async function init() {
 function esc(s) {
   return s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
+
+// Poke Nori, get another line.
+$("buddy-orb").addEventListener("click", () => {
+  const pack = LINES[reason] || LINES.blocklist;
+  const lines = pack[buddyTone];
+  const current = $("subline").textContent;
+  const others = lines.filter(l => l !== current);
+  $("subline").textContent = others[Math.floor(Math.random() * others.length)] || current;
+  $("buddy-orb").animate(
+    [{ transform: "scale(1)" }, { transform: "scale(1.16) rotate(-4deg)" }, { transform: "scale(1)" }],
+    { duration: 340, easing: "ease-out" }
+  );
+});
 
 // ---------------------------------------------------------------------------
 // "Take me somewhere better": picked at random the moment you click.
@@ -216,9 +232,9 @@ function startBreath() {
   });
   (async () => {
     while (!stopped) {
-      await phase("Breathe in", [{ transform: "scale(0.65)", opacity: 0.25 }, { transform: "scale(1)", opacity: 0.5 }], 4000);
+      await phase("Breathe in", [{ transform: "scale(0.55)", opacity: 0.55 }, { transform: "scale(1.05)", opacity: 1 }], 4000);
       await phase("Hold", null, 4000);
-      await phase("Breathe out", [{ transform: "scale(1)", opacity: 0.5 }, { transform: "scale(0.65)", opacity: 0.25 }], 6000);
+      await phase("Breathe out", [{ transform: "scale(1.05)", opacity: 1 }, { transform: "scale(0.55)", opacity: 0.55 }], 6000);
     }
   })();
   breathStop = () => { stopped = true; };

@@ -7,6 +7,7 @@
 
   const fixtureSettings = {
     enabled: true,
+    theme: "light",
     strict: { enabled: true, waitSeconds: 8, challenge: "phrase", maxUnlockMinutes: 15 },
     buddy: { enabled: true, name: "Nori", tone: "kind" },
     shorts: { enabled: true, blockTikTokEntirely: true, allowSharedLinks: true },
