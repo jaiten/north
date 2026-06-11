@@ -1,0 +1,168 @@
+// North — YouTube content script
+// Hides Shorts everywhere, optionally the home feed / related / comments,
+// and hides videos whose title or channel matches blocked keywords.
+
+(() => {
+  let settings = null;
+
+  const SHORTS_CSS = `
+    ytd-rich-shelf-renderer[is-shorts],
+    ytd-reel-shelf-renderer,
+    ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts]),
+    grid-shelf-view-model,
+    ytm-shorts-lockup-view-model,
+    ytd-guide-entry-renderer:has(a#endpoint[title="Shorts"]),
+    ytd-mini-guide-entry-renderer:has(a[title="Shorts"]),
+    yt-chip-cloud-chip-renderer:has(yt-formatted-string[title="Shorts"]),
+    a[title="Shorts"][href^="/shorts"],
+    ytd-rich-item-renderer:has(a[href^="/shorts"]) {
+      display: none !important;
+    }`;
+
+  const HOME_FEED_CSS = `
+    ytd-browse[page-subtype="home"] ytd-rich-grid-renderer #contents,
+    ytd-browse[page-subtype="home"] ytd-feed-filter-chip-bar-renderer {
+      display: none !important;
+    }`;
+
+  const RELATED_CSS = `
+    ytd-watch-flexy #secondary ytd-watch-next-secondary-results-renderer,
+    ytd-watch-flexy #related {
+      display: none !important;
+    }`;
+
+  const COMMENTS_CSS = `ytd-comments#comments { display: none !important; }`;
+
+  const SUBS_CSS = `
+    ytd-guide-entry-renderer:has(a[href="/feed/subscriptions"]),
+    ytd-mini-guide-entry-renderer:has(a[href="/feed/subscriptions"]),
+    ytd-browse[page-subtype="subscriptions"] ytd-rich-grid-renderer #contents,
+    ytd-browse[page-subtype="subscriptions"] ytd-section-list-renderer #contents {
+      display: none !important;
+    }`;
+
+  function applyStyles() {
+    document.getElementById("north-yt-style")?.remove();
+    if (!settings?.enabled) return;
+    let css = "";
+    if (settings.shorts?.enabled || settings.youtube?.blockShorts) css += SHORTS_CSS;
+    if (settings.youtube?.hideHomeFeed) css += HOME_FEED_CSS;
+    if (settings.youtube?.hideRelated) css += RELATED_CSS;
+    if (settings.youtube?.hideComments) css += COMMENTS_CSS;
+    if (settings.youtube?.hideSubscriptions) css += SUBS_CSS;
+    if (!css) return;
+    const style = document.createElement("style");
+    style.id = "north-yt-style";
+    style.textContent = css;
+    (document.head || document.documentElement).appendChild(style);
+  }
+
+  // --- Calm placeholder when the home feed is hidden -----------------------
+
+  function ensureFeedPlaceholder() {
+    const isHome = location.pathname === "/" && !location.search &&
+      settings?.youtube?.hideHomeFeed;
+    const isSubs = location.pathname.startsWith("/feed/subscriptions") &&
+      settings?.youtube?.hideSubscriptions;
+    if (!settings?.enabled || (!isHome && !isSubs)) {
+      document.getElementById("north-yt-placeholder")?.remove();
+      return;
+    }
+    const grid = document.querySelector(
+      'ytd-browse[page-subtype="home"] ytd-rich-grid-renderer,' +
+      'ytd-browse[page-subtype="subscriptions"] ytd-rich-grid-renderer,' +
+      'ytd-browse[page-subtype="subscriptions"] ytd-section-list-renderer');
+    if (!grid || document.getElementById("north-yt-placeholder")) return;
+    const card = document.createElement("div");
+    card.id = "north-yt-placeholder";
+    card.innerHTML = `
+      <div class="north-orb"></div>
+      <h2>Search with intention</h2>
+      <p>${(settings.buddy?.name || "Nori")} hid the feed so the feed can't choose for you.<br>
+      If you came here for something specific, search for it. If not — is there something better waiting?</p>`;
+    const style = document.createElement("style");
+    style.textContent = `
+      #north-yt-placeholder { max-width: 460px; margin: 12vh auto; text-align: center;
+        font-family: "Segoe UI", Roboto, sans-serif; color: var(--yt-spec-text-primary, #f1f1f1); }
+      #north-yt-placeholder .north-orb { width: 56px; height: 56px; margin: 0 auto 20px;
+        border-radius: 50%; background: linear-gradient(135deg,#6366f1,#2dd4bf);
+        animation: north-breathe 4s ease-in-out infinite; }
+      #north-yt-placeholder h2 { font-size: 22px; font-weight: 600; margin: 0 0 10px; }
+      #north-yt-placeholder p { font-size: 14px; line-height: 1.6; opacity: .75; margin: 0; }
+      @keyframes north-breathe { 0%,100% { transform: scale(1); opacity:.85 } 50% { transform: scale(1.12); opacity:1 } }`;
+    card.appendChild(style);
+    grid.parentElement.insertBefore(card, grid);
+  }
+
+  // --- Keyword filtering of video renderers --------------------------------
+
+  function keywordList() {
+    const a = settings?.keywords || [];
+    const b = settings?.youtube?.titleKeywords || [];
+    return [...a, ...b].map(k => k.toLowerCase()).filter(Boolean);
+  }
+
+  const RENDERERS = [
+    "ytd-rich-item-renderer", "ytd-video-renderer", "ytd-compact-video-renderer",
+    "ytd-grid-video-renderer", "ytd-playlist-renderer", "ytd-radio-renderer"
+  ].join(",");
+
+  function filterVideos() {
+    if (!settings?.enabled) return;
+    const kws = keywordList();
+    if (!kws.length) return;
+    for (const el of document.querySelectorAll(`${RENDERERS}:not([data-north-checked])`)) {
+      el.setAttribute("data-north-checked", "1");
+      const title = el.querySelector("#video-title")?.textContent || "";
+      const channel = el.querySelector("ytd-channel-name, #channel-name")?.textContent || "";
+      const text = (title + " " + channel).toLowerCase();
+      if (kws.some(k => text.includes(k))) el.style.setProperty("display", "none", "important");
+    }
+  }
+
+  // --- Wiring ----------------------------------------------------------------
+
+  let scheduled = false;
+  function onMutate() {
+    if (scheduled) return;
+    scheduled = true;
+    setTimeout(() => {
+      scheduled = false;
+      filterVideos();
+      ensureFeedPlaceholder();
+    }, 250);
+  }
+
+  function boot() {
+    applyStyles();
+    const obs = new MutationObserver(onMutate);
+    const start = () => {
+      if (!document.body) return requestAnimationFrame(start);
+      obs.observe(document.body, { childList: true, subtree: true });
+      onMutate();
+    };
+    start();
+    // YouTube SPA navigation
+    window.addEventListener("yt-navigate-finish", () => {
+      // re-check unfiltered renderers after navigation re-renders
+      document.querySelectorAll("[data-north-checked]").forEach(el => el.removeAttribute("data-north-checked"));
+      onMutate();
+    });
+  }
+
+  chrome.storage.local.get("settings", ({ settings: s }) => {
+    settings = s || {};
+    boot();
+  });
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === "local" && changes.settings) {
+      settings = changes.settings.newValue || {};
+      applyStyles();
+      document.querySelectorAll("[data-north-checked]").forEach(el => {
+        el.removeAttribute("data-north-checked");
+        el.style.removeProperty("display");
+      });
+      onMutate();
+    }
+  });
+})();

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>North</title>
+  <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-mark">▲</div>
+      <div>
+        <div class="logo-name">North</div>
+        <div class="logo-tag" id="status-tag">Protection on</div>
+      </div>
+    </div>
+    <button class="icon-btn" id="btn-options" title="Settings">⚙</button>
+  </header>
+
+  <section class="buddy-line">
+    <div class="mini-orb"></div>
+    <p id="buddy-msg">Loading…</p>
+  </section>
+
+  <!-- Focus session -->
+  <section class="card" id="focus-card">
+    <div id="focus-idle">
+      <h3>Focus session</h3>
+      <p class="dim">Blocks everything on your list — no unlocks until it ends.</p>
+      <div class="focus-row">
+        <button class="chip" data-mins="25">25 min</button>
+        <button class="chip" data-mins="50">50 min</button>
+        <button class="chip" data-mins="90">90 min</button>
+        <input type="number" id="focus-custom" min="1" max="480" placeholder="min">
+      </div>
+      <button class="btn primary full" id="btn-focus">Start focusing</button>
+    </div>
+    <div id="focus-active" class="hidden">
+      <h3>In session</h3>
+      <div class="focus-time" id="focus-remaining">—</div>
+      <p class="dim">Everything distracting is sealed. You've got this.</p>
+      <button class="btn ghost full small" id="btn-end-focus">End early (requires challenge)</button>
+    </div>
+  </section>
+
+  <!-- Today -->
+  <section class="card">
+    <h3>Today</h3>
+    <div class="stat-row">
+      <div class="stat"><div class="stat-num" id="stat-blocks">0</div><div class="stat-label">distractions<br>dodged</div></div>
+      <div class="stat"><div class="stat-num" id="stat-focus">0m</div><div class="stat-label">focused<br>time</div></div>
+      <div class="stat"><div class="stat-num" id="stat-unlocks">0</div><div class="stat-label">unlocks<br>used</div></div>
+    </div>
+    <div id="usage-bars"></div>
+  </section>
+
+  <footer>
+    <label class="switch" title="Protection (turning off requires the challenge)">
+      <input type="checkbox" id="toggle-enabled" checked>
+      <span class="track"></span>
+    </label>
+    <span class="dim" id="enabled-label">Protection enabled</span>
+  </footer>
+
+  <div class="incog hidden" id="incog-banner">
+    Not active in Incognito windows — <a id="incog-fix">fix that</a>
+  </div>
+
+  <script src="dev-shim.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

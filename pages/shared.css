@@ -1,0 +1,159 @@
+/* North — shared design system */
+
+:root {
+  --bg: #0b1020;
+  --bg-elev: #11182c;
+  --bg-elev-2: #182138;
+  --line: rgba(148, 163, 196, 0.14);
+  --text: #e7ecf5;
+  --text-dim: #9aa7c0;
+  --text-faint: #5d6b88;
+  --accent: #6366f1;
+  --accent-2: #2dd4bf;
+  --grad: linear-gradient(135deg, #6366f1, #2dd4bf);
+  --danger: #f87171;
+  --ok: #34d399;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+  --font: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { font-weight: 650; letter-spacing: -0.01em; margin: 0; }
+
+.hidden { display: none !important; }
+
+/* Buttons */
+.btn {
+  font: 600 14px/1 var(--font);
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.2s ease, background 0.2s ease, opacity 0.2s;
+}
+.btn:active { transform: scale(0.97); }
+.btn.primary {
+  background: var(--grad);
+  color: #fff;
+  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.35);
+}
+.btn.primary:hover { box-shadow: 0 8px 32px rgba(99, 102, 241, 0.5); }
+.btn.primary:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+.btn.ghost {
+  background: transparent;
+  color: var(--text-dim);
+  border-color: var(--line);
+}
+.btn.ghost:hover { color: var(--text); border-color: rgba(148, 163, 196, 0.35); }
+.btn.danger { background: rgba(248, 113, 113, 0.12); color: var(--danger); border-color: rgba(248, 113, 113, 0.3); }
+.btn.danger:hover { background: rgba(248, 113, 113, 0.2); }
+.btn.small { padding: 8px 14px; font-size: 12.5px; border-radius: 9px; }
+
+/* Chips */
+.chip {
+  font: 600 12.5px/1 var(--font);
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--bg-elev);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.chip:hover { border-color: var(--accent); color: var(--text); }
+.chip.selected {
+  background: rgba(99, 102, 241, 0.18);
+  border-color: var(--accent);
+  color: #c7caff;
+}
+
+/* Inputs */
+input[type="text"], input[type="number"], input[type="time"], select {
+  font: 500 14px var(--font);
+  background: var(--bg-elev-2);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+input:focus, select:focus { border-color: var(--accent); }
+input::placeholder { color: var(--text-faint); }
+
+/* Toggle switch */
+.switch { position: relative; width: 42px; height: 24px; flex: none; cursor: pointer; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch .track {
+  position: absolute; inset: 0;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  transition: background 0.2s, border-color 0.2s;
+}
+.switch .track::after {
+  content: "";
+  position: absolute; top: 2px; left: 2px;
+  width: 18px; height: 18px;
+  background: var(--text-faint);
+  border-radius: 50%;
+  transition: transform 0.2s cubic-bezier(0.3, 1.4, 0.5, 1), background 0.2s;
+}
+.switch input:checked + .track { background: rgba(99, 102, 241, 0.35); border-color: var(--accent); }
+.switch input:checked + .track::after { transform: translateX(18px); background: #fff; }
+
+/* Aurora background flourish */
+.aurora {
+  position: fixed; inset: -20%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(40% 35% at 25% 20%, rgba(99, 102, 241, 0.16), transparent 70%),
+    radial-gradient(35% 30% at 75% 70%, rgba(45, 212, 191, 0.10), transparent 70%),
+    radial-gradient(30% 25% at 60% 15%, rgba(168, 85, 247, 0.08), transparent 70%);
+  animation: aurora-drift 24s ease-in-out infinite alternate;
+}
+@keyframes aurora-drift {
+  from { transform: translate3d(-2%, -1%, 0) scale(1); }
+  to   { transform: translate3d(2%, 2%, 0) scale(1.06); }
+}
+
+/* The Nori orb */
+.orb {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: var(--grad);
+  position: relative;
+  animation: orb-breathe 4.5s ease-in-out infinite;
+  box-shadow: 0 0 48px rgba(99, 102, 241, 0.45), 0 0 96px rgba(45, 212, 191, 0.18);
+}
+.orb-core {
+  position: absolute; inset: 26%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  filter: blur(6px);
+  animation: orb-breathe 4.5s ease-in-out infinite reverse;
+}
+@keyframes orb-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.09); }
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--bg-elev-2); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #233050; }
+::-webkit-scrollbar-track { background: transparent; }
