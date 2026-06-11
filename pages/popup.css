@@ -58,6 +58,19 @@ header {
   animation: orb-breathe 4s ease-in-out infinite;
 }
 
+.prot-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.prot-chip {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  background: rgba(45, 212, 191, 0.08);
+  border: 1px solid rgba(45, 212, 191, 0.22);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
 .card {
   background: var(--bg-elev);
   border: 1px solid var(--line);

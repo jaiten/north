@@ -23,8 +23,8 @@ const DEFAULT_SETTINGS = {
     blockTikTokEntirely: true,
     allowSharedLinks: true    // a single reel/short opened from outside the platform plays
   },
-  instagramDmOnly: true,      // only instagram.com/direct/* is reachable
-  adultBlock: true,           // category block, never unlockable
+  instagramDmOnly: false,     // only instagram.com/direct/* is reachable (user opts in)
+  adultBlock: true,           // category block, always on — enforced in saveSettings and evaluate
   keywords: [],               // blocked keywords (URL + page title)
   youtube: {
     blockShorts: true,
@@ -32,24 +32,23 @@ const DEFAULT_SETTINGS = {
     hideRelated: false,
     hideComments: false,
     hideSubscriptions: false,
-    titleKeywords: []         // hide videos whose title/channel matches
+    titleKeywords: [],        // hide videos whose title/channel matches
+    topicMode: false,         // only show videos matching allowedKeywords
+    allowedKeywords: []
   },
   betterPlaces: [
-    { label: "Learn something on Khan Academy", url: "https://www.khanacademy.org" },
+    { label: "Khan Academy", url: "https://www.khanacademy.org" },
     { label: "A random Wikipedia article", url: "https://en.wikipedia.org/wiki/Special:Random" },
-    { label: "Practice coding on freeCodeCamp", url: "https://www.freecodecamp.org/learn" },
-    { label: "Read a classic on Project Gutenberg", url: "https://www.gutenberg.org/ebooks/search/?sort_order=downloads" },
-    { label: "Pick up a language on Duolingo", url: "https://www.duolingo.com" }
+    { label: "freeCodeCamp", url: "https://www.freecodecamp.org/learn" },
+    { label: "A free classic book", url: "https://www.gutenberg.org/ebooks/search/?sort_order=downloads" },
+    { label: "Duolingo", url: "https://www.duolingo.com" },
+    { label: "MIT OpenCourseWare", url: "https://ocw.mit.edu" },
+    { label: "A TED talk", url: "https://www.ted.com/talks" },
+    { label: "Typing practice", url: "https://www.keybr.com" },
+    { label: "A math problem to chew on", url: "https://projecteuler.net/archives" }
   ],
-  sites: [
-    // { id, pattern, mode: "always"|"schedule"|"limit",
-    //   schedule: [{days:[0..6], start:"09:00", end:"17:00"}],
-    //   limitMins: 30 }
-    { id: "s_x",   pattern: "x.com",        mode: "always", schedule: [], limitMins: 0 },
-    { id: "s_tw",  pattern: "twitter.com",  mode: "always", schedule: [], limitMins: 0 },
-    { id: "s_fb",  pattern: "facebook.com", mode: "always", schedule: [], limitMins: 0 },
-    { id: "s_rd",  pattern: "reddit.com",   mode: "limit",  schedule: [], limitMins: 20 }
-  ]
+  // Empty on purpose: nothing is blocked until the user chooses it.
+  sites: []
 };
 
 let cache = { settings: null, unlocks: {}, focus: null };
@@ -168,13 +167,30 @@ function isAdult(url, title = "") {
 }
 
 // ---------------------------------------------------------------------------
-// Shared-link pass: a friend sends you one reel/short — that one item plays.
-// Granted when a short-form item is opened from OUTSIDE the platform (a DM,
-// another app, a pasted link). Locked to that exact item id and tab; swiping
-// to the next item is blocked.
+// Shared-link pass: a friend sends you one reel/short/post. That one item
+// plays for a few minutes. Granted when the item is opened from OUTSIDE the
+// platform (another app, a pasted link) or from Instagram DMs. Swiping to the
+// next item is blocked because the pass is locked to the exact item id.
+//
+// Anti-abuse: a pass lasts PASS_MINUTES, and only one NEW pass can be granted
+// every GRANT_COOLDOWN_MINUTES, persisted in storage so restarting the
+// browser doesn't reset it. You can watch the thing your friend sent. You
+// cannot chain passes into a feed.
 // ---------------------------------------------------------------------------
 
-const tabNav = new Map(); // tabId -> { lastUrl, pass: { id, until } }
+const PASS_MINUTES = 5;
+const GRANT_COOLDOWN_MINUTES = 10;
+
+const tabNav = new Map(); // tabId -> { lastUrl, ytTime }
+
+let passCache = null;
+async function getPassState() {
+  if (!passCache) {
+    const { sharePass = { lastGrant: 0, items: {} } } = await chrome.storage.local.get("sharePass");
+    passCache = sharePass;
+  }
+  return passCache;
+}
 
 function shortFormItem(url) {
   let u;
@@ -187,6 +203,10 @@ function shortFormItem(url) {
   if (host.endsWith("instagram.com") && (m = u.pathname.match(/^\/reels?\/([\w-]+)/))) {
     return { platform: "ig", id: m[1] };
   }
+  // Posts shared in Instagram DMs open as /p/<id>. Only legit from DMs.
+  if (host.endsWith("instagram.com") && (m = u.pathname.match(/^\/p\/([\w-]+)/))) {
+    return { platform: "ig", id: m[1], dmOnlySource: true };
+  }
   if (host.endsWith("facebook.com") && (m = u.pathname.match(/^\/reel\/([\w-]+)/))) {
     return { platform: "fb", id: m[1] };
   }
@@ -195,33 +215,42 @@ function shortFormItem(url) {
 
 function rootDomain(host) { return host.split(".").slice(-2).join("."); }
 
-function sharePassAllows(tabId, url, settings) {
+async function sharePassAllows(tabId, url, settings) {
   if (!settings.shorts.allowSharedLinks || tabId == null) return false;
   const item = shortFormItem(url);
   if (!item) return false;
 
-  const nav = tabNav.get(tabId) || {};
-  if (nav.pass && nav.pass.id === item.id && nav.pass.until > Date.now()) return true;
+  const pass = await getPassState();
 
-  // Decide whether this navigation came from outside the platform.
-  let external = false;
-  const prev = nav.lastUrl;
+  // An active pass for this exact item keeps working (any tab, survives restarts).
+  if (pass.items[item.id] && pass.items[item.id] > Date.now()) return true;
+
+  // Where did this navigation come from?
+  const prev = tabNav.get(tabId)?.lastUrl;
+  let external = false, fromDirect = false;
   if (!prev) {
-    external = true; // fresh tab — opened from another app or a link click
+    external = true; // fresh tab: opened from another app or a link click
   } else {
     try {
       const prevU = new URL(prev);
       const prevHost = prevU.hostname.replace(/^www\./, "");
       const curHost = new URL(url).hostname.replace(/^www\./, "");
-      if (rootDomain(prevHost) !== rootDomain(curHost)) external = true;
-      // Instagram DMs are a legitimate in-platform source for shared reels.
-      if (item.platform === "ig" && prevU.pathname.startsWith("/direct")) external = true;
+      external = rootDomain(prevHost) !== rootDomain(curHost);
+      fromDirect = prevHost.endsWith("instagram.com") && prevU.pathname.startsWith("/direct");
     } catch { /* ignore */ }
   }
-  if (!external) return false;
+  const legit = item.dmOnlySource ? fromDirect : (external || fromDirect);
+  if (!legit) return false;
 
-  nav.pass = { id: item.id, until: Date.now() + 10 * 60e3 };
-  tabNav.set(tabId, nav);
+  // Rate limit: one new pass per cooldown window.
+  if (Date.now() - (pass.lastGrant || 0) < GRANT_COOLDOWN_MINUTES * 60e3) return false;
+
+  for (const k of Object.keys(pass.items)) {
+    if (pass.items[k] < Date.now()) delete pass.items[k];
+  }
+  pass.items[item.id] = Date.now() + PASS_MINUTES * 60e3;
+  pass.lastGrant = Date.now();
+  await chrome.storage.local.set({ sharePass: pass });
   return true;
 }
 
@@ -290,8 +319,8 @@ async function evaluate(url, { title = "", tabId = null } = {}) {
   const host = hostnameOf(url);
   if (!host) return null;
 
-  // 0. Adult content — never unlockable.
-  if (settings.adultBlock && isAdult(url, title)) {
+  // 0. Adult content — always blocked, regardless of any stored flag.
+  if (isAdult(url, title)) {
     return { reason: "adult", site: host };
   }
 
@@ -302,8 +331,8 @@ async function evaluate(url, { title = "", tabId = null } = {}) {
   const isUnlocked = !!unlockedUntil && !focus.active; // unlocks don't apply during focus
 
   // A single shared reel/short opened from outside the platform may pass the
-  // short-form and DM-only checks — but NOT site rules, keywords or focus.
-  const shared = !focus.active && sharePassAllows(tabId, url, settings);
+  // short-form and DM-only checks, but NOT site rules, keywords or focus.
+  const shared = !focus.active && await sharePassAllows(tabId, url, settings);
 
   // 1. Short-form content — never unlockable, by design.
   if (settings.shorts.enabled && !shared && isShortForm(url, settings)) {
@@ -346,6 +375,22 @@ async function evaluate(url, { title = "", tabId = null } = {}) {
   return null;
 }
 
+// If a YouTube video gets blocked mid-watch (limit ran out), remember where
+// playback was so coming back resumes instead of restarting.
+function withResumeTime(tabId, url) {
+  try {
+    const u = new URL(url);
+    if (!u.hostname.includes("youtube.com") || u.pathname !== "/watch") return url;
+    const vid = u.searchParams.get("v");
+    const yt = tabNav.get(tabId)?.ytTime;
+    if (vid && yt && yt.videoId === vid && Date.now() - yt.ts < 5 * 60e3 && yt.t > 10) {
+      u.searchParams.set("t", Math.max(0, Math.floor(yt.t) - 2) + "s");
+      return u.toString();
+    }
+  } catch { /* ignore */ }
+  return url;
+}
+
 function blockedPageUrl(verdict, fromUrl) {
   const p = new URLSearchParams({
     reason: verdict.reason,
@@ -373,7 +418,7 @@ async function enforceOnTab(tabId, url, title = "") {
   const last = recentBlocks.get(tabId);
   if (last && last.url === url && Date.now() - last.ts < 3000) return true;
   recentBlocks.set(tabId, { url, ts: Date.now() });
-  const target = verdict.redirect || blockedPageUrl(verdict, url);
+  const target = verdict.redirect || blockedPageUrl(verdict, withResumeTime(tabId, url));
   if (!verdict.redirect) await recordBlock(verdict.site || hostnameOf(url));
   try { await chrome.tabs.update(tabId, { url: target }); } catch { /* tab gone */ }
   return true;
@@ -460,6 +505,9 @@ chrome.runtime.onInstalled.addListener(async details => {
   if (details.reason === "install") {
     chrome.tabs.create({ url: chrome.runtime.getURL("pages/options.html") + "#welcome" });
   }
+  // Uninstall friction: a goodbye page that shows what you're walking away
+  // from. Update the domain once the website is live.
+  try { chrome.runtime.setUninstallURL("https://northfocus.app/goodbye.html"); } catch { /* ignore */ }
 });
 chrome.runtime.onStartup.addListener(() => chrome.alarms.create("tick", { periodInMinutes: 1 }));
 
@@ -562,7 +610,7 @@ async function completeFocus() {
         type: "basic",
         iconUrl: chrome.runtime.getURL("icons/icon128.png"),
         title: `${settings.buddy.name}: session complete`,
-        message: "You stayed the course. That's how momentum is built — one honest block of focus at a time."
+        message: "You stayed the course. That's how momentum gets built, one honest session at a time."
       });
     }
   }
@@ -593,7 +641,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         break;
       }
       case "saveSettings": {
-        await saveSettings(deepMerge(structuredClone(DEFAULT_SETTINGS), msg.settings));
+        const merged = deepMerge(structuredClone(DEFAULT_SETTINGS), msg.settings);
+        merged.adultBlock = true; // not negotiable, even via imported settings
+        await saveSettings(merged);
         sendResponse({ ok: true });
         break;
       }
@@ -630,9 +680,19 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       }
       case "checkUrl": {
         // Content script saw the URL change without a full navigation (SPA
-        // history, or a back/forward-cache restore) — re-enforce.
+        // history, or a back/forward-cache restore). Re-enforce.
         if (sender.tab?.id) {
           await enforceOnTab(sender.tab.id, msg.url || sender.tab.url || "");
+        }
+        sendResponse({ ok: true });
+        break;
+      }
+      case "ytTime": {
+        // YouTube content script reports playback position for limit-block resume.
+        if (sender.tab?.id) {
+          const nav = tabNav.get(sender.tab.id) || {};
+          nav.ytTime = { videoId: msg.videoId, t: msg.t, ts: Date.now() };
+          tabNav.set(sender.tab.id, nav);
         }
         sendResponse({ ok: true });
         break;

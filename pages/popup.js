@@ -8,17 +8,17 @@ const GREETINGS = {
   kind: [
     "Good to see you. What's the one thing that matters most right now?",
     "Every blocked tab is a small vote for the person you're becoming.",
-    "You don't need more willpower — you need fewer doors. I closed some for you.",
+    "You don't need more willpower. You need fewer open doors. I closed some for you.",
     "Progress isn't loud. It's just a day with fewer detours."
   ],
   tough: [
-    "Stats don't lie. Let's keep the dodge count up and the unlock count at zero.",
+    "Stats don't lie. Keep the dodge count up and the unlock count at zero.",
     "The feed misses you. Don't text back.",
-    "Discipline is remembering what you want. I'm your reminder."
+    "Discipline is remembering what you want. Consider this your reminder."
   ],
   goodDay: [
-    "{n} distractions dodged today. That's real, reclaimed time.",
-    "{n} blocked attempts today — each one was a fork in the road, and you took the right one."
+    "{n} distractions dodged today. That's real time you got back.",
+    "{n} blocked attempts today. Each one was a fork in the road and you took the right turn."
   ]
 };
 
@@ -42,6 +42,17 @@ async function load() {
     msg = GREETINGS[tone][Math.floor(Math.random() * GREETINGS[tone].length)];
   }
   $("buddy-msg").textContent = s.buddy?.enabled ? msg : "Buddy is off. The blocks still hold.";
+
+  // What's actively protected right now
+  const chips = [];
+  if (s.enabled) {
+    if (s.shorts?.enabled) chips.push("Shorts blocked");
+    if (s.adultBlock) chips.push("18+ blocked");
+    if (s.instagramDmOnly) chips.push("Instagram: DMs only");
+    if (s.sites?.length) chips.push(`${s.sites.length} site${s.sites.length === 1 ? "" : "s"} guarded`);
+    if (s.keywords?.length) chips.push(`${s.keywords.length} keyword${s.keywords.length === 1 ? "" : "s"}`);
+  }
+  $("prot-row").innerHTML = chips.map(c => `<span class="prot-chip">${c}</span>`).join("");
 
   // Stats
   $("stat-blocks").textContent = totalBlocks;

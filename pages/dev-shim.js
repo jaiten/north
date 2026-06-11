@@ -13,7 +13,7 @@
     instagramDmOnly: true,
     adultBlock: true,
     keywords: ["celebrity gossip", "drama"],
-    youtube: { blockShorts: true, hideHomeFeed: true, hideRelated: false, hideComments: false, hideSubscriptions: false, titleKeywords: ["reaction", "gone wrong"] },
+    youtube: { blockShorts: true, hideHomeFeed: true, hideRelated: false, hideComments: false, hideSubscriptions: false, titleKeywords: ["reaction", "gone wrong"], topicMode: true, allowedKeywords: ["guitar", "python", "calculus"] },
     betterPlaces: [
       { label: "Learn something on Khan Academy", url: "https://www.khanacademy.org" },
       { label: "A random Wikipedia article", url: "https://en.wikipedia.org/wiki/Special:Random" },

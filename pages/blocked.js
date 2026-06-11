@@ -9,81 +9,81 @@ const fromUrl = params.get("from") || "";
 const $ = id => document.getElementById(id);
 
 // ---------------------------------------------------------------------------
-// Buddy copy — kind and tough variants per reason
+// Buddy copy. Two tones per reason: gentle and direct. Plain words, no fluff.
 // ---------------------------------------------------------------------------
 
 const LINES = {
   shorts: {
     kind: [
-      "Short-form is engineered to eat hours in 15-second bites. You deserve hours that add up to something.",
-      "The algorithm wanted the next 40 minutes of your life. I said no on your behalf.",
-      "Nothing in that feed will still matter tomorrow. What you're avoiding probably will."
+      "Short videos are built to eat your time in 15 second bites. You had better plans for this hour.",
+      "The algorithm wanted your next 40 minutes. I said no for you.",
+      "Nothing in that feed will matter tomorrow. The thing you're avoiding probably will."
     ],
     tough: [
-      "Shorts again? You know exactly how that ends. Closed.",
+      "Shorts again? You know exactly how that ends.",
       "That feed is a slot machine. You're better than a slot machine.",
-      "You didn't even want this. Your thumb did. Overruled."
+      "You didn't even want this. Your thumb did."
     ],
-    headline: "Short-form stays closed."
+    headline: "Short videos stay closed."
   },
   instagram: {
     kind: [
-      "Messages are open if someone needs you. The feed can wait forever — it's designed to.",
-      "I kept your DMs reachable. Everything else on Instagram is a rabbit hole with no bottom."
+      "Your messages still work. The feed can wait. It's designed to wait forever.",
+      "I kept your DMs open in case someone real needs you. The rest is a rabbit hole."
     ],
     tough: [
-      "DMs only. The feed is not a place, it's a trap with good lighting.",
-      "If it's not a message from a real person, it's not worth your attention."
+      "Messages only. The feed is a trap with good lighting.",
+      "If it's not a message from a real person, it can wait."
     ],
-    headline: "Instagram is DMs-only right now."
+    headline: "Instagram is messages-only right now."
   },
   keyword: {
     kind: [
-      "You asked me to keep this topic out of reach — that past-you was thinking clearly. Trust them.",
-      "This matched a keyword you chose to block. Future-you says thanks."
+      "You asked me to keep this topic away from you. The you who wrote that rule was thinking clearly.",
+      "This matched a keyword you blocked. Future you says thanks."
     ],
     tough: [
-      "You literally wrote this keyword down as a no-go. Hold the line.",
+      "You wrote this keyword down as a no-go. Hold the line.",
       "Blocked by your own rule. Don't negotiate with yourself mid-craving."
     ],
-    headline: "That topic is off-limits."
+    headline: "That topic is off limits."
   },
   schedule: {
     kind: [
-      "This site is scheduled off right now. The version of you who set that schedule was protecting this exact moment.",
-      "It'll be there when the window opens. Right now belongs to your real work."
+      "This site is scheduled off right now. You set that schedule to protect this exact moment.",
+      "It'll still be there when the window opens. Right now belongs to your real work."
     ],
     tough: [
-      "It's blocked hours. You set them. Honor them.",
-      "Clock says focus time. The site will survive without you."
+      "These are blocked hours. You set them. Honor them.",
+      "The clock says focus time. The site will survive without you."
     ],
     headline: "Not during these hours."
   },
   limit: {
     kind: [
-      "You've used your time here today — and that's fine, it was budgeted. Now the budget's spent.",
-      "Today's allowance for this site is done. Tomorrow it resets. Tonight, you're free."
+      "You used your time here today, and that's fine. It was budgeted. Now the budget is spent.",
+      "Today's allowance for this site is done. It resets at midnight."
     ],
     tough: [
       "Time's up. More scrolling won't find what the first 20 minutes didn't.",
-      "Daily limit hit. The feed doesn't have an ending — but your day does."
+      "Daily limit hit. The feed has no ending. Your day does."
     ],
     headline: "You've hit today's limit."
   },
   focus: {
     kind: [
-      "You're mid focus session — and you're doing great. Don't trade the streak for a scroll.",
-      "The session you started is still running. Finish it and this feeling of pull will be gone."
+      "You're in the middle of a focus session, and you're doing well. Don't trade that for a scroll.",
+      "The session you started is still running. Finish it and this pull will be gone."
     ],
     tough: [
       "You started a focus session. Finish what you started.",
-      "Mid-session. No exceptions, no negotiations. Back to work."
+      "Mid-session. No exceptions. Back to work."
     ],
     headline: "Focus session in progress."
   },
   adult: {
     kind: [
-      "That content is filtered out. Not a judgment — a boundary you get to keep for free.",
+      "That content is filtered out. Not a judgment, just a boundary you get to keep.",
       "This category stays closed. Your attention has better places to live."
     ],
     tough: [
@@ -94,12 +94,12 @@ const LINES = {
   },
   blocklist: {
     kind: [
-      "You put this site on your blocklist for a reason. The reason hasn't changed — only the urge has.",
-      "Habit brought you here, not intention. Let's redirect that energy.",
-      "This moment — right now — is where the new habit gets built. One closed tab at a time."
+      "You put this site on your blocklist for a reason. The reason hasn't changed. Only the urge has.",
+      "Habit brought you here, not intention. Let's point that energy somewhere real.",
+      "Right now is where the new habit gets built. One closed tab at a time."
     ],
     tough: [
-      "You blocked this yourself. Past-you doesn't trust this moment, and past-you was right.",
+      "You blocked this yourself. Past you doesn't trust this moment, and past you was right.",
       "Muscle memory typed that URL. You don't actually want to be here.",
       "Nope. You have things to do and this isn't one of them."
     ],
@@ -148,26 +148,19 @@ async function init() {
   }
   $("meta").innerHTML = pills.join("");
 
-  // "Somewhere better" destination — picked once per visit
-  const places = s.betterPlaces || [];
-  if (places.length) {
-    betterPlace = places[Math.floor(Math.random() * places.length)];
-    $("btn-back").textContent = betterPlace.label;
-  }
-
   // Unlock availability
   if (reason === "shorts") {
     $("btn-unlock").classList.add("hidden");
-    $("footnote").textContent = "Short-form content can't be unlocked — that's the whole point. A reel or short a friend sends you still opens (just that one).";
+    $("footnote").textContent = "Short videos can't be unlocked. That's the whole point. A reel or short a friend sends you still opens, just that one.";
   } else if (reason === "adult") {
     $("btn-unlock").classList.add("hidden");
     $("footnote").textContent = "This category can't be unlocked.";
   } else if (dash.focus?.active) {
     $("btn-unlock").classList.add("hidden");
     const mins = Math.max(1, Math.ceil((dash.focus.until - Date.now()) / 60e3));
-    $("footnote").textContent = `Focus session running — ${mins} min to go. Unlocks are paused until it ends.`;
+    $("footnote").textContent = `Focus session running, ${mins} min to go. Unlocks are paused until it ends.`;
   } else {
-    $("footnote").textContent = `Unlocking takes a ${strict.waitSeconds}s wait and an honest sentence. By design.`;
+    $("footnote").textContent = `Unlocking takes a ${strict.waitSeconds}s wait and an honest sentence. That's deliberate.`;
   }
 }
 
@@ -176,19 +169,16 @@ function esc(s) {
 }
 
 // ---------------------------------------------------------------------------
-// Actions
+// "Take me somewhere better": picked at random the moment you click.
 // ---------------------------------------------------------------------------
 
-let betterPlace = null;
-
 $("btn-back").addEventListener("click", () => {
-  // Primary action: a genuinely better destination, picked at random from the
-  // user's "somewhere better" list (configurable in settings).
-  if (betterPlace?.url) {
-    location.href = betterPlace.url;
+  const places = dash?.settings?.betterPlaces || [];
+  if (places.length) {
+    const p = places[Math.floor(Math.random() * places.length)];
+    location.href = p.url;
     return;
   }
-  // Fallback: back past the blocked redirect, else a blank page.
   if (history.length > 2) {
     history.go(-2);
     setTimeout(() => { location.href = "about:blank"; }, 400);
@@ -197,7 +187,9 @@ $("btn-back").addEventListener("click", () => {
   }
 });
 
-// --- Unlock flow ---
+// ---------------------------------------------------------------------------
+// Unlock flow
+// ---------------------------------------------------------------------------
 
 let waitTimer = null;
 const CIRC = 2 * Math.PI * 52; // ring circumference
@@ -207,6 +199,30 @@ $("btn-unlock").addEventListener("click", () => {
   $("unlock-card").classList.remove("hidden");
   startWait();
 });
+
+// --- Breathing guide: in 4s, hold 4s, out 6s. The point is presence. ---
+
+let breathStop = null;
+
+function startBreath() {
+  const orb = $("breath-orb");
+  const label = $("breath-label");
+  let stopped = false;
+  const phase = (text, anim, ms) => new Promise(res => {
+    if (stopped) return res();
+    label.textContent = text;
+    if (anim) orb.animate(anim, { duration: ms, fill: "forwards", easing: "ease-in-out" });
+    setTimeout(res, ms);
+  });
+  (async () => {
+    while (!stopped) {
+      await phase("Breathe in", [{ transform: "scale(0.65)", opacity: 0.25 }, { transform: "scale(1)", opacity: 0.5 }], 4000);
+      await phase("Hold", null, 4000);
+      await phase("Breathe out", [{ transform: "scale(1)", opacity: 0.5 }, { transform: "scale(0.65)", opacity: 0.25 }], 6000);
+    }
+  })();
+  breathStop = () => { stopped = true; };
+}
 
 function startWait() {
   const total = Math.max(5, strict.waitSeconds || 60);
@@ -218,7 +234,10 @@ function startWait() {
   fg.style.strokeDasharray = CIRC;
   fg.style.strokeDashoffset = 0;
 
-  // The wait demands presence: leaving the tab or window restarts it.
+  startBreath();
+
+  // The wait demands presence: leaving the tab, the window or the app
+  // restarts it from zero.
   const restart = () => {
     left = total;
     $("ring-num").textContent = left;
@@ -245,6 +264,7 @@ let waitOnLeave = null, waitOnBlur = null;
 
 function stopWaitWatch() {
   clearInterval(waitTimer);
+  if (breathStop) breathStop();
   if (waitOnLeave) document.removeEventListener("visibilitychange", waitOnLeave);
   if (waitOnBlur) window.removeEventListener("blur", waitOnBlur);
   waitOnLeave = waitOnBlur = null;
@@ -257,7 +277,7 @@ function cancelUnlock() {
   $("step-wait").classList.remove("hidden");
   $("main-card").classList.remove("hidden");
   $("challenge-input").value = "";
-  $("btn-confirm-unlock").disabled = true;
+  $("challenge-error").classList.add("hidden");
 }
 
 $("btn-cancel-wait").addEventListener("click", cancelUnlock);
@@ -278,12 +298,12 @@ function showChallenge() {
     expected = String(a * b);
     $("challenge-prompt").textContent = "Solve this to prove you're acting on purpose, not on autopilot:";
     $("challenge-phrase").textContent = `${a} × ${b} = ?`;
-    $("challenge-input").placeholder = "Answer…";
+    $("challenge-input").placeholder = "Answer, then press Enter";
   } else {
     expected = PHRASES[Math.floor(Math.random() * PHRASES.length)];
     $("challenge-prompt").textContent = "Type this sentence exactly. If it doesn't feel true, close the tab instead.";
     $("challenge-phrase").textContent = expected;
-    $("challenge-input").placeholder = "Type it exactly…";
+    $("challenge-input").placeholder = "Type it, then press Enter";
   }
   $("challenge-input").focus();
 
@@ -293,13 +313,15 @@ function showChallenge() {
   });
 }
 
-$("challenge-input").addEventListener("input", e => {
-  const ok = e.target.value.trim() === expected;
-  $("btn-confirm-unlock").disabled = !ok;
-  $("challenge-error").classList.toggle("hidden", ok || !e.target.value);
+// Errors only show on submit, not while typing.
+$("challenge-input").addEventListener("input", () => {
+  $("challenge-error").classList.add("hidden");
+});
+$("challenge-input").addEventListener("keydown", e => {
+  if (e.key === "Enter") submitChallenge();
 });
 
-// Block paste — the sentence must be typed.
+// The sentence must be typed, not pasted.
 $("challenge-input").addEventListener("paste", e => e.preventDefault());
 $("challenge-input").addEventListener("drop", e => e.preventDefault());
 
@@ -310,15 +332,21 @@ document.querySelectorAll("#durations .chip").forEach(chip => {
   });
 });
 
-$("btn-confirm-unlock").addEventListener("click", async () => {
+async function submitChallenge() {
+  if ($("challenge-input").value.trim() !== expected) {
+    $("challenge-error").classList.remove("hidden");
+    return;
+  }
   const mins = Number(document.querySelector("#durations .chip.selected")?.dataset.mins || 5);
   const res = await chrome.runtime.sendMessage({ type: "requestUnlock", domain: site, minutes: mins });
   if (res?.ok && fromUrl) {
     location.href = fromUrl;
   } else if (res?.error === "focus") {
     cancelUnlock();
-    $("footnote").textContent = "A focus session is running — unlocks are paused.";
+    $("footnote").textContent = "A focus session is running. Unlocks are paused.";
   }
-});
+}
+
+$("btn-confirm-unlock").addEventListener("click", submitChallenge);
 
 init();

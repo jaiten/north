@@ -44,6 +44,12 @@
     (document.head || document.documentElement).appendChild(style);
   }
 
+  // The "press back twice" loophole: Chrome can restore this page from the
+  // back/forward cache with a reel modal still open while the URL reads as an
+  // allowed /direct path. A fresh load kills the stale modal and puts the
+  // current URL back through the rules.
+  window.addEventListener("pageshow", e => { if (e.persisted) location.reload(); });
+
   chrome.storage.local.get("settings", ({ settings: s }) => {
     settings = s || {};
     apply();

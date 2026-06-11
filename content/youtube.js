@@ -37,7 +37,9 @@
     ytd-guide-entry-renderer:has(a[href="/feed/subscriptions"]),
     ytd-mini-guide-entry-renderer:has(a[href="/feed/subscriptions"]),
     ytd-browse[page-subtype="subscriptions"] ytd-rich-grid-renderer #contents,
-    ytd-browse[page-subtype="subscriptions"] ytd-section-list-renderer #contents {
+    ytd-browse[page-subtype="subscriptions"] ytd-section-list-renderer #contents,
+    /* the sidebar list of subscribed channels: remember who you came for */
+    ytd-guide-section-renderer:has(a#endpoint[href^="/@"]) {
       display: none !important;
     }`;
 
@@ -79,7 +81,7 @@
       <div class="north-orb"></div>
       <h2>Search with intention</h2>
       <p>${(settings.buddy?.name || "Nori")} hid the feed so the feed can't choose for you.<br>
-      If you came here for something specific, search for it. If not — is there something better waiting?</p>`;
+      If you came here for something specific, search for it. If not, something better is probably waiting.</p>`;
     const style = document.createElement("style");
     style.textContent = `
       #north-yt-placeholder { max-width: 460px; margin: 12vh auto; text-align: center;
@@ -109,14 +111,22 @@
 
   function filterVideos() {
     if (!settings?.enabled) return;
-    const kws = keywordList();
-    if (!kws.length) return;
+    const blockKws = keywordList();
+    const topicMode = settings.youtube?.topicMode &&
+      (settings.youtube?.allowedKeywords || []).length > 0;
+    const allowKws = (settings.youtube?.allowedKeywords || []).map(k => k.toLowerCase());
+    if (!blockKws.length && !topicMode) return;
+
     for (const el of document.querySelectorAll(`${RENDERERS}:not([data-north-checked])`)) {
       el.setAttribute("data-north-checked", "1");
       const title = el.querySelector("#video-title")?.textContent || "";
       const channel = el.querySelector("ytd-channel-name, #channel-name")?.textContent || "";
       const text = (title + " " + channel).toLowerCase();
-      if (kws.some(k => text.includes(k))) el.style.setProperty("display", "none", "important");
+      if (!text.trim()) continue;
+      const blocked = blockKws.some(k => text.includes(k));
+      // Topic mode: in feeds and search, only videos matching your topics survive.
+      const offTopic = topicMode && !allowKws.some(k => text.includes(k));
+      if (blocked || offTopic) el.style.setProperty("display", "none", "important");
     }
   }
 
@@ -148,6 +158,20 @@
       document.querySelectorAll("[data-north-checked]").forEach(el => el.removeAttribute("data-north-checked"));
       onMutate();
     });
+
+    // A back/forward-cache restore can resurrect a page that should be
+    // blocked. A fresh load puts it back through the rules.
+    window.addEventListener("pageshow", e => { if (e.persisted) location.reload(); });
+
+    // Report playback position so a mid-video block can resume, not restart.
+    setInterval(() => {
+      if (location.pathname !== "/watch") return;
+      const video = document.querySelector("video.html5-main-video, video");
+      const vid = new URLSearchParams(location.search).get("v");
+      if (video && vid && video.currentTime > 10) {
+        chrome.runtime.sendMessage({ type: "ytTime", videoId: vid, t: video.currentTime }).catch(() => {});
+      }
+    }, 5000);
   }
 
   chrome.storage.local.get("settings", ({ settings: s }) => {

@@ -4,6 +4,8 @@ const $ = id => document.getElementById(id);
 let S = null;        // settings (live copy)
 let dash = null;
 
+const FEEDBACK_EMAIL = "jaitenkangis@gmail.com";
+
 const GATE_PHRASES = [
   "I am deliberately weakening the protection I asked for",
   "I choose convenience now over the goals I set",
@@ -27,15 +29,15 @@ function toast(msg) {
 }
 
 // ---------------------------------------------------------------------------
-// Challenge gate — friction for protective changes
+// Challenge gate: friction for protective changes
 // ---------------------------------------------------------------------------
 
 let gateTimer = null;
+let gateApply = null;
 const CIRC = 2 * Math.PI * 52;
 
 /**
  * Run `apply` only after the wait + challenge (when strict mode is on).
- * `desc` explains what the user is about to weaken.
  */
 function gate(desc, apply) {
   if (!S.strict?.enabled) { apply(); return; }
@@ -45,17 +47,19 @@ function gate(desc, apply) {
   $("gate-wait").classList.remove("hidden");
   $("gate-challenge").classList.add("hidden");
   $("gate-input").value = "";
-  $("gate-confirm").disabled = true;
+  $("gate-error").classList.add("hidden");
+  $("gate-note").classList.add("hidden");
 
   const total = Math.max(5, S.strict.waitSeconds || 60);
   let left = total;
   const fg = $("gate-ring-fg");
-  $("gate-note").classList.add("hidden");
   $("gate-ring-num").textContent = left;
   fg.style.strokeDasharray = CIRC;
   fg.style.strokeDashoffset = 0;
 
-  // The wait demands presence: leaving the tab or window restarts it.
+  startGateBreath();
+
+  // The wait demands presence: leaving the tab, window or app restarts it.
   const restart = () => {
     left = total;
     $("gate-ring-num").textContent = left;
@@ -79,10 +83,31 @@ function gate(desc, apply) {
   }, 1000);
 }
 
-let gateOnLeave = null, gateOnBlur = null;
+let gateOnLeave = null, gateOnBlur = null, gateBreathStop = null;
+
+function startGateBreath() {
+  const orb = $("gate-breath-orb");
+  const label = $("gate-breath-label");
+  let stopped = false;
+  const phase = (text, anim, ms) => new Promise(res => {
+    if (stopped) return res();
+    label.textContent = text;
+    if (anim) orb.animate(anim, { duration: ms, fill: "forwards", easing: "ease-in-out" });
+    setTimeout(res, ms);
+  });
+  (async () => {
+    while (!stopped) {
+      await phase("Breathe in", [{ transform: "scale(0.65)", opacity: 0.25 }, { transform: "scale(1)", opacity: 0.5 }], 4000);
+      await phase("Hold", null, 4000);
+      await phase("Breathe out", [{ transform: "scale(1)", opacity: 0.5 }, { transform: "scale(0.65)", opacity: 0.25 }], 6000);
+    }
+  })();
+  gateBreathStop = () => { stopped = true; };
+}
 
 function stopGateWatch() {
   clearInterval(gateTimer);
+  if (gateBreathStop) gateBreathStop();
   if (gateOnLeave) document.removeEventListener("visibilitychange", gateOnLeave);
   if (gateOnBlur) window.removeEventListener("blur", gateOnBlur);
   gateOnLeave = gateOnBlur = null;
@@ -93,6 +118,7 @@ let gateExpected = "";
 function showGateChallenge(apply) {
   $("gate-wait").classList.add("hidden");
   $("gate-challenge").classList.remove("hidden");
+  gateApply = apply;
 
   if (S.strict.challenge === "math") {
     const a = 12 + Math.floor(Math.random() * 78);
@@ -106,10 +132,15 @@ function showGateChallenge(apply) {
     $("gate-phrase").textContent = gateExpected;
   }
   $("gate-input").focus();
-  $("gate-confirm").onclick = () => {
-    closeGate();
-    apply();
-  };
+}
+
+function submitGate() {
+  if ($("gate-input").value.trim() !== gateExpected) {
+    $("gate-error").classList.remove("hidden");
+    return;
+  }
+  closeGate();
+  if (gateApply) gateApply();
 }
 
 function closeGate() {
@@ -117,10 +148,11 @@ function closeGate() {
   $("gate-backdrop").classList.add("hidden");
 }
 
-$("gate-input").addEventListener("input", e => {
-  $("gate-confirm").disabled = e.target.value.trim() !== gateExpected;
-});
+// Errors only show on submit, not while typing.
+$("gate-input").addEventListener("input", () => $("gate-error").classList.add("hidden"));
+$("gate-input").addEventListener("keydown", e => { if (e.key === "Enter") submitGate(); });
 $("gate-input").addEventListener("paste", e => e.preventDefault());
+$("gate-confirm").addEventListener("click", submitGate);
 $("gate-cancel-wait").addEventListener("click", () => { closeGate(); render(); });
 $("gate-cancel").addEventListener("click", () => { closeGate(); render(); });
 
@@ -146,7 +178,7 @@ async function load() {
   dash = await chrome.runtime.sendMessage({ type: "getDashboard" });
   S = dash.settings;
   render();
-  handleHashGate();
+  handleHash();
 }
 
 function render() {
@@ -159,11 +191,11 @@ function render() {
   $("opt-tiktok").checked = S.shorts.blockTikTokEntirely;
   $("opt-shorts-shared").checked = S.shorts.allowSharedLinks;
   $("opt-ig-dm").checked = S.instagramDmOnly;
-  $("opt-adult").checked = S.adultBlock;
   $("opt-yt-home").checked = S.youtube.hideHomeFeed;
   $("opt-yt-related").checked = S.youtube.hideRelated;
   $("opt-yt-comments").checked = S.youtube.hideComments;
   $("opt-yt-subs").checked = S.youtube.hideSubscriptions;
+  $("opt-yt-topic").checked = S.youtube.topicMode;
 
   // Buddy
   $("opt-buddy").checked = S.buddy.enabled;
@@ -186,10 +218,10 @@ function describeSite(site) {
   if (site.mode === "always") return "Blocked 24/7";
   if (site.mode === "limit") return `${site.limitMins} min/day budget`;
   if (site.mode === "schedule") {
-    if (!site.schedule?.length) return "Schedule — no windows yet (never blocked!)";
+    if (!site.schedule?.length) return "Schedule with no windows yet (never blocked!)";
     const DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
     return site.schedule.map(w =>
-      `${(w.days || []).map(d => DAYS[d]).join("")} ${w.start}–${w.end}`).join(" · ");
+      `${(w.days || []).map(d => DAYS[d]).join("")} ${w.start}-${w.end}`).join(" · ");
   }
   return "";
 }
@@ -197,7 +229,7 @@ function describeSite(site) {
 function renderSites() {
   const list = $("site-list");
   if (!S.sites.length) {
-    list.innerHTML = `<p class="hint">No sites yet. Add the ones that pull you in.</p>`;
+    list.innerHTML = `<p class="hint">Nothing blocked yet. Add the sites that pull you in. The chips above are one click.</p>`;
     return;
   }
   list.innerHTML = S.sites.map(site => `
@@ -243,14 +275,14 @@ async function addSite(pattern) {
   S.sites.unshift({ id: "s_" + Date.now().toString(36), pattern: p, mode: "always", schedule: [], limitMins: 30 });
   await save();
   renderSites();
-  toast(`${p} blocked — always. Click Edit to set a schedule or limit.`);
+  toast(`${p} blocked, always. Click Edit to set a schedule or limit.`);
 }
 
 $("btn-add-site").addEventListener("click", () => { addSite($("add-site-input").value); $("add-site-input").value = ""; });
 $("add-site-input").addEventListener("keydown", e => {
   if (e.key === "Enter") { addSite(e.target.value); e.target.value = ""; }
 });
-document.querySelectorAll("#presets .chip").forEach(c =>
+document.querySelectorAll("#presets .chip, #presets-games .chip").forEach(c =>
   c.addEventListener("click", () => addSite(c.dataset.site)));
 
 // ---------------------------------------------------------------------------
@@ -299,15 +331,15 @@ function renderWindows() {
     const start = document.createElement("input");
     start.type = "time"; start.value = w.start || "09:00";
     start.onchange = () => { w.start = start.value; };
-    const dash2 = document.createElement("span");
-    dash2.textContent = "–"; dash2.style.color = "var(--text-faint)";
+    const sep = document.createElement("span");
+    sep.textContent = "to"; sep.style.color = "var(--text-faint)";
     const end = document.createElement("input");
     end.type = "time"; end.value = w.end || "17:00";
     end.onchange = () => { w.end = end.value; };
     const rm = document.createElement("button");
     rm.className = "rm"; rm.textContent = "✕";
     rm.onclick = () => { editing.schedule.splice(i, 1); renderWindows(); };
-    row.append(days, start, dash2, end, rm);
+    row.append(days, start, sep, end, rm);
     box.appendChild(row);
   });
 }
@@ -328,7 +360,6 @@ $("edit-save").addEventListener("click", async () => {
   const idx = S.sites.findIndex(s => s.id === editing.id);
   const old = S.sites[idx];
 
-  // Is this change a weakening? (less strict mode, higher limit)
   const strictness = { always: 3, schedule: 2, limit: 1 };
   const weakening =
     strictness[editing.mode] < strictness[old.mode] ||
@@ -353,7 +384,7 @@ $("edit-save").addEventListener("click", async () => {
 });
 
 // ---------------------------------------------------------------------------
-// Keywords
+// Keywords & topics
 // ---------------------------------------------------------------------------
 
 function renderKeywords() {
@@ -370,13 +401,18 @@ function renderKeywords() {
     await save();
     renderKeywords();
   });
+  renderChipList("yt-topic-chips", S.youtube.allowedKeywords, async i => {
+    S.youtube.allowedKeywords.splice(i, 1);
+    await save();
+    renderKeywords();
+  });
 }
 
 function renderChipList(elId, arr, onRemove) {
   const box = $(elId);
   box.innerHTML = "";
   if (!arr.length) {
-    box.innerHTML = `<span class="hint" style="margin:0">Nothing blocked yet.</span>`;
+    box.innerHTML = `<span class="hint" style="margin:0">Nothing here yet.</span>`;
     return;
   }
   arr.forEach((kw, i) => {
@@ -406,20 +442,23 @@ $("btn-add-kw").addEventListener("click", () => addKeyword("kw-input", S.keyword
 $("kw-input").addEventListener("keydown", e => { if (e.key === "Enter") addKeyword("kw-input", S.keywords); });
 $("btn-yt-kw").addEventListener("click", () => addKeyword("yt-kw-input", S.youtube.titleKeywords));
 $("yt-kw-input").addEventListener("keydown", e => { if (e.key === "Enter") addKeyword("yt-kw-input", S.youtube.titleKeywords); });
+$("btn-yt-topic").addEventListener("click", () => addKeyword("yt-topic-input", S.youtube.allowedKeywords));
+$("yt-topic-input").addEventListener("keydown", e => { if (e.key === "Enter") addKeyword("yt-topic-input", S.youtube.allowedKeywords); });
 
 // ---------------------------------------------------------------------------
-// Toggles & inputs — protective ones go through the gate
+// Toggles. Protective ones go through the gate.
 // ---------------------------------------------------------------------------
 
 function bindToggle(elId, get, set, weakenDesc) {
   $(elId).addEventListener("change", async e => {
     const turningOff = !e.target.checked && get();
-    const applyChange = async () => { set(e.target.checked); await save(); render(); };
     if (turningOff && weakenDesc) {
-      e.target.checked = true; // revert until gate passes
+      e.target.checked = true; // revert until the gate passes
       gate(weakenDesc, async () => { set(false); await save(); render(); });
     } else {
-      await applyChange();
+      set(e.target.checked);
+      await save();
+      render();
     }
   });
 }
@@ -427,27 +466,32 @@ function bindToggle(elId, get, set, weakenDesc) {
 bindToggle("master-enabled", () => S.enabled, v => { S.enabled = v; },
   "Turning North off removes every block, limit and schedule at once.");
 bindToggle("opt-shorts", () => S.shorts.enabled, v => { S.shorts.enabled = v; },
-  "Re-opening short-form content invites the most addictive feeds back in.");
+  "Re-opening short videos invites the most addictive feeds back in.");
 bindToggle("opt-tiktok", () => S.shorts.blockTikTokEntirely, v => { S.shorts.blockTikTokEntirely = v; },
-  "Unblocking TikTok opens an infinite short-form feed.");
+  "Unblocking TikTok opens an infinite short-video feed.");
 bindToggle("opt-ig-dm", () => S.instagramDmOnly, v => { S.instagramDmOnly = v; },
   "Turning this off opens the full Instagram feed, Reels and Explore.");
-bindToggle("opt-adult", () => S.adultBlock, v => { S.adultBlock = v; },
-  "Turning off the adult-content filter opens that entire category back up.");
 bindToggle("opt-strict", () => S.strict.enabled, v => { S.strict.enabled = v; },
-  "Without strict mode, all protections can be switched off instantly.");
+  "Without strict mode, every protection can be switched off instantly.");
 
-// Allowing shared links is a narrow allowance — no gate either way.
+// Narrow allowance, no gate either way.
 $("opt-shorts-shared").addEventListener("change", async e => {
   S.shorts.allowSharedLinks = e.target.checked;
   await save();
 });
 
-// YouTube focus tools are quality-of-life — no gate.
+// YouTube focus tools are quality-of-life, no gate.
 $("opt-yt-home").addEventListener("change", async e => { S.youtube.hideHomeFeed = e.target.checked; await save(); });
 $("opt-yt-related").addEventListener("change", async e => { S.youtube.hideRelated = e.target.checked; await save(); });
 $("opt-yt-comments").addEventListener("change", async e => { S.youtube.hideComments = e.target.checked; await save(); });
 $("opt-yt-subs").addEventListener("change", async e => { S.youtube.hideSubscriptions = e.target.checked; await save(); });
+$("opt-yt-topic").addEventListener("change", async e => {
+  S.youtube.topicMode = e.target.checked;
+  await save();
+  if (e.target.checked && !(S.youtube.allowedKeywords || []).length) {
+    toast("Add a few topics below or every video will be hidden");
+  }
+});
 
 // Buddy
 $("opt-buddy").addEventListener("change", async e => { S.buddy.enabled = e.target.checked; await save(); });
@@ -459,12 +503,12 @@ $("opt-buddy-name").addEventListener("change", async e => {
 $("tone-kind").addEventListener("click", async () => { S.buddy.tone = "kind"; await save(); render(); });
 $("tone-tough").addEventListener("click", async () => { S.buddy.tone = "tough"; await save(); render(); });
 
-// Strict tuning — lowering the wait or unlock window is a weakening
+// Strict tuning. Lowering the wait or extending unlocks is a weakening.
 $("opt-wait").addEventListener("change", async e => {
   const v = Number(e.target.value);
   if (v < S.strict.waitSeconds) {
     e.target.value = String(S.strict.waitSeconds);
-    gate("Shortening the wait makes impulsive unlocks easier.", async () => {
+    gate("A shorter wait makes impulsive unlocks easier.", async () => {
       S.strict.waitSeconds = v; await save(); render();
     });
   } else {
@@ -493,7 +537,7 @@ function renderBetterPlaces() {
   const places = S.betterPlaces || [];
   box.innerHTML = "";
   if (!places.length) {
-    box.innerHTML = `<p class="hint" style="margin:0">Nowhere better yet — the block page will just send you back.</p>`;
+    box.innerHTML = `<p class="hint" style="margin:0">Nowhere better yet. The block page will just send you back.</p>`;
     return;
   }
   places.forEach((p, i) => {
@@ -530,6 +574,78 @@ $("btn-add-bp").addEventListener("click", async () => {
   $("bp-url").value = "";
   await save();
   renderBetterPlaces();
+});
+
+// ---------------------------------------------------------------------------
+// Backup & restore. Importing weaker settings goes through the gate.
+// ---------------------------------------------------------------------------
+
+function protectionScore(s) {
+  let score = 0;
+  if (s.enabled) score += 4;
+  score += (s.sites?.length || 0);
+  score += (s.keywords?.length || 0);
+  if (s.shorts?.enabled) score += 3;
+  if (s.adultBlock) score += 3;
+  if (s.instagramDmOnly) score += 2;
+  if (s.strict?.enabled) score += 3;
+  score += Math.min(5, (s.strict?.waitSeconds || 0) / 60);
+  return score;
+}
+
+$("btn-export").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify({ north: 1, exportedAt: new Date().toISOString(), settings: S }, null, 2)],
+    { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "north-settings.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast("Settings exported");
+});
+
+$("btn-import").addEventListener("click", () => $("import-file").click());
+
+$("import-file").addEventListener("change", async e => {
+  const file = e.target.files?.[0];
+  e.target.value = "";
+  if (!file) return;
+  let data;
+  try { data = JSON.parse(await file.text()); } catch { toast("That file isn't valid JSON"); return; }
+  const incoming = data?.settings;
+  if (data?.north !== 1 || !incoming || typeof incoming !== "object" || !Array.isArray(incoming.sites)) {
+    toast("That doesn't look like a North settings file");
+    return;
+  }
+  const applyImport = async () => {
+    S = incoming;
+    await save();
+    render();
+    toast("Settings imported");
+  };
+  if (protectionScore(incoming) < protectionScore(S)) {
+    gate("The file you're importing is weaker than your current protection.", applyImport);
+  } else {
+    await applyImport();
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Feature requests, by email
+// ---------------------------------------------------------------------------
+
+$("btn-feature").addEventListener("click", () => {
+  const body = [
+    "Hi, I'd like to request a feature for North:",
+    "",
+    "What I want:",
+    "",
+    "Why it would help me:",
+    "",
+    `(North v1.0, sent from the settings page)`
+  ].join("\n");
+  const url = `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent("North feature request")}&body=${encodeURIComponent(body)}`;
+  window.open(url, "_blank");
 });
 
 // ---------------------------------------------------------------------------
@@ -591,18 +707,17 @@ function renderStats() {
   const top = Object.entries(siteCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
   $("top-blocked").innerHTML = top.length
     ? top.map(([site, n]) => `<div class="top-blocked-row"><span>${esc(site)}</span><span class="n">${n}×</span></div>`).join("")
-    : `<p class="hint">No blocks recorded yet. That's either very good or very new.</p>`;
+    : `<p class="hint">No blocks recorded yet. Either very good or very new.</p>`;
 }
 
 // ---------------------------------------------------------------------------
-// Hash-routed gates from the popup (#gate=disable, #gate=endFocus)
+// Hash routing: #welcome onboarding, #gate=… from the popup
 // ---------------------------------------------------------------------------
 
-function handleHashGate() {
+function handleHash() {
   if (location.hash === "#welcome") {
     history.replaceState(null, "", location.pathname);
-    toast("Welcome to North. Start by adding the sites that pull you in.");
-    $("add-site-input").focus();
+    $("welcome-backdrop").classList.remove("hidden");
     return;
   }
   const m = location.hash.match(/gate=(\w+)/);
@@ -623,6 +738,17 @@ function handleHashGate() {
     });
   }
 }
+
+$("wel-apply").addEventListener("click", async () => {
+  S.shorts.enabled = $("wel-shorts").checked;
+  S.instagramDmOnly = $("wel-ig").checked;
+  S.strict.enabled = $("wel-strict").checked;
+  await save();
+  render();
+  $("welcome-backdrop").classList.add("hidden");
+  toast("Good start. Now add the sites that pull you in.");
+  $("add-site-input").focus();
+});
 
 load();
 checkIncognito();

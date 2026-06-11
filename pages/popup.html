@@ -23,11 +23,13 @@
     <p id="buddy-msg">Loading…</p>
   </section>
 
+  <div class="prot-row" id="prot-row"></div>
+
   <!-- Focus session -->
   <section class="card" id="focus-card">
     <div id="focus-idle">
       <h3>Focus session</h3>
-      <p class="dim">Blocks everything on your list — no unlocks until it ends.</p>
+      <p class="dim">Blocks everything on your list. No unlocks until it ends.</p>
       <div class="focus-row">
         <button class="chip" data-mins="25">25 min</button>
         <button class="chip" data-mins="50">50 min</button>
@@ -38,7 +40,7 @@
     </div>
     <div id="focus-active" class="hidden">
       <h3>In session</h3>
-      <div class="focus-time" id="focus-remaining">—</div>
+      <div class="focus-time" id="focus-remaining">0:00</div>
       <p class="dim">Everything distracting is sealed. You've got this.</p>
       <button class="btn ghost full small" id="btn-end-focus">End early (requires challenge)</button>
     </div>
@@ -64,7 +66,7 @@
   </footer>
 
   <div class="incog hidden" id="incog-banner">
-    Not active in Incognito windows — <a id="incog-fix">fix that</a>
+    Not active in Incognito windows. <a id="incog-fix">Fix that</a>
   </div>
 
   <script src="dev-shim.js"></script>

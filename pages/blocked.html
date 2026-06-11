@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>North — Stay the course</title>
+  <title>North</title>
   <link rel="stylesheet" href="shared.css">
   <link rel="stylesheet" href="blocked.css">
 </head>
@@ -16,7 +16,7 @@
     </div>
 
     <p class="buddy-name" id="buddy-name">Nori</p>
-    <h1 id="headline">Hold on — this isn't the way.</h1>
+    <h1 id="headline">Hold on. This isn't the way.</h1>
     <p class="sub" id="subline"></p>
 
     <div class="meta" id="meta"></div>
@@ -31,20 +31,23 @@
 
   <!-- Unlock flow -->
   <section class="card unlock hidden" id="unlock-card">
-    <!-- Step 1: wait -->
+    <!-- Step 1: a mindful wait -->
     <div id="step-wait">
       <h2>First, breathe.</h2>
-      <p class="sub">If this still matters in <span id="wait-total">60</span> seconds, you can continue.
-        Most urges don't survive the wait.</p>
+      <p class="sub">Stay with the timer for <span id="wait-total">60</span> seconds.
+        Most urges don't survive a real pause.</p>
       <div class="ring-wrap">
+        <div class="breath-orb" id="breath-orb"></div>
         <svg viewBox="0 0 120 120" class="ring">
           <circle class="ring-bg" cx="60" cy="60" r="52"/>
           <circle class="ring-fg" id="ring-fg" cx="60" cy="60" r="52"/>
         </svg>
         <div class="ring-num" id="ring-num">60</div>
       </div>
-      <p class="error hidden" id="wait-note">You switched away — the timer restarted. It needs your full attention.</p>
-      <button class="btn ghost" id="btn-cancel-wait">Never mind — I'm out</button>
+      <p class="breath-label" id="breath-label">Breathe in</p>
+      <p class="stay-hint">Stay on this page. Switching tabs or apps restarts the timer.</p>
+      <p class="error hidden" id="wait-note">You switched away, so the timer restarted. It needs your full attention.</p>
+      <button class="btn ghost" id="btn-cancel-wait">Never mind, I'm out</button>
     </div>
 
     <!-- Step 2: challenge -->
@@ -53,8 +56,8 @@
       <p class="sub" id="challenge-prompt"></p>
       <p class="phrase" id="challenge-phrase"></p>
       <input type="text" id="challenge-input" autocomplete="off" spellcheck="false"
-             placeholder="Type it exactly…">
-      <p class="error hidden" id="challenge-error">Not quite — it has to match exactly.</p>
+             placeholder="Type it, then press Enter">
+      <p class="error hidden" id="challenge-error">That doesn't match yet. It has to be word for word.</p>
       <div class="durations" id="durations">
         <span class="dur-label">Then unlock for</span>
         <button class="chip" data-mins="5">5 min</button>
@@ -62,7 +65,7 @@
         <button class="chip" data-mins="15">15 min</button>
       </div>
       <div class="actions">
-        <button class="btn primary" id="btn-confirm-unlock" disabled>Unlock</button>
+        <button class="btn primary" id="btn-confirm-unlock">Unlock</button>
         <button class="btn ghost" id="btn-cancel-challenge">Actually, never mind</button>
       </div>
     </div>

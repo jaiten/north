@@ -6,6 +6,12 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["--yes", "http-server", "-p", "8123", "-c-1", "."],
       "port": 8123
+    },
+    {
+      "name": "north-website",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["--yes", "http-server", "-p", "8124", "-c-1", "C:/Users/jaiten/Documents/Code/North-Website"],
+      "port": 8124
     }
   ]
 }
