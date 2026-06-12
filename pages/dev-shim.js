@@ -9,7 +9,7 @@
     enabled: true,
     theme: "light",
     strict: { enabled: true, waitSeconds: 8, challenge: "journal", maxUnlockMinutes: 15 },
-    buddy: { enabled: true, name: "Nori", tone: "kind" },
+    buddy: { enabled: true, tone: "kind" },
     shorts: { enabled: true, blockTikTokEntirely: true, allowSharedLinks: true },
     messagesOnly: { instagram: true, linkedin: false, facebook: false, x: true },
     linkedin: { tidyNav: true },

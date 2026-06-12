@@ -42,7 +42,7 @@ async function load() {
   } else {
     msg = GREETINGS[tone][Math.floor(Math.random() * GREETINGS[tone].length)];
   }
-  $("buddy-msg").textContent = s.buddy?.enabled ? msg : "buddy is off. the blocks still hold.";
+  $("buddy-msg").textContent = s.buddy?.enabled ? msg : "nudges are off. the blocks still hold.";
 
   // What's actively protected right now
   const chips = [];
@@ -62,9 +62,6 @@ async function load() {
   const streak = cleanStreak();
   if (streak >= 2) chips.push(`${streak}-day no-unlock streak`);
   $("prot-row").innerHTML = chips.map(c => `<span class="prot-chip">${c}</span>`).join("");
-
-  // Nori wears the day on its face.
-  $("mini-orb").classList.toggle("sleepy", (dash.todayStats.unlocks || 0) >= 2);
 
   // Stats
   $("stat-blocks").textContent = totalBlocks;
@@ -182,18 +179,14 @@ $("toggle-enabled").addEventListener("change", async e => {
 
 $("btn-options").addEventListener("click", () => chrome.runtime.openOptionsPage());
 
-// Poke Nori, get another line.
-$("mini-orb").addEventListener("click", () => {
+// Click the line for another one.
+$("buddy-msg").addEventListener("click", () => {
   if (!dash?.settings?.buddy?.enabled) return;
   const tone = dash.settings.buddy.tone === "tough" ? "tough" : "kind";
   const lines = GREETINGS[tone];
   const current = $("buddy-msg").textContent;
   const others = lines.filter(l => l !== current);
   $("buddy-msg").textContent = others[Math.floor(Math.random() * others.length)] || current;
-  $("mini-orb").animate(
-    [{ transform: "scale(1)" }, { transform: "scale(1.25)" }, { transform: "scale(1)" }],
-    { duration: 300, easing: "ease-out" }
-  );
 });
 
 // Suggest Incognito coverage — the blocks should hold everywhere.

@@ -27,15 +27,16 @@ body {
   from { opacity: 0; transform: translateY(18px) scale(0.98); }
 }
 
-.buddy { display: flex; justify-content: center; margin-bottom: 18px; }
-
-.buddy-name {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--accent-2);
-  margin: 0 0 8px;
+.brand-mark {
+  width: 52px; height: 52px;
+  margin: 0 auto 16px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  color: #fff;
+  background: var(--grad);
+  border-radius: 16px;
+  box-shadow: 0 8px 26px rgba(99, 102, 241, 0.35);
 }
 
 h1 { font-size: 26px; margin-bottom: 10px; }
@@ -133,7 +134,6 @@ h2 { font-size: 21px; margin-bottom: 8px; }
   color: var(--accent-text);
 }
 
-.challenge-orb { width: 46px; height: 46px; margin: 0 auto 14px; }
 #challenge-input { width: 100%; text-align: center; margin-bottom: 14px; }
 #challenge-why { width: 100%; text-align: left; display: block; }
 .why-meta {

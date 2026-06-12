@@ -11,13 +11,7 @@
   <div class="aurora"></div>
 
   <main class="card" id="main-card">
-    <div class="buddy">
-      <div class="orb" id="buddy-orb" title="Click me">
-        <div class="eyes"><span class="eye"></span><span class="eye"></span></div>
-      </div>
-    </div>
-
-    <p class="buddy-name" id="buddy-name">Nori</p>
+    <p class="brand-mark">▲</p>
     <h1 id="headline">hold on. this isn't it.</h1>
     <p class="sub" id="subline"></p>
 
@@ -47,16 +41,13 @@
         <div class="ring-num" id="ring-num">60</div>
       </div>
       <p class="breath-label" id="breath-label">breathe in</p>
-      <p class="stay-hint">stay on this page. switching tabs or apps restarts the timer.</p>
-      <p class="error hidden" id="wait-note">you switched away, so the timer restarted. it needs your full attention.</p>
+      <p class="stay-hint" id="stay-hint">stay on this page. the timer only runs while you're here.</p>
+      <p class="error hidden" id="wait-note">the timer restarted. it needs your full attention, on this page.</p>
       <button class="btn ghost" id="btn-cancel-wait">never mind, i'm out</button>
     </div>
 
     <!-- Step 2: the journal entry is the challenge -->
     <div id="step-challenge" class="hidden">
-      <div class="orb challenge-orb" id="challenge-orb">
-        <div class="eyes"><span class="eye"></span><span class="eye"></span></div>
-      </div>
       <h2>make your case.</h2>
       <p class="sub" id="challenge-prompt"></p>
 
@@ -67,7 +58,7 @@
       </div>
 
       <textarea id="challenge-why" maxlength="600" rows="4" spellcheck="true"
-                placeholder="why do you need this site right now? what will you do there, and when will you leave? be honest — this is for you."></textarea>
+                placeholder="why do you need this site right now? what will you do there, and when will you leave? be honest. this is for you."></textarea>
       <div class="why-meta">
         <span id="word-count">0 / 20 words</span>
         <span class="why-hint">this goes in your unlock journal. future you reads it.</span>
@@ -89,7 +80,7 @@
   <p class="brand">▲ <strong>North</strong> · find your true north</p>
 
   <script src="dev-shim.js"></script>
-  <script src="nori.js"></script>
+  <script src="theme.js"></script>
   <script src="blocked.js"></script>
 </body>
 </html>

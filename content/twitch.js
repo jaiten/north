@@ -1,18 +1,33 @@
 // North — Twitch content script
-// Calm-homepage mode: the front page's carousel and recommendation shelves go,
-// replaced by a quiet prompt. Recommended channels leave the side nav too.
-// Followed channels, search and direct channel URLs all keep working.
+// Calm mode: the front page's carousel and recommendation shelves go, replaced
+// by a quiet prompt. Recommended channels and categories leave the side nav,
+// and the top bar loses Following, Browse and the notification bell. Followed
+// channels in the sidebar, search and direct channel URLs all keep working.
 
 (() => {
   let settings = null;
 
-  // Recommendations are hidden everywhere; Twitch's attributes are more
-  // stable than its hashed class names.
+  // Recommendations and nav bait are hidden everywhere; Twitch's data
+  // attributes are more stable than its hashed class names.
   const CLEAN_CSS = `
+    /* sidebar: recommended channels + recommended categories + For You header */
     .side-nav-section:has([data-a-id^="recommended-channel"]),
     .side-nav-section:has([data-test-selector="recommended-channel"]),
+    .side-nav-section:has(a[href^="/directory/category"]),
     div[aria-label="Recommended Channels"],
-    div[aria-label="Live channels we think you'll like"] {
+    div[aria-label="Recommended Categories"],
+    div[aria-label="Live channels we think you'll like"],
+    #side-nav .side-nav-header,
+    [data-a-target="side-nav-header-expanded"],
+    /* top bar: Following, Browse, the dots menu next to them, notifications */
+    [data-a-target="following-link"],
+    a[href="/directory/following"],
+    [data-a-target="browse-link"],
+    a[href="/directory"],
+    [data-a-target="top-nav-get-bits-button"],
+    .onsite-notifications,
+    button[data-a-target="onsite-notifications-toggle"],
+    div:has(> button[data-a-target="onsite-notifications-toggle"]) {
       display: none !important;
     }`;
 
@@ -29,21 +44,20 @@
     card = document.createElement("div");
     card.id = "north-twitch-home";
     card.innerHTML = `
-      <div class="north-orb"></div>
+      <div class="north-mark">▲</div>
       <h2>watch on purpose</h2>
-      <p>${(settings?.buddy?.name || "Nori")} cleared the homepage so it can't pick for you.<br>
+      <p>North cleared the homepage so it can't pick for you.<br>
       your followed channels are in the sidebar. if no one you follow is live, that might be your answer.</p>
       <style>
         #north-twitch-home { position: fixed; inset: 0; z-index: 1;
           display: flex; flex-direction: column; align-items: center; justify-content: center;
           text-align: center; pointer-events: none; padding: 0 20px;
           font-family: "Segoe UI", Roboto, sans-serif; color: #efeff1; }
-        #north-twitch-home .north-orb { width: 56px; height: 56px; margin-bottom: 20px;
-          border-radius: 50%; background: linear-gradient(135deg,#6366f1,#2dd4bf);
-          animation: north-breathe 4s ease-in-out infinite; }
+        #north-twitch-home .north-mark { width: 56px; height: 56px; margin-bottom: 20px;
+          display: grid; place-items: center; font-size: 24px; color: #fff;
+          border-radius: 16px; background: linear-gradient(135deg,#6366f1,#2dd4bf); }
         #north-twitch-home h2 { font-size: 22px; font-weight: 600; margin: 0 0 10px; }
         #north-twitch-home p { font-size: 14px; line-height: 1.6; opacity: .75; margin: 0; }
-        @keyframes north-breathe { 0%,100% { transform: scale(1); opacity:.85 } 50% { transform: scale(1.12); opacity:1 } }
       </style>`;
     document.body.appendChild(card);
     return card;

@@ -15,8 +15,7 @@ const DEFAULT_SETTINGS = {
     maxUnlockMinutes: 15
   },
   buddy: {
-    enabled: true,
-    name: "Nori",
+    enabled: true,            // nudges: block-page lines, low-budget warnings, session notes
     tone: "kind"              // "kind" | "tough"
   },
   shorts: {
@@ -708,8 +707,8 @@ async function completeFocus() {
       chrome.notifications.create({
         type: "basic",
         iconUrl: chrome.runtime.getURL("icons/icon128.png"),
-        title: `${settings.buddy.name}: session complete`,
-        message: "you stayed the whole way through. that's how momentum gets built — one honest session at a time."
+        title: "North: session complete",
+        message: "you stayed the whole way through. that's how momentum gets built, one honest session at a time."
       });
     }
   }
@@ -755,8 +754,8 @@ async function completeLockdown() {
       chrome.notifications.create({
         type: "basic",
         iconUrl: chrome.runtime.getURL("icons/icon128.png"),
-        title: `${settings.buddy.name}: lockdown complete`,
-        message: "you held the line for the whole stretch. the internet is yours again — spend it like you mean it."
+        title: "North: lockdown complete",
+        message: "you held the line for the whole stretch. the internet is yours again. spend it like you mean it."
       });
     }
   }

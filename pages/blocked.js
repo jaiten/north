@@ -9,14 +9,14 @@ const fromUrl = params.get("from") || "";
 const $ = id => document.getElementById(id);
 
 // ---------------------------------------------------------------------------
-// Buddy copy. Two tones per reason: gentle and direct. Plain words, no fluff.
+// Block-page copy. Two tones per reason: gentle and direct. Plain words.
 // ---------------------------------------------------------------------------
 
 const LINES = {
   shorts: {
     kind: [
       "short videos are built to eat your time in 15 second bites. you had better plans for this hour.",
-      "the algorithm wanted your next 40 minutes. i said no for you.",
+      "the algorithm wanted your next 40 minutes. North said no for you.",
       "nothing in that feed will matter tomorrow. the thing you're avoiding probably will."
     ],
     tough: [
@@ -28,8 +28,8 @@ const LINES = {
   },
   instagram: {
     kind: [
-      "your messages still work. the feed can wait — it's designed to wait forever.",
-      "i kept your DMs open in case someone real needs you. the rest is a rabbit hole."
+      "your messages still work. the feed can wait. it's designed to wait forever.",
+      "your DMs are open in case someone real needs you. the rest is a rabbit hole."
     ],
     tough: [
       "messages only. the feed is a trap with good lighting.",
@@ -40,7 +40,7 @@ const LINES = {
   dmonly: {
     kind: [
       "your messages still work. the feed doesn't, and honestly, it won't miss you.",
-      "i kept the conversations and closed the scroll. real people get through. algorithms don't."
+      "the conversations stay, the scroll is closed. real people get through. algorithms don't."
     ],
     tough: [
       "messages only. everything else on this site is bait.",
@@ -51,7 +51,7 @@ const LINES = {
   lockdown: {
     kind: [
       "lockdown is on. you chose a short list of places that matter, and this isn't one of them.",
-      "you set this up in a clear-headed moment. i'm just keeping the promise for you."
+      "you set this up in a clear-headed moment. North is just keeping the promise for you."
     ],
     tough: [
       "lockdown. your list, your rules, no exceptions.",
@@ -129,11 +129,10 @@ const LINES = {
   }
 };
 
-// What Nori says when the typed answer is wrong. Rotates so repeat misses
-// don't feel canned.
+// Wrong-answer lines. Rotates so repeat misses don't feel canned.
 const WRONG_LINES = {
   kind: [
-    "not quite — it has to be word for word. i'll wait.",
+    "not quite. it has to be word for word. take your time.",
     "close. but the deal is the exact sentence.",
     "almost. slow down and try once more.",
     "still not it. maybe that's a sign worth listening to."
@@ -147,15 +146,12 @@ const WRONG_LINES = {
 };
 let wrongIdx = 0;
 
-function noriWince() {
-  const orb = $("challenge-orb");
-  orb.classList.add("squint");
-  orb.animate(
+function shake(el) {
+  el.animate(
     [{ transform: "translateX(0)" }, { transform: "translateX(-5px)" }, { transform: "translateX(5px)" },
      { transform: "translateX(-4px)" }, { transform: "translateX(3px)" }, { transform: "translateX(0)" }],
     { duration: 380, easing: "ease-out" }
   );
-  setTimeout(() => orb.classList.remove("squint"), 1100);
 }
 
 function linePack() {
@@ -189,9 +185,6 @@ async function init() {
   buddyTone = tone;
   const pack = linePack();
 
-  // Nori shows the day: a couple of unlocks and the eyes get heavy.
-  if ((dash.todayStats?.unlocks || 0) >= 2) $("buddy-orb").classList.add("sleepy");
-  $("buddy-name").textContent = s.buddy?.enabled ? (s.buddy.name || "Nori") : "North";
   $("headline").textContent = pack.headline;
   $("subline").textContent = pack[tone][Math.floor(Math.random() * pack[tone].length)];
 
@@ -215,10 +208,10 @@ async function init() {
     $("btn-unlock").classList.add("hidden");
     const left = Math.max(1, Math.ceil((Number(detail) - Date.now()) / 60e3));
     const h = Math.floor(left / 60), m = left % 60;
-    $("footnote").textContent = `lockdown ends in ${h ? h + "h " : ""}${m}m. no unlocks, no exceptions — that's the deal you made with yourself.`;
+    $("footnote").textContent = `lockdown ends in ${h ? h + "h " : ""}${m}m. no unlocks, no exceptions. that's the deal you made with yourself.`;
   } else if (reason === "shorts") {
     $("btn-unlock").classList.add("hidden");
-    $("footnote").textContent = "short videos can't be unlocked. that's the whole point. a reel or short a friend sends you still opens — just that one.";
+    $("footnote").textContent = "short videos can't be unlocked. that's the whole point. a reel or short a friend sends you still opens, just that one.";
   } else if (reason === "adult") {
     $("btn-unlock").classList.add("hidden");
     $("footnote").textContent = "this category can't be unlocked.";
@@ -235,17 +228,12 @@ function esc(s) {
   return s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
-// Poke Nori, get another line.
-$("buddy-orb").addEventListener("click", () => {
-  const pack = linePack();
-  const lines = pack[buddyTone];
+// Click the headline for another line, if this one didn't land.
+$("subline").addEventListener("click", () => {
+  const lines = linePack()[buddyTone];
   const current = $("subline").textContent;
   const others = lines.filter(l => l !== current);
   $("subline").textContent = others[Math.floor(Math.random() * others.length)] || current;
-  $("buddy-orb").animate(
-    [{ transform: "scale(1)" }, { transform: "scale(1.16) rotate(-4deg)" }, { transform: "scale(1)" }],
-    { duration: 340, easing: "ease-out" }
-  );
 });
 
 // ---------------------------------------------------------------------------
@@ -281,6 +269,14 @@ $("btn-unlock").addEventListener("click", () => {
 });
 
 // --- Breathing guide: in 4s, hold 4s, out 6s. The point is presence. ---
+// The cues vary cycle to cycle so it reads like a person pacing you, not a
+// metronome.
+
+const BREATH_CUES = {
+  in:   ["breathe in", "in, slowly", "fill your lungs", "in through your nose", "another breath in"],
+  hold: ["hold", "hold it there", "stay right here", "keep it", "hold. you're fine."],
+  out:  ["breathe out", "let it all go", "out, slowly", "long exhale", "and release"]
+};
 
 let breathStop = null;
 
@@ -288,6 +284,7 @@ function startBreath() {
   const orb = $("breath-orb");
   const label = $("breath-label");
   let stopped = false;
+  let cycle = 0;
   const phase = (text, anim, ms) => new Promise(res => {
     if (stopped) return res();
     label.textContent = text;
@@ -296,12 +293,25 @@ function startBreath() {
   });
   (async () => {
     while (!stopped) {
-      await phase("breathe in", [{ transform: "scale(0.55)", opacity: 0.55 }, { transform: "scale(1.05)", opacity: 1 }], 4000);
-      await phase("hold", null, 4000);
-      await phase("breathe out", [{ transform: "scale(1.05)", opacity: 1 }, { transform: "scale(0.55)", opacity: 0.55 }], 6000);
+      await phase(BREATH_CUES.in[cycle % BREATH_CUES.in.length],
+        [{ transform: "scale(0.55)", opacity: 0.55 }, { transform: "scale(1.05)", opacity: 1 }], 4000);
+      await phase(BREATH_CUES.hold[cycle % BREATH_CUES.hold.length], null, 4000);
+      await phase(BREATH_CUES.out[cycle % BREATH_CUES.out.length],
+        [{ transform: "scale(1.05)", opacity: 1 }, { transform: "scale(0.55)", opacity: 0.55 }], 6000);
+      cycle++;
     }
   })();
   breathStop = () => { stopped = true; };
+}
+
+// Milestone notes under the ring, so the wait talks back a little.
+function waitMilestone(left, total) {
+  const p = left / total;
+  if (left <= 5) return "almost. last few seconds.";
+  if (p <= 0.25) return "nearly there. finish strong.";
+  if (p <= 0.5) return "halfway. still here, still breathing.";
+  if (p <= 0.75) return "good. eyes on the circle.";
+  return "stay on this page. the timer only runs while you're here.";
 }
 
 function startWait() {
@@ -310,6 +320,7 @@ function startWait() {
   $("wait-total").textContent = total;
   $("ring-num").textContent = left;
   $("wait-note").classList.add("hidden");
+  $("stay-hint").textContent = waitMilestone(left, total);
   const fg = $("ring-fg");
   fg.style.strokeDasharray = CIRC;
   fg.style.strokeDashoffset = 0;
@@ -330,8 +341,12 @@ function startWait() {
   window.addEventListener("blur", waitOnBlur);
 
   waitTimer = setInterval(() => {
+    // Belt and braces: blur can fail to fire (embedded views, devtools), but
+    // hasFocus() can't lie. No focus, no countdown.
+    if (document.hidden || !document.hasFocus()) { restart(); return; }
     left -= 1;
     $("ring-num").textContent = left;
+    $("stay-hint").textContent = waitMilestone(left, total);
     fg.style.strokeDashoffset = CIRC * (1 - left / total);
     if (left <= 0) {
       stopWaitWatch();
@@ -408,7 +423,7 @@ function showChallenge() {
     expected = null;
     $("extra-challenge").classList.add("hidden");
     $("challenge-prompt").textContent =
-      `write future you a note about why you need this — at least ${MIN_WORDS} words. if you can't fill ${MIN_WORDS} words, you probably don't need it.`;
+      `write future you a note about why you need this, at least ${MIN_WORDS} words. if you can't fill ${MIN_WORDS} words, you probably don't need it.`;
   }
   (expected ? $("challenge-input") : $("challenge-why")).focus();
   updateReady();
@@ -430,7 +445,7 @@ function updateReady() {
   const n = journalWords($("challenge-why").value).length;
   const counter = $("word-count");
   counter.textContent = noteOk ? `${n} words ✓`
-    : n >= MIN_WORDS ? `${n} words — make them real ones`
+    : n >= MIN_WORDS ? `${n} words, make them real ones`
     : `${n} / ${MIN_WORDS} words`;
   counter.classList.toggle("done", noteOk);
 
@@ -466,8 +481,7 @@ document.querySelectorAll("#durations .chip").forEach(chip => {
 function challengeFail(msg, focusEl) {
   $("challenge-error").textContent = msg;
   $("challenge-error").classList.remove("hidden");
-  noriWince();
-  if (focusEl) focusEl.focus();
+  if (focusEl) { shake(focusEl); focusEl.focus(); }
 }
 
 async function submitChallenge() {
@@ -479,7 +493,7 @@ async function submitChallenge() {
   if (!journalNoteOk(note)) {
     const words = journalWords(note).length;
     challengeFail(words < MIN_WORDS
-      ? `that's ${words} word${words === 1 ? "" : "s"}. the deal is ${MIN_WORDS} honest ones — keep going.`
+      ? `that's ${words} word${words === 1 ? "" : "s"}. the deal is ${MIN_WORDS} honest ones. keep going.`
       : "that doesn't read like a real reason yet. write it like you'd explain it to a friend.",
       $("challenge-why"));
     return;

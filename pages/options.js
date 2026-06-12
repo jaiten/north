@@ -65,6 +65,7 @@ function gate(desc, apply) {
   let left = total;
   const fg = $("gate-ring-fg");
   $("gate-ring-num").textContent = left;
+  $("gate-stay-hint").textContent = gateMilestone(left, total);
   fg.style.strokeDasharray = CIRC;
   fg.style.strokeDashoffset = 0;
 
@@ -84,8 +85,12 @@ function gate(desc, apply) {
 
   clearInterval(gateTimer);
   gateTimer = setInterval(() => {
+    // Belt and braces: blur can fail to fire (embedded views, devtools), but
+    // hasFocus() can't lie. No focus, no countdown.
+    if (document.hidden || !document.hasFocus()) { restart(); return; }
     left -= 1;
     $("gate-ring-num").textContent = left;
+    $("gate-stay-hint").textContent = gateMilestone(left, total);
     fg.style.strokeDashoffset = CIRC * (1 - left / total);
     if (left <= 0) {
       stopGateWatch();
@@ -96,10 +101,28 @@ function gate(desc, apply) {
 
 let gateOnLeave = null, gateOnBlur = null, gateBreathStop = null;
 
+// Varied cues so the pacing reads like a person, not a metronome.
+const BREATH_CUES = {
+  in:   ["breathe in", "in, slowly", "fill your lungs", "in through your nose", "another breath in"],
+  hold: ["hold", "hold it there", "stay right here", "keep it", "hold. you're fine."],
+  out:  ["breathe out", "let it all go", "out, slowly", "long exhale", "and release"]
+};
+
+// Milestone notes under the ring, so the wait talks back a little.
+function gateMilestone(left, total) {
+  const p = left / total;
+  if (left <= 5) return "almost. last few seconds.";
+  if (p <= 0.25) return "nearly there. finish strong.";
+  if (p <= 0.5) return "halfway. still here, still breathing.";
+  if (p <= 0.75) return "good. eyes on the circle.";
+  return "stay on this page. the timer only runs while you're here.";
+}
+
 function startGateBreath() {
   const orb = $("gate-breath-orb");
   const label = $("gate-breath-label");
   let stopped = false;
+  let cycle = 0;
   const phase = (text, anim, ms) => new Promise(res => {
     if (stopped) return res();
     label.textContent = text;
@@ -108,9 +131,12 @@ function startGateBreath() {
   });
   (async () => {
     while (!stopped) {
-      await phase("Breathe in", [{ transform: "scale(0.55)", opacity: 0.55 }, { transform: "scale(1.05)", opacity: 1 }], 4000);
-      await phase("Hold", null, 4000);
-      await phase("Breathe out", [{ transform: "scale(1.05)", opacity: 1 }, { transform: "scale(0.55)", opacity: 0.55 }], 6000);
+      await phase(BREATH_CUES.in[cycle % BREATH_CUES.in.length],
+        [{ transform: "scale(0.55)", opacity: 0.55 }, { transform: "scale(1.05)", opacity: 1 }], 4000);
+      await phase(BREATH_CUES.hold[cycle % BREATH_CUES.hold.length], null, 4000);
+      await phase(BREATH_CUES.out[cycle % BREATH_CUES.out.length],
+        [{ transform: "scale(1.05)", opacity: 1 }, { transform: "scale(0.55)", opacity: 0.55 }], 6000);
+      cycle++;
     }
   })();
   gateBreathStop = () => { stopped = true; };
@@ -175,8 +201,8 @@ function closeGate() {
   $("gate-backdrop").classList.add("hidden");
 }
 
-// Errors only show on submit, not while typing — but a correct answer goes
-// green immediately, so you know the moment you've got it.
+// Errors only show on submit, not while typing. A correct answer goes green
+// immediately, so you know the moment you've got it.
 $("gate-input").addEventListener("input", e => {
   $("gate-error").classList.add("hidden");
   const ok = e.target.value.trim() === gateExpected;
@@ -240,9 +266,8 @@ function render() {
   $("opt-li-tidy").checked = S.linkedin?.tidyNav !== false;
   $("opt-tw-clean").checked = S.twitch?.cleanHome !== false;
 
-  // Buddy
+  // Nudges
   $("opt-buddy").checked = S.buddy.enabled;
-  $("opt-buddy-name").value = S.buddy.name;
   $("tone-kind").classList.toggle("selected", S.buddy.tone !== "tough");
   $("tone-tough").classList.toggle("selected", S.buddy.tone === "tough");
 
@@ -274,7 +299,7 @@ function describeSite(site) {
 function renderSites() {
   const list = $("site-list");
   if (!S.sites.length) {
-    list.innerHTML = `<p class="hint">nothing blocked yet. add the sites that pull you in — the chips above are one click.</p>`;
+    list.innerHTML = `<p class="hint">nothing blocked yet. add the sites that pull you in. the chips above are one click.</p>`;
     return;
   }
   list.innerHTML = S.sites.map(site => `
@@ -329,7 +354,7 @@ async function addSite(pattern) {
   // Blocking instagram.com takes the DMs down with it — people are often
   // surprised by that, so offer the messages-only mode right here.
   if (p === "instagram.com") {
-    toast("Instagram is fully blocked — DMs included.", {
+    toast("Instagram is fully blocked, DMs included.", {
       label: "keep my DMs, block the rest",
       fn: async () => {
         S.sites = S.sites.filter(s => s.pattern !== "instagram.com");
@@ -342,7 +367,7 @@ async function addSite(pattern) {
     });
     return;
   }
-  toast(`${p} blocked. misclick? removing it is free for ${SITE_GRACE_MS / 1000}s — after that it takes the ${S.strict?.waitSeconds || 60}s challenge.`);
+  toast(`${p} blocked. misclick? removing it is free for ${SITE_GRACE_MS / 1000}s. after that it takes the ${S.strict?.waitSeconds || 60}s challenge.`);
 }
 
 $("btn-add-site").addEventListener("click", () => { addSite($("add-site-input").value); $("add-site-input").value = ""; });
@@ -539,7 +564,7 @@ function bindToggle(elId, get, set, weakenDesc) {
     } else {
       if (e.target.checked) {
         graceUntil[elId] = Date.now() + TOGGLE_GRACE_MS;
-        if (weakenDesc) toast(`on. misclick? you've got ${TOGGLE_GRACE_MS / 1000}s to flip it back free — ${undoCostNote()}.`);
+        if (weakenDesc) toast(`on. misclick? you've got ${TOGGLE_GRACE_MS / 1000}s to flip it back free. after that, ${undoCostNote()}.`);
       } else {
         graceUntil[elId] = 0;
       }
@@ -604,33 +629,10 @@ $("btn-theme").addEventListener("click", async () => {
   render();
 });
 
-// Buddy
+// Nudges
 $("opt-buddy").addEventListener("change", async e => { S.buddy.enabled = e.target.checked; await save(); });
-$("opt-buddy-name").addEventListener("change", async e => {
-  S.buddy.name = e.target.value.trim() || "Nori";
-  await save();
-  toast(`${S.buddy.name} it is.`);
-});
 $("tone-kind").addEventListener("click", async () => { S.buddy.tone = "kind"; await save(); render(); });
 $("tone-tough").addEventListener("click", async () => { S.buddy.tone = "tough"; await save(); render(); });
-
-// Clicking the preview orb makes Nori say something else.
-const PREVIEW_LINES = [
-  '"every blocked tab is a small vote for the person you\'re becoming."',
-  '"the feed misses you. don\'t text back."',
-  '"i\'d wave, but i\'m a sphere."',
-  '"you bring the goals. i\'ll bring the stubbornness."',
-  '"north is up. i checked."'
-];
-let previewIdx = 0;
-$("buddy-preview-orb").addEventListener("click", () => {
-  previewIdx = (previewIdx + 1) % PREVIEW_LINES.length;
-  $("buddy-preview-line").textContent = PREVIEW_LINES[previewIdx];
-  $("buddy-preview-orb").animate(
-    [{ transform: "scale(1)" }, { transform: "scale(1.15)" }, { transform: "scale(1)" }],
-    { duration: 320, easing: "ease-out" }
-  );
-});
 
 // Strict tuning. Lowering the wait or extending unlocks is a weakening.
 $("opt-wait").addEventListener("change", async e => {
@@ -706,7 +708,7 @@ $("ld-input").addEventListener("keydown", e => { if (e.key === "Enter") $("btn-l
 $("btn-ld-start").addEventListener("click", async () => {
   const mins = Number($("ld-duration").value);
   if (!(S.lockdownAllow || []).length) {
-    toast("add at least one site to the allowlist first — or you'll lock out the entire internet.");
+    toast("add at least one site to the allowlist first, or you'll lock out the entire internet.");
     return;
   }
   if (!ldArmed) {
@@ -942,7 +944,7 @@ function handleHash() {
       S.enabled = false;
       await save();
       render();
-      toast("protection off. Nori will be here when you're ready.");
+      toast("protection off. come back when you're ready.");
     });
   }
   if (m[1] === "endFocus") {

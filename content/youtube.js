@@ -109,20 +109,19 @@
     const card = document.createElement("div");
     card.id = "north-yt-placeholder";
     card.innerHTML = `
-      <div class="north-orb"></div>
+      <div class="north-mark">▲</div>
       <h2>search with intention</h2>
-      <p>${(settings.buddy?.name || "Nori")} hid the feed so the feed can't choose for you.<br>
+      <p>North hid the feed so the feed can't choose for you.<br>
       if you came here for something specific, search for it. if not, something better is probably waiting.</p>`;
     const style = document.createElement("style");
     style.textContent = `
       #north-yt-placeholder { max-width: 460px; margin: 12vh auto; text-align: center;
         font-family: "Segoe UI", Roboto, sans-serif; color: var(--yt-spec-text-primary, #f1f1f1); }
-      #north-yt-placeholder .north-orb { width: 56px; height: 56px; margin: 0 auto 20px;
-        border-radius: 50%; background: linear-gradient(135deg,#6366f1,#2dd4bf);
-        animation: north-breathe 4s ease-in-out infinite; }
+      #north-yt-placeholder .north-mark { width: 56px; height: 56px; margin: 0 auto 20px;
+        display: grid; place-items: center; font-size: 24px; color: #fff;
+        border-radius: 16px; background: linear-gradient(135deg,#6366f1,#2dd4bf); }
       #north-yt-placeholder h2 { font-size: 22px; font-weight: 600; margin: 0 0 10px; }
-      #north-yt-placeholder p { font-size: 14px; line-height: 1.6; opacity: .75; margin: 0; }
-      @keyframes north-breathe { 0%,100% { transform: scale(1); opacity:.85 } 50% { transform: scale(1.12); opacity:1 } }`;
+      #north-yt-placeholder p { font-size: 14px; line-height: 1.6; opacity: .75; margin: 0; }`;
     card.appendChild(style);
     grid.parentElement.insertBefore(card, grid);
   }

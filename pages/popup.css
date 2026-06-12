@@ -49,16 +49,7 @@ header {
   border-radius: var(--radius-sm);
   padding: 10px 13px;
 }
-.buddy-line p { margin: 0; font-size: 12.8px; color: var(--text-dim); line-height: 1.45; }
-.mini-orb {
-  position: relative;
-  flex: none;
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  background: var(--grad);
-  animation: orb-breathe 4s ease-in-out infinite;
-  cursor: pointer;
-}
+.buddy-line p { margin: 0; font-size: 12.8px; color: var(--text-dim); line-height: 1.45; cursor: pointer; }
 
 .prot-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .prot-chip {

@@ -213,63 +213,6 @@ input.match, textarea.match { border-color: var(--ok) !important; }
     radial-gradient(30% 25% at 60% 15%, rgba(99, 102, 241, 0.10), transparent 70%);
 }
 
-/* The Nori orb — gradient body, eyes that blink and follow the cursor */
-.orb {
-  width: 72px; height: 72px;
-  border-radius: 50%;
-  background: var(--grad);
-  position: relative;
-  animation: orb-breathe 4.5s ease-in-out infinite;
-  box-shadow: 0 0 48px rgba(99, 102, 241, 0.45), 0 0 96px rgba(45, 212, 191, 0.18),
-    inset -6px -8px 16px rgba(40, 40, 120, 0.18);
-}
-@keyframes orb-breathe {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.09); }
-}
-.eyes {
-  position: absolute;
-  top: 36%;
-  left: 0; right: 0;
-  display: flex;
-  justify-content: center;
-  gap: 22%;
-}
-.eye {
-  width: 19%;
-  aspect-ratio: 1;
-  background: #fff;
-  border-radius: 50%;
-  position: relative;
-  animation: blink 4.8s ease-in-out infinite;
-}
-.eye::after {
-  content: "";
-  position: absolute;
-  inset: 22%;
-  background: #20234a;
-  border-radius: 50%;
-  transform: translate(var(--px, 0px), var(--py, 0px));
-  transition: transform 0.18s ease-out;
-}
-@keyframes blink {
-  0%, 91%, 100% { transform: scaleY(1); }
-  94%, 96% { transform: scaleY(0.08); }
-}
-
-/* Rough day: heavy-lidded Nori (added when today's unlocks pile up) */
-.orb.sleepy .eye { animation: none; transform: scaleY(0.45); }
-.orb.sleepy { animation-duration: 6.5s; }
-
-/* Wrong answer: Nori winces */
-.orb.squint .eye { animation: none; transform: scaleY(0.22); }
-@keyframes nori-shake {
-  10%, 90% { transform: translateX(-2px); }
-  20%, 80% { transform: translateX(3px); }
-  30%, 50%, 70% { transform: translateX(-5px); }
-  40%, 60% { transform: translateX(5px); }
-}
-
 /* Scrollbars */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--bg-elev-2); border-radius: 99px; }
