@@ -33,6 +33,20 @@
 
   const COMMENTS_CSS = `ytd-comments#comments { display: none !important; }`;
 
+  // Sidebar promo destinations: Movies & TV, Music, Live. Matched by title
+  // (English UI) and by their stable hrefs as a locale-proof fallback.
+  const EXPLORE_CSS = `
+    ytd-guide-entry-renderer:has(a#endpoint[title="Movies & TV"]),
+    ytd-guide-entry-renderer:has(a#endpoint[title="Movies"]),
+    ytd-guide-entry-renderer:has(a#endpoint[title="Music"]),
+    ytd-guide-entry-renderer:has(a#endpoint[title="Live"]),
+    ytd-guide-entry-renderer:has(a#endpoint[href="/feed/storefront"]),
+    ytd-guide-entry-renderer:has(a#endpoint[href^="/channel/UC-9-kyTW8ZkZNDHQJ6FgpwQ"]),
+    ytd-guide-entry-renderer:has(a#endpoint[href^="/channel/UC4R8DWoMoI7CAwX8_LjQHig"]),
+    ytd-guide-entry-renderer:has(a#endpoint[href^="/gaming"]) {
+      display: none !important;
+    }`;
+
   const SUBS_CSS = `
     ytd-guide-entry-renderer:has(a[href="/feed/subscriptions"]),
     ytd-mini-guide-entry-renderer:has(a[href="/feed/subscriptions"]),
@@ -52,6 +66,7 @@
     if (settings.youtube?.hideRelated) css += RELATED_CSS;
     if (settings.youtube?.hideComments) css += COMMENTS_CSS;
     if (settings.youtube?.hideSubscriptions) css += SUBS_CSS;
+    if (settings.youtube?.hideExplore !== false) css += EXPLORE_CSS;
     if (!css) return;
     const style = document.createElement("style");
     style.id = "north-yt-style";

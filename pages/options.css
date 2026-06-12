@@ -21,6 +21,12 @@ body { min-height: 100vh; }
   flex-direction: column;
   gap: 28px;
   border-right: 1px solid var(--line);
+  /* Pin to the viewport so the footer controls never move when sections
+     of different heights are shown. */
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 .logo { display: flex; align-items: center; gap: 11px; padding: 0 8px; }
@@ -36,6 +42,16 @@ body { min-height: 100vh; }
 .logo-tag { font-size: 11px; color: var(--text-faint); font-weight: 600; letter-spacing: 0.05em; }
 
 nav { display: flex; flex-direction: column; gap: 3px; }
+.nav-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin: 14px 0 4px;
+  padding: 0 13px;
+}
+nav .nav-label:first-child { margin-top: 0; }
 .nav-item {
   text-align: left;
   font: 600 13.5px var(--font);
@@ -53,7 +69,47 @@ nav { display: flex; flex-direction: column; gap: 3px; }
   color: var(--accent-text);
 }
 
-.sidebar-foot { margin-top: auto; display: flex; flex-direction: column; gap: 14px; padding: 0 8px; }
+.sidebar-foot { margin-top: auto; display: flex; flex-direction: column; gap: 12px; padding: 0 8px; }
+.sidebar-foot .btn { text-align: center; }
+.donate {
+  display: block;
+  text-decoration: none;
+  color: var(--accent-text);
+  border-color: rgba(99, 102, 241, 0.35);
+}
+.donate:hover { border-color: var(--accent); color: var(--accent-text); }
+
+/* Lockdown */
+.lockdown-active {
+  text-align: center;
+  padding: 10px 0 4px;
+}
+.lockdown-active .countdown {
+  font-size: 38px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin: 2px 0 4px;
+}
+.lockdown-active p { font-size: 12.5px; color: var(--text-faint); margin: 0; }
+.btn.arm { background: rgba(248, 113, 113, 0.14); color: var(--danger); border-color: rgba(248, 113, 113, 0.4); }
+
+/* Unlock journal */
+.journal-row {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  padding: 11px 2px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.journal-row:last-child { border-bottom: none; }
+.journal-when { flex: none; width: 78px; color: var(--text-faint); font-size: 11.5px; }
+.journal-site { flex: none; font-weight: 600; color: var(--accent-text); font-size: 12px; }
+.journal-note { color: var(--text-dim); font-style: italic; }
 .master-toggle { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; color: var(--text-dim); }
 .version { font-size: 11px; color: var(--text-faint); line-height: 1.6; margin: 0; }
 .version .pro {
@@ -428,7 +484,7 @@ h1 { font-size: 26px; margin-bottom: 6px; }
 
 @media (max-width: 760px) {
   .layout { flex-direction: column; }
-  .sidebar { width: auto; border-right: none; border-bottom: 1px solid var(--line); }
+  .sidebar { width: auto; border-right: none; border-bottom: 1px solid var(--line); position: static; height: auto; overflow: visible; }
   nav { flex-direction: row; flex-wrap: wrap; }
 }
 

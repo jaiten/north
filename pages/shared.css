@@ -135,6 +135,11 @@ input::placeholder { color: var(--text-faint); }
 .switch input:checked + .track { background: rgba(99, 102, 241, 0.35); border-color: var(--accent); }
 .switch input:checked + .track::after { transform: translateX(18px); background: #fff; }
 
+/* Daylight theme: iOS-style contrast — grey when off, solid indigo when on */
+:root[data-theme="light"] .switch .track { background: #d9dcee; border-color: #c3c7e0; }
+:root[data-theme="light"] .switch .track::after { background: #fff; box-shadow: 0 1px 4px rgba(32, 35, 90, 0.35); }
+:root[data-theme="light"] .switch input:checked + .track { background: var(--accent); border-color: var(--accent); }
+
 /* Locked switch: on, and staying that way */
 .switch.locked { cursor: not-allowed; }
 .switch.locked .track { opacity: 0.45; }
@@ -218,6 +223,19 @@ input::placeholder { color: var(--text-faint); }
 @keyframes blink {
   0%, 91%, 100% { transform: scaleY(1); }
   94%, 96% { transform: scaleY(0.08); }
+}
+
+/* Rough day: heavy-lidded Nori (added when today's unlocks pile up) */
+.orb.sleepy .eye { animation: none; transform: scaleY(0.45); }
+.orb.sleepy { animation-duration: 6.5s; }
+
+/* Wrong answer: Nori winces */
+.orb.squint .eye { animation: none; transform: scaleY(0.22); }
+@keyframes nori-shake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(3px); }
+  30%, 50%, 70% { transform: translateX(-5px); }
+  40%, 60% { transform: translateX(5px); }
 }
 
 /* Scrollbars */

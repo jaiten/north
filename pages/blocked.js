@@ -37,6 +37,28 @@ const LINES = {
     ],
     headline: "Instagram is messages-only right now."
   },
+  dmonly: {
+    kind: [
+      "Your messages still work. The feed doesn't, and honestly, it won't miss you.",
+      "I kept the conversations and closed the scroll. Real people get through. Algorithms don't."
+    ],
+    tough: [
+      "Messages only. Everything else on this site is bait.",
+      "If a human wrote it to you, it's open. If a feed ranked it for you, it's not."
+    ],
+    headline: "This site is messages-only right now."
+  },
+  lockdown: {
+    kind: [
+      "Lockdown is on. You chose a short list of places that matter, and this isn't one of them.",
+      "You set this up in a clear-headed moment. I'm just keeping the promise for you."
+    ],
+    tough: [
+      "Lockdown. Your list, your rules, no exceptions.",
+      "You knew this moment would come when you started the clock. Hold."
+    ],
+    headline: "Lockdown is on."
+  },
   keyword: {
     kind: [
       "You asked me to keep this topic away from you. The you who wrote that rule was thinking clearly.",
@@ -107,6 +129,40 @@ const LINES = {
   }
 };
 
+// What Nori says when the typed answer is wrong. Rotates so repeat misses
+// don't feel canned.
+const WRONG_LINES = {
+  kind: [
+    "Not quite — it has to be word for word. I'll wait.",
+    "Close. But the deal is the exact sentence.",
+    "Almost. Slow down and try once more.",
+    "Still not it. Maybe that's a sign worth listening to."
+  ],
+  tough: [
+    "Wrong. Type it like you mean it.",
+    "Not it. The sentence can tell when you're skimming.",
+    "Miss. Again, word for word.",
+    "If you can't even type it, you definitely shouldn't unlock it."
+  ]
+};
+let wrongIdx = 0;
+
+function noriWince() {
+  const orb = $("challenge-orb");
+  orb.classList.add("squint");
+  orb.animate(
+    [{ transform: "translateX(0)" }, { transform: "translateX(-5px)" }, { transform: "translateX(5px)" },
+     { transform: "translateX(-4px)" }, { transform: "translateX(3px)" }, { transform: "translateX(0)" }],
+    { duration: 380, easing: "ease-out" }
+  );
+  setTimeout(() => orb.classList.remove("squint"), 1100);
+}
+
+function linePack() {
+  if (reason === "dmonly" && site.includes("instagram")) return LINES.instagram;
+  return LINES[reason] || LINES.blocklist;
+}
+
 const PHRASES = [
   "I am choosing distraction over my own goals right now",
   "This site matters more to me than my focus today",
@@ -131,7 +187,10 @@ async function init() {
 
   const tone = s.buddy?.tone === "tough" ? "tough" : "kind";
   buddyTone = tone;
-  const pack = LINES[reason] || LINES.blocklist;
+  const pack = linePack();
+
+  // Nori shows the day: a couple of unlocks and the eyes get heavy.
+  if ((dash.todayStats?.unlocks || 0) >= 2) $("buddy-orb").classList.add("sleepy");
   $("buddy-name").textContent = s.buddy?.enabled ? (s.buddy.name || "Nori") : "North";
   $("headline").textContent = pack.headline;
   $("subline").textContent = pack[tone][Math.floor(Math.random() * pack[tone].length)];
@@ -152,7 +211,12 @@ async function init() {
   $("meta").innerHTML = pills.join("");
 
   // Unlock availability
-  if (reason === "shorts") {
+  if (reason === "lockdown") {
+    $("btn-unlock").classList.add("hidden");
+    const left = Math.max(1, Math.ceil((Number(detail) - Date.now()) / 60e3));
+    const h = Math.floor(left / 60), m = left % 60;
+    $("footnote").textContent = `Lockdown ends in ${h ? h + "h " : ""}${m}m. No unlocks, no exceptions — that's the deal you made with yourself.`;
+  } else if (reason === "shorts") {
     $("btn-unlock").classList.add("hidden");
     $("footnote").textContent = "Short videos can't be unlocked. That's the whole point. A reel or short a friend sends you still opens, just that one.";
   } else if (reason === "adult") {
@@ -173,7 +237,7 @@ function esc(s) {
 
 // Poke Nori, get another line.
 $("buddy-orb").addEventListener("click", () => {
-  const pack = LINES[reason] || LINES.blocklist;
+  const pack = linePack();
   const lines = pack[buddyTone];
   const current = $("subline").textContent;
   const others = lines.filter(l => l !== current);
@@ -293,6 +357,7 @@ function cancelUnlock() {
   $("step-wait").classList.remove("hidden");
   $("main-card").classList.remove("hidden");
   $("challenge-input").value = "";
+  $("challenge-why").value = "";
   $("challenge-error").classList.add("hidden");
 }
 
@@ -334,6 +399,12 @@ $("challenge-input").addEventListener("input", () => {
   $("challenge-error").classList.add("hidden");
 });
 $("challenge-input").addEventListener("keydown", e => {
+  if (e.key === "Enter") $("challenge-why").focus();
+});
+$("challenge-why").addEventListener("input", () => {
+  $("challenge-error").classList.add("hidden");
+});
+$("challenge-why").addEventListener("keydown", e => {
   if (e.key === "Enter") submitChallenge();
 });
 
@@ -350,11 +421,21 @@ document.querySelectorAll("#durations .chip").forEach(chip => {
 
 async function submitChallenge() {
   if ($("challenge-input").value.trim() !== expected) {
+    $("challenge-error").textContent = WRONG_LINES[buddyTone][wrongIdx++ % WRONG_LINES[buddyTone].length];
     $("challenge-error").classList.remove("hidden");
+    noriWince();
+    return;
+  }
+  const note = $("challenge-why").value.trim();
+  if (note.length < 5) {
+    $("challenge-error").textContent = "The journal line is part of the deal. One honest reason, in your own words.";
+    $("challenge-error").classList.remove("hidden");
+    noriWince();
+    $("challenge-why").focus();
     return;
   }
   const mins = Number(document.querySelector("#durations .chip.selected")?.dataset.mins || 5);
-  const res = await chrome.runtime.sendMessage({ type: "requestUnlock", domain: site, minutes: mins });
+  const res = await chrome.runtime.sendMessage({ type: "requestUnlock", domain: site, minutes: mins, note });
   if (res?.ok && fromUrl) {
     location.href = fromUrl;
   } else if (res?.error === "focus") {

@@ -54,11 +54,17 @@
 
     <!-- Step 2: challenge -->
     <div id="step-challenge" class="hidden">
+      <div class="orb challenge-orb" id="challenge-orb">
+        <div class="eyes"><span class="eye"></span><span class="eye"></span></div>
+      </div>
       <h2>One honest moment.</h2>
       <p class="sub" id="challenge-prompt"></p>
       <p class="phrase" id="challenge-phrase"></p>
       <input type="text" id="challenge-input" autocomplete="off" spellcheck="false"
              placeholder="Type it, then press Enter">
+      <input type="text" id="challenge-why" autocomplete="off" maxlength="160"
+             placeholder="And in your own words: why do you need it?">
+      <p class="why-hint">This goes in your unlock journal. Future you will read it.</p>
       <p class="error hidden" id="challenge-error">That doesn't match yet. It has to be word for word.</p>
       <div class="durations" id="durations">
         <span class="dur-label">Then unlock for</span>

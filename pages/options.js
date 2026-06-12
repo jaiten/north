@@ -145,9 +145,23 @@ function showGateChallenge(apply) {
   $("gate-input").focus();
 }
 
+const GATE_WRONG_LINES = [
+  "That doesn't match yet. It has to be word for word.",
+  "Still not it. The sentence can tell when you're skimming.",
+  "Close, but the deal is the exact words.",
+  "If it won't type, maybe it isn't true."
+];
+let gateWrongIdx = 0;
+
 function submitGate() {
   if ($("gate-input").value.trim() !== gateExpected) {
+    $("gate-error").textContent = GATE_WRONG_LINES[gateWrongIdx++ % GATE_WRONG_LINES.length];
     $("gate-error").classList.remove("hidden");
+    $("gate-phrase").animate(
+      [{ transform: "translateX(0)" }, { transform: "translateX(-5px)" }, { transform: "translateX(5px)" },
+       { transform: "translateX(-4px)" }, { transform: "translateX(3px)" }, { transform: "translateX(0)" }],
+      { duration: 380, easing: "ease-out" }
+    );
     return;
   }
   closeGate();
@@ -205,7 +219,11 @@ function render() {
   $("opt-shorts").checked = S.shorts.enabled;
   $("opt-tiktok").checked = S.shorts.blockTikTokEntirely;
   $("opt-shorts-shared").checked = S.shorts.allowSharedLinks;
-  $("opt-ig-dm").checked = S.instagramDmOnly;
+  $("opt-mo-instagram").checked = !!S.messagesOnly?.instagram;
+  $("opt-mo-linkedin").checked = !!S.messagesOnly?.linkedin;
+  $("opt-mo-facebook").checked = !!S.messagesOnly?.facebook;
+  $("opt-mo-x").checked = !!S.messagesOnly?.x;
+  $("opt-yt-explore").checked = S.youtube.hideExplore !== false;
   $("opt-yt-home").checked = S.youtube.hideHomeFeed;
   $("opt-yt-related").checked = S.youtube.hideRelated;
   $("opt-yt-comments").checked = S.youtube.hideComments;
@@ -227,6 +245,7 @@ function render() {
   renderSites();
   renderKeywords();
   renderBetterPlaces();
+  renderLockdown();
 }
 
 function describeSite(site) {
@@ -299,10 +318,10 @@ async function addSite(pattern) {
       label: "Keep my DMs, block the rest",
       fn: async () => {
         S.sites = S.sites.filter(s => s.pattern !== "instagram.com");
-        S.instagramDmOnly = true;
+        S.messagesOnly.instagram = true;
         await save();
         render();
-        document.querySelector('.nav-item[data-section="shorts"]').click();
+        document.querySelector('.nav-item[data-section="social"]').click();
         toast("Messages-only mode is on. DMs work, the feed doesn't.");
       }
     });
@@ -315,7 +334,7 @@ $("btn-add-site").addEventListener("click", () => { addSite($("add-site-input").
 $("add-site-input").addEventListener("keydown", e => {
   if (e.key === "Enter") { addSite(e.target.value); e.target.value = ""; }
 });
-document.querySelectorAll("#presets .chip, #presets-games .chip").forEach(c =>
+document.querySelectorAll(".chip[data-site]").forEach(c =>
   c.addEventListener("click", () => addSite(c.dataset.site)));
 
 // ---------------------------------------------------------------------------
@@ -482,13 +501,22 @@ $("yt-topic-input").addEventListener("keydown", e => { if (e.key === "Enter") ad
 // Toggles. Protective ones go through the gate.
 // ---------------------------------------------------------------------------
 
+// Accidental clicks shouldn't cost a challenge: turning a protection ON
+// starts a short grace window during which turning it back OFF is free.
+const TOGGLE_GRACE_MS = 10000;
+const SITE_GRACE_MS = 30000;
+const graceUntil = {}; // toggle elId -> timestamp
+
 function bindToggle(elId, get, set, weakenDesc) {
   $(elId).addEventListener("change", async e => {
     const turningOff = !e.target.checked && get();
-    if (turningOff && weakenDesc) {
+    const inGrace = Date.now() < (graceUntil[elId] || 0);
+    if (turningOff && weakenDesc && !inGrace) {
       e.target.checked = true; // revert until the gate passes
       gate(weakenDesc, async () => { set(false); await save(); render(); });
     } else {
+      if (e.target.checked) graceUntil[elId] = Date.now() + TOGGLE_GRACE_MS;
+      else graceUntil[elId] = 0;
       set(e.target.checked);
       await save();
       render();
@@ -502,8 +530,14 @@ bindToggle("opt-shorts", () => S.shorts.enabled, v => { S.shorts.enabled = v; },
   "Re-opening short videos invites the most addictive feeds back in.");
 bindToggle("opt-tiktok", () => S.shorts.blockTikTokEntirely, v => { S.shorts.blockTikTokEntirely = v; },
   "Unblocking TikTok opens an infinite short-video feed.");
-bindToggle("opt-ig-dm", () => S.instagramDmOnly, v => { S.instagramDmOnly = v; },
+bindToggle("opt-mo-instagram", () => S.messagesOnly.instagram, v => { S.messagesOnly.instagram = v; },
   "Turning this off opens the full Instagram feed, Reels and Explore.");
+bindToggle("opt-mo-linkedin", () => S.messagesOnly.linkedin, v => { S.messagesOnly.linkedin = v; },
+  "Turning this off brings the LinkedIn feed back.");
+bindToggle("opt-mo-facebook", () => S.messagesOnly.facebook, v => { S.messagesOnly.facebook = v; },
+  "Turning this off opens the full Facebook feed, Watch and Marketplace.");
+bindToggle("opt-mo-x", () => S.messagesOnly.x, v => { S.messagesOnly.x = v; },
+  "Turning this off brings the X timeline and trends back.");
 bindToggle("opt-strict", () => S.strict.enabled, v => { S.strict.enabled = v; },
   "Without strict mode, every protection can be switched off instantly.");
 
@@ -514,6 +548,7 @@ $("opt-shorts-shared").addEventListener("change", async e => {
 });
 
 // YouTube focus tools are quality-of-life, no gate.
+$("opt-yt-explore").addEventListener("change", async e => { S.youtube.hideExplore = e.target.checked; await save(); });
 $("opt-yt-home").addEventListener("change", async e => { S.youtube.hideHomeFeed = e.target.checked; await save(); });
 $("opt-yt-related").addEventListener("change", async e => { S.youtube.hideRelated = e.target.checked; await save(); });
 $("opt-yt-comments").addEventListener("change", async e => { S.youtube.hideComments = e.target.checked; await save(); });
@@ -587,6 +622,77 @@ $("opt-max-unlock").addEventListener("change", async e => {
 });
 
 // ---------------------------------------------------------------------------
+// Lockdown: allowlist-only mode with no off switch
+// ---------------------------------------------------------------------------
+
+let ldTicker = null;
+let ldArmed = false;
+
+function renderLockdown() {
+  const live = dash.lockdown?.active && dash.lockdown.until > Date.now();
+  $("lockdown-setup").classList.toggle("hidden", live);
+  $("lockdown-live").classList.toggle("hidden", !live);
+
+  renderChipList("ld-chips", S.lockdownAllow || [], async i => {
+    S.lockdownAllow.splice(i, 1);
+    await save();
+    renderLockdown();
+  });
+
+  clearInterval(ldTicker);
+  if (live) {
+    const tick = () => {
+      const left = Math.max(0, dash.lockdown.until - Date.now());
+      const h = Math.floor(left / 3600e3);
+      const m = Math.floor((left % 3600e3) / 60e3);
+      const sec = Math.floor((left % 60e3) / 1000);
+      $("ld-countdown").textContent = `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+      if (left <= 0) { clearInterval(ldTicker); load(); }
+    };
+    tick();
+    ldTicker = setInterval(tick, 1000);
+  }
+}
+
+$("btn-ld-add").addEventListener("click", async () => {
+  const p = normalizeSite($("ld-input").value);
+  if (!p) { toast("That doesn't look like a domain"); return; }
+  S.lockdownAllow = S.lockdownAllow || [];
+  if (S.lockdownAllow.includes(p)) { toast(`${p} is already on the allowlist`); return; }
+  S.lockdownAllow.push(p);
+  $("ld-input").value = "";
+  await save();
+  renderLockdown();
+});
+$("ld-input").addEventListener("keydown", e => { if (e.key === "Enter") $("btn-ld-add").click(); });
+
+// Two-step start: arm, then commit. The arm state melts away after 6 seconds.
+$("btn-ld-start").addEventListener("click", async () => {
+  const mins = Number($("ld-duration").value);
+  if (!(S.lockdownAllow || []).length) {
+    toast("Add at least one site to the allowlist first — or you'll lock out the entire internet.");
+    return;
+  }
+  if (!ldArmed) {
+    ldArmed = true;
+    $("btn-ld-start").textContent = "Click again to commit";
+    $("btn-ld-start").classList.add("arm");
+    setTimeout(() => {
+      ldArmed = false;
+      $("btn-ld-start").textContent = "Start";
+      $("btn-ld-start").classList.remove("arm");
+    }, 6000);
+    return;
+  }
+  await chrome.runtime.sendMessage({ type: "startLockdown", minutes: mins });
+  ldArmed = false;
+  $("btn-ld-start").textContent = "Start";
+  $("btn-ld-start").classList.remove("arm");
+  await load();
+  toast("Lockdown started. See you on the other side.");
+});
+
+// ---------------------------------------------------------------------------
 // "Take me somewhere better" destinations
 // ---------------------------------------------------------------------------
 
@@ -645,7 +751,7 @@ function protectionScore(s) {
   score += (s.keywords?.length || 0);
   if (s.shorts?.enabled) score += 3;
   if (s.adultBlock) score += 3;
-  if (s.instagramDmOnly) score += 2;
+  score += Object.values(s.messagesOnly || {}).filter(Boolean).length * 2;
   if (s.strict?.enabled) score += 3;
   score += Math.min(5, (s.strict?.waitSeconds || 0) / 60);
   return score;
@@ -766,6 +872,20 @@ function renderStats() {
   $("top-blocked").innerHTML = top.length
     ? top.map(([site, n]) => `<div class="top-blocked-row"><span>${esc(site)}</span><span class="n">${n}×</span></div>`).join("")
     : `<p class="hint">No blocks recorded yet. Either very good or very new.</p>`;
+
+  // Unlock journal: your own reasons, read back to you.
+  const journal = dash.journal || [];
+  $("journal").innerHTML = journal.length
+    ? journal.slice(0, 30).map(j => {
+        const d = new Date(j.t);
+        const when = `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`;
+        return `<div class="journal-row">
+          <span class="journal-when">${when}</span>
+          <span class="journal-site">${esc(j.site || "")}</span>
+          <span class="journal-note">"${esc(j.note)}"</span>
+        </div>`;
+      }).join("")
+    : `<p class="hint" style="margin:0">Empty, and that's the best version of this page. Every unlock you talk yourself through ends up here, in your own words.</p>`;
 }
 
 // ---------------------------------------------------------------------------
@@ -799,7 +919,7 @@ function handleHash() {
 
 $("wel-apply").addEventListener("click", async () => {
   S.shorts.enabled = $("wel-shorts").checked;
-  S.instagramDmOnly = $("wel-ig").checked;
+  S.messagesOnly.instagram = $("wel-ig").checked;
   S.strict.enabled = $("wel-strict").checked;
   await save();
   render();

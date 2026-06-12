@@ -24,11 +24,14 @@ const DEFAULT_SETTINGS = {
     blockTikTokEntirely: true,
     allowSharedLinks: true    // a single reel/short opened from outside the platform plays
   },
-  instagramDmOnly: false,     // only instagram.com/direct/* is reachable (user opts in)
+  // Messages-only modes: DMs stay open, the feed disappears (user opts in)
+  messagesOnly: { instagram: false, linkedin: false, facebook: false, x: false },
+  lockdownAllow: [],          // the only sites reachable during a lockdown
   adultBlock: true,           // category block, always on — enforced in saveSettings and evaluate
   keywords: [],               // blocked keywords (URL + page title)
   youtube: {
     blockShorts: true,
+    hideExplore: true,        // sidebar Movies & TV, Music, Live, Gaming links
     hideHomeFeed: false,
     hideRelated: false,
     hideComments: false,
@@ -52,12 +55,18 @@ const DEFAULT_SETTINGS = {
   sites: []
 };
 
-let cache = { settings: null, unlocks: {}, focus: null };
+let cache = { settings: null, unlocks: {}, focus: null, lockdown: null };
 
 async function getSettings() {
   if (cache.settings) return cache.settings;
   const { settings } = await chrome.storage.local.get("settings");
-  cache.settings = deepMerge(structuredClone(DEFAULT_SETTINGS), settings || {});
+  const merged = deepMerge(structuredClone(DEFAULT_SETTINGS), settings || {});
+  // Migration: instagramDmOnly predates the per-site messagesOnly object.
+  if (merged.instagramDmOnly) {
+    merged.messagesOnly.instagram = true;
+    delete merged.instagramDmOnly;
+  }
+  cache.settings = merged;
   return cache.settings;
 }
 
@@ -83,6 +92,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
   if (changes.settings) cache.settings = null;
   if (changes.unlocks) cache.unlocks = changes.unlocks.newValue || {};
   if (changes.focus) cache.focus = changes.focus.newValue || null;
+  if (changes.lockdown) cache.lockdown = changes.lockdown.newValue || null;
 });
 
 // ---------------------------------------------------------------------------
@@ -257,22 +267,51 @@ async function sharePassAllows(tabId, url, settings) {
 }
 
 // ---------------------------------------------------------------------------
-// Instagram DM-only
+// Messages-only mode: keep the conversations, lose the feed. Per-site.
+// The root URL redirects straight to the inbox; auth/legal paths stay open so
+// logging in still works.
 // ---------------------------------------------------------------------------
 
-const IG_ALLOWED_PREFIXES = [
-  "/direct", "/accounts", "/api", "/login", "/logout",
-  "/challenge", "/two_factor", "/static", "/graphql", "/ajax", "/legal"
-];
+const MESSAGES_ONLY = {
+  instagram: {
+    host: "instagram.com",
+    home: "https://www.instagram.com/direct/inbox/",
+    allow: ["/direct", "/accounts", "/api", "/login", "/logout",
+      "/challenge", "/two_factor", "/static", "/graphql", "/ajax", "/legal"]
+  },
+  linkedin: {
+    host: "linkedin.com",
+    home: "https://www.linkedin.com/messaging/",
+    allow: ["/messaging", "/jobs", "/job", "/login", "/checkpoint", "/uas",
+      "/authwall", "/psettings", "/mypreferences", "/legal", "/help"]
+  },
+  facebook: {
+    host: "facebook.com", // messenger.com is untouched either way
+    home: "https://www.facebook.com/messages",
+    allow: ["/messages", "/login", "/checkpoint", "/recover", "/settings",
+      "/security", "/privacy", "/legal", "/help", "/ajax", "/api"]
+  },
+  x: {
+    host: "x.com",
+    home: "https://x.com/messages",
+    allow: ["/messages", "/i", "/login", "/logout", "/flow", "/account",
+      "/settings", "/tos", "/privacy"]
+  }
+};
 
-function instagramVerdict(url) {
+function messagesOnlyVerdict(url, settings) {
   let u;
   try { u = new URL(url); } catch { return null; }
-  if (!u.hostname.replace(/^www\./, "").endsWith("instagram.com")) return null;
-  const path = u.pathname;
-  if (path === "/" || path === "") return { redirect: "https://www.instagram.com/direct/inbox/" };
-  if (IG_ALLOWED_PREFIXES.some(p => path.startsWith(p))) return null; // allowed
-  return { block: true };
+  const host = u.hostname.replace(/^www\.|^m\./, "");
+  for (const [key, site] of Object.entries(MESSAGES_ONLY)) {
+    if (!settings.messagesOnly?.[key]) continue;
+    if (host !== site.host && !host.endsWith("." + site.host)) continue;
+    const path = u.pathname;
+    if (path === "/" || path === "") return { redirect: site.home };
+    if (site.allow.some(p => path.startsWith(p))) return null; // allowed
+    return { block: true, site: site.host };
+  }
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -326,6 +365,14 @@ async function evaluate(url, { title = "", tabId = null } = {}) {
     return { reason: "adult", site: host };
   }
 
+  // 0.5 Lockdown: allowlist or nothing, no unlocks, no shared passes, until
+  // the clock runs out. Allowlisted sites still face the normal rules below.
+  const lockdown = await getLockdown();
+  if (lockdown.active) {
+    const allowed = (settings.lockdownAllow || []).some(p => domainMatches(host, p));
+    if (!allowed) return { reason: "lockdown", site: host, detail: String(lockdown.until) };
+  }
+
   const focus = await getFocus();
   const unlocks = await getUnlocks();
   const unlockedUntil = Object.entries(unlocks)
@@ -341,11 +388,11 @@ async function evaluate(url, { title = "", tabId = null } = {}) {
     return { reason: "shorts", site: host };
   }
 
-  // 2. Instagram DM-only.
-  if (settings.instagramDmOnly && !isUnlocked && !shared) {
-    const v = instagramVerdict(url);
-    if (v?.redirect) return { reason: "ig-redirect", redirect: v.redirect };
-    if (v?.block) return { reason: "instagram", site: "instagram.com" };
+  // 2. Messages-only sites.
+  if (!isUnlocked && !shared) {
+    const v = messagesOnlyVerdict(url, settings);
+    if (v?.redirect) return { reason: "msg-redirect", redirect: v.redirect };
+    if (v?.block) return { reason: "dmonly", site: v.site };
   }
 
   // 3. Keyword blocking (URL + title).
@@ -403,8 +450,14 @@ function blockedPageUrl(verdict, fromUrl) {
   return chrome.runtime.getURL("pages/blocked.html") + "?" + p.toString();
 }
 
-// One navigation fires several webNavigation/tabs events; dedupe so a single
-// blocked visit is redirected and counted once.
+// One navigation fires several webNavigation/tabs events in a burst; dedupe
+// so a single blocked visit is redirected and counted once. The two windows
+// matter: within BURST_MS it's the same navigation (skip everything), within
+// COUNT_MS it's the user re-trying (Back button) — redirect again, but don't
+// double-count the stat. Never skip the redirect outside the burst window:
+// that's how "press Back twice fast" used to sneak through.
+const BURST_MS = 800;
+const COUNT_MS = 3000;
 const recentBlocks = new Map(); // tabId -> { url, ts }
 
 // A shared-link pass is single-visit: navigating away from the item (to the
@@ -436,10 +489,12 @@ async function enforceOnTab(tabId, url, title = "") {
     return false;
   }
   const last = recentBlocks.get(tabId);
-  if (last && last.url === url && Date.now() - last.ts < 3000) return true;
+  const sameUrl = last && last.url === url;
+  if (sameUrl && Date.now() - last.ts < BURST_MS) return true;
+  const isRetry = sameUrl && Date.now() - last.ts < COUNT_MS;
   recentBlocks.set(tabId, { url, ts: Date.now() });
   const target = verdict.redirect || blockedPageUrl(verdict, withResumeTime(tabId, url));
-  if (!verdict.redirect) await recordBlock(verdict.site || hostnameOf(url));
+  if (!verdict.redirect && !isRetry) await recordBlock(verdict.site || hostnameOf(url));
   try { await chrome.tabs.update(tabId, { url: target }); } catch { /* tab gone */ }
   return true;
 }
@@ -525,8 +580,7 @@ chrome.runtime.onInstalled.addListener(async details => {
   if (details.reason === "install") {
     chrome.tabs.create({ url: chrome.runtime.getURL("pages/options.html") + "#welcome" });
   }
-  // Uninstall friction: a goodbye page that shows what you're walking away
-  // from. Update the domain once the website is live.
+  // Uninstall friction: a goodbye page that shows what you're walking away from.
   try { chrome.runtime.setUninstallURL("https://northfocus.app/goodbye.html"); } catch { /* ignore */ }
 });
 chrome.runtime.onStartup.addListener(() => chrome.alarms.create("tick", { periodInMinutes: 1 }));
@@ -538,6 +592,7 @@ chrome.alarms.onAlarm.addListener(async alarm => {
     await pruneOldData();
   }
   if (alarm.name === "focus-end") await completeFocus();
+  if (alarm.name === "lockdown-end") await completeLockdown();
 });
 
 async function enforceLimitsOnActiveTab() {
@@ -594,12 +649,19 @@ async function recordBlock(domain) {
   await chrome.storage.local.set({ stats });
 }
 
-async function recordUnlock() {
+async function recordUnlock(domain, minutes, note) {
   const key = dateKey();
   const { stats = {} } = await chrome.storage.local.get("stats");
   stats[key] = stats[key] || { blocks: {}, focusMinutes: 0, unlocks: 0 };
   stats[key].unlocks += 1;
   await chrome.storage.local.set({ stats });
+  // The unlock journal: their own words, kept so they can re-read them later.
+  if (note) {
+    const { journal = [] } = await chrome.storage.local.get("journal");
+    journal.unshift({ t: Date.now(), site: domain || "", mins: minutes, note: String(note).slice(0, 200) });
+    journal.length = Math.min(journal.length, 100);
+    await chrome.storage.local.set({ journal });
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -640,6 +702,50 @@ async function completeFocus() {
 }
 
 // ---------------------------------------------------------------------------
+// Lockdown: allowlist-only mode for a fixed duration. There is deliberately
+// no way to end it early — not even the challenge. That's the product.
+// ---------------------------------------------------------------------------
+
+async function getLockdown() {
+  if (cache.lockdown === null) {
+    const { lockdown = { active: false } } = await chrome.storage.local.get("lockdown");
+    cache.lockdown = lockdown;
+  }
+  if (cache.lockdown?.active && cache.lockdown.until < Date.now()) {
+    await completeLockdown();
+  }
+  return cache.lockdown || { active: false };
+}
+
+async function startLockdown(minutes) {
+  const lockdown = { active: true, startedAt: Date.now(), until: Date.now() + minutes * 60e3, minutes };
+  cache.lockdown = lockdown;
+  await chrome.storage.local.set({ lockdown });
+  chrome.alarms.create("lockdown-end", { when: lockdown.until });
+  // Immediately sweep open tabs.
+  const tabs = await chrome.tabs.query({ url: ["http://*/*", "https://*/*"] });
+  for (const t of tabs) enforceOnTab(t.id, t.url);
+}
+
+async function completeLockdown() {
+  const lockdown = cache.lockdown?.active ? cache.lockdown : (await chrome.storage.local.get("lockdown")).lockdown;
+  cache.lockdown = { active: false };
+  await chrome.storage.local.set({ lockdown: { active: false } });
+  chrome.alarms.clear("lockdown-end");
+  if (lockdown?.active) {
+    const settings = await getSettings();
+    if (settings.buddy.enabled) {
+      chrome.notifications.create({
+        type: "basic",
+        iconUrl: chrome.runtime.getURL("icons/icon128.png"),
+        title: `${settings.buddy.name}: lockdown complete`,
+        message: "You held the line for the whole stretch. The internet is yours again — spend it like you mean it."
+      });
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Message hub (popup / options / blocked page / content scripts)
 // ---------------------------------------------------------------------------
 
@@ -649,11 +755,13 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       case "getDashboard": {
         const settings = await getSettings();
         const key = dateKey();
-        const { usage = {}, stats = {} } = await chrome.storage.local.get(["usage", "stats"]);
+        const { usage = {}, stats = {}, journal = [] } = await chrome.storage.local.get(["usage", "stats", "journal"]);
         sendResponse({
           settings,
           focus: await getFocus(),
+          lockdown: await getLockdown(),
           unlocks: await getUnlocks(),
+          journal,
           todayUsage: usage[key] || {},
           todayStats: stats[key] || { blocks: {}, focusMinutes: 0, unlocks: 0 },
           allStats: stats
@@ -672,6 +780,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         sendResponse({ ok: true });
         break;
       }
+      case "startLockdown": {
+        // 15 min to 7 days. No endLockdown handler exists, on purpose.
+        await startLockdown(Math.max(15, Math.min(7 * 24 * 60, msg.minutes)));
+        sendResponse({ ok: true });
+        break;
+      }
       case "endFocus": {
         await completeFocus();
         sendResponse({ ok: true });
@@ -686,7 +800,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         unlocks[msg.domain] = Date.now() + mins * 60e3;
         cache.unlocks = unlocks;
         await chrome.storage.local.set({ unlocks });
-        await recordUnlock();
+        await recordUnlock(msg.domain, mins, msg.note);
         sendResponse({ ok: true, until: unlocks[msg.domain] });
         break;
       }

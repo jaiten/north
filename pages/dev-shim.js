@@ -11,10 +11,11 @@
     strict: { enabled: true, waitSeconds: 8, challenge: "phrase", maxUnlockMinutes: 15 },
     buddy: { enabled: true, name: "Nori", tone: "kind" },
     shorts: { enabled: true, blockTikTokEntirely: true, allowSharedLinks: true },
-    instagramDmOnly: true,
+    messagesOnly: { instagram: true, linkedin: false, facebook: false, x: true },
+    lockdownAllow: ["docs.google.com", "wikipedia.org", "khanacademy.org"],
     adultBlock: true,
     keywords: ["celebrity gossip", "drama"],
-    youtube: { blockShorts: true, hideHomeFeed: true, hideRelated: false, hideComments: false, hideSubscriptions: false, titleKeywords: ["reaction", "gone wrong"], topicMode: true, allowedKeywords: ["guitar", "python", "calculus"] },
+    youtube: { blockShorts: true, hideExplore: true, hideHomeFeed: true, hideRelated: false, hideComments: false, hideSubscriptions: false, titleKeywords: ["reaction", "gone wrong"], topicMode: true, allowedKeywords: ["guitar", "python", "calculus"] },
     betterPlaces: [
       { label: "Learn something on Khan Academy", url: "https://www.khanacademy.org" },
       { label: "A random Wikipedia article", url: "https://en.wikipedia.org/wiki/Special:Random" },
@@ -42,7 +43,13 @@
   const dashboard = {
     settings: fixtureSettings,
     focus: { active: false },
+    lockdown: { active: false },
     unlocks: {},
+    journal: [
+      { t: Date.now() - 2 * 3600e3, site: "reddit.com", mins: 10, note: "need to check a thread for my assignment, actually" },
+      { t: Date.now() - day, site: "x.com", mins: 5, note: "bored waiting for the bus" },
+      { t: Date.now() - 3 * day, site: "twitch.tv", mins: 15, note: "finals are over, one stream as a treat" }
+    ],
     todayUsage: { "reddit.com": 14 * 60, "youtube.com": 38 * 60, "x.com": 6 * 60, "github.com": 95 * 60 },
     todayStats: allStats[dk(new Date())],
     allStats
@@ -55,6 +62,10 @@
         if (msg.type === "getDashboard") return structuredClone(dashboard);
         if (msg.type === "getUsageFor") return { seconds: 14 * 60 };
         if (msg.type === "requestUnlock") return { ok: true, until: Date.now() + 6e5 };
+        if (msg.type === "startLockdown") {
+          dashboard.lockdown = { active: true, startedAt: Date.now(), until: Date.now() + msg.minutes * 60e3, minutes: msg.minutes };
+          return { ok: true };
+        }
         return { ok: true };
       },
       getURL: p => "/" + p,

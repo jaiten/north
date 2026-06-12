@@ -46,14 +46,25 @@ async function load() {
 
   // What's actively protected right now
   const chips = [];
+  if (dash.lockdown?.active && dash.lockdown.until > Date.now()) {
+    const left = Math.ceil((dash.lockdown.until - Date.now()) / 60e3);
+    chips.push(`Lockdown: ${left >= 60 ? Math.floor(left / 60) + "h " + (left % 60) + "m" : left + "m"} left`);
+  }
   if (s.enabled) {
     if (s.shorts?.enabled) chips.push("Shorts blocked");
     if (s.adultBlock) chips.push("18+ blocked");
-    if (s.instagramDmOnly) chips.push("Instagram: DMs only");
+    const MO_NAMES = { instagram: "Instagram", linkedin: "LinkedIn", facebook: "Facebook", x: "X" };
+    const mo = Object.entries(s.messagesOnly || {}).filter(([, on]) => on).map(([k]) => MO_NAMES[k]);
+    if (mo.length) chips.push(`${mo.join(", ")}: DMs only`);
     if (s.sites?.length) chips.push(`${s.sites.length} site${s.sites.length === 1 ? "" : "s"} guarded`);
     if (s.keywords?.length) chips.push(`${s.keywords.length} keyword${s.keywords.length === 1 ? "" : "s"}`);
   }
+  const streak = cleanStreak();
+  if (streak >= 2) chips.push(`${streak}-day no-unlock streak`);
   $("prot-row").innerHTML = chips.map(c => `<span class="prot-chip">${c}</span>`).join("");
+
+  // Nori wears the day on its face.
+  $("mini-orb").classList.toggle("sleepy", (dash.todayStats.unlocks || 0) >= 2);
 
   // Stats
   $("stat-blocks").textContent = totalBlocks;
@@ -100,6 +111,21 @@ function renderFocus() {
 function formatMins(m) {
   if (m >= 60) return `${Math.floor(m / 60)}h ${m % 60}m`;
   return `${m}m`;
+}
+
+// Consecutive days (today backwards) with activity recorded and zero unlocks.
+function cleanStreak() {
+  const stats = dash.allStats || {};
+  let n = 0;
+  for (let i = 0; i < 60; i++) {
+    const d = new Date(Date.now() - i * 86400e3);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const day = stats[key];
+    if (!day) { if (i === 0) continue; break; } // quiet today is fine; gaps end the streak
+    if ((day.unlocks || 0) > 0) break;
+    n++;
+  }
+  return n;
 }
 function esc(s) {
   return s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
