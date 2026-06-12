@@ -18,14 +18,14 @@
     </div>
 
     <p class="buddy-name" id="buddy-name">Nori</p>
-    <h1 id="headline">Hold on. This isn't the way.</h1>
+    <h1 id="headline">hold on. this isn't it.</h1>
     <p class="sub" id="subline"></p>
 
     <div class="meta" id="meta"></div>
 
     <div class="actions" id="actions">
-      <button class="btn primary" id="btn-back">Take me somewhere better</button>
-      <button class="btn ghost" id="btn-unlock">I genuinely need this site</button>
+      <button class="btn primary" id="btn-back">take me somewhere better</button>
+      <button class="btn ghost" id="btn-unlock">i actually need this site</button>
     </div>
 
     <p class="footnote" id="footnote"></p>
@@ -35,9 +35,9 @@
   <section class="card unlock hidden" id="unlock-card">
     <!-- Step 1: a mindful wait -->
     <div id="step-wait">
-      <h2>First, breathe.</h2>
-      <p class="sub">Stay with the timer for <span id="wait-total">60</span> seconds.
-        Most urges don't survive a real pause.</p>
+      <h2>first, breathe.</h2>
+      <p class="sub">stay with the timer for <span id="wait-total">60</span> seconds.
+        most urges don't survive a real pause.</p>
       <div class="ring-wrap">
         <div class="breath-orb" id="breath-orb"></div>
         <svg viewBox="0 0 120 120" class="ring">
@@ -46,35 +46,42 @@
         </svg>
         <div class="ring-num" id="ring-num">60</div>
       </div>
-      <p class="breath-label" id="breath-label">Breathe in</p>
-      <p class="stay-hint">Stay on this page. Switching tabs or apps restarts the timer.</p>
-      <p class="error hidden" id="wait-note">You switched away, so the timer restarted. It needs your full attention.</p>
-      <button class="btn ghost" id="btn-cancel-wait">Never mind, I'm out</button>
+      <p class="breath-label" id="breath-label">breathe in</p>
+      <p class="stay-hint">stay on this page. switching tabs or apps restarts the timer.</p>
+      <p class="error hidden" id="wait-note">you switched away, so the timer restarted. it needs your full attention.</p>
+      <button class="btn ghost" id="btn-cancel-wait">never mind, i'm out</button>
     </div>
 
-    <!-- Step 2: challenge -->
+    <!-- Step 2: the journal entry is the challenge -->
     <div id="step-challenge" class="hidden">
       <div class="orb challenge-orb" id="challenge-orb">
         <div class="eyes"><span class="eye"></span><span class="eye"></span></div>
       </div>
-      <h2>One honest moment.</h2>
+      <h2>make your case.</h2>
       <p class="sub" id="challenge-prompt"></p>
-      <p class="phrase" id="challenge-phrase"></p>
-      <input type="text" id="challenge-input" autocomplete="off" spellcheck="false"
-             placeholder="Type it, then press Enter">
-      <input type="text" id="challenge-why" autocomplete="off" maxlength="160"
-             placeholder="And in your own words: why do you need it?">
-      <p class="why-hint">This goes in your unlock journal. Future you will read it.</p>
-      <p class="error hidden" id="challenge-error">That doesn't match yet. It has to be word for word.</p>
+
+      <div id="extra-challenge" class="hidden">
+        <p class="phrase" id="challenge-phrase"></p>
+        <input type="text" id="challenge-input" autocomplete="off" spellcheck="false"
+               placeholder="type it here">
+      </div>
+
+      <textarea id="challenge-why" maxlength="600" rows="4" spellcheck="true"
+                placeholder="why do you need this site right now? what will you do there, and when will you leave? be honest — this is for you."></textarea>
+      <div class="why-meta">
+        <span id="word-count">0 / 20 words</span>
+        <span class="why-hint">this goes in your unlock journal. future you reads it.</span>
+      </div>
+      <p class="error hidden" id="challenge-error"></p>
       <div class="durations" id="durations">
-        <span class="dur-label">Then unlock for</span>
+        <span class="dur-label">then unlock for</span>
         <button class="chip" data-mins="5">5 min</button>
         <button class="chip selected" data-mins="10">10 min</button>
         <button class="chip" data-mins="15">15 min</button>
       </div>
       <div class="actions">
-        <button class="btn primary" id="btn-confirm-unlock">Unlock</button>
-        <button class="btn ghost" id="btn-cancel-challenge">Actually, never mind</button>
+        <button class="btn primary" id="btn-confirm-unlock">unlock</button>
+        <button class="btn ghost" id="btn-cancel-challenge">actually, never mind</button>
       </div>
     </div>
   </section>

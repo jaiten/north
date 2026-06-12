@@ -35,7 +35,7 @@
     document.getElementById("north-ig-style")?.remove();
     if (!settings?.enabled) return;
     let css = "";
-    if (settings.instagramDmOnly) css += DM_ONLY_CSS;
+    if (settings.messagesOnly?.instagram) css += DM_ONLY_CSS;
     else if (settings.shorts?.enabled) css += REELS_ONLY_CSS;
     if (!css) return;
     const style = document.createElement("style");

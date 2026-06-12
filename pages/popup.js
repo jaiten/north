@@ -6,19 +6,19 @@ let focusTicker = null;
 
 const GREETINGS = {
   kind: [
-    "Good to see you. What's the one thing that matters most right now?",
-    "Every blocked tab is a small vote for the person you're becoming.",
-    "You don't need more willpower. You need fewer open doors. I closed some for you.",
-    "Progress isn't loud. It's just a day with fewer detours."
+    "good to see you. what's the one thing that matters most right now?",
+    "every blocked tab is a small vote for the person you're becoming.",
+    "you don't need more willpower. you need fewer open doors. i closed some for you.",
+    "progress isn't loud. it's just a day with fewer detours."
   ],
   tough: [
-    "Stats don't lie. Keep the dodge count up and the unlock count at zero.",
-    "The feed misses you. Don't text back.",
-    "Discipline is remembering what you want. Consider this your reminder."
+    "stats don't lie. keep the dodge count up and the unlock count at zero.",
+    "the feed misses you. don't text back.",
+    "discipline is remembering what you want. consider this your reminder."
   ],
   goodDay: [
-    "{n} distractions dodged today. That's real time you got back.",
-    "{n} blocked attempts today. Each one was a fork in the road and you took the right turn."
+    "{n} distractions dodged today. that's real time you got back.",
+    "{n} blocked attempts today. each one was a fork in the road and you took the right turn."
   ]
 };
 
@@ -29,9 +29,9 @@ async function load() {
 
   // Status
   $("toggle-enabled").checked = s.enabled;
-  $("status-tag").textContent = s.enabled ? "Protection on" : "Protection OFF";
+  $("status-tag").textContent = s.enabled ? "protection on" : "protection OFF";
   $("status-tag").classList.toggle("off", !s.enabled);
-  $("enabled-label").textContent = s.enabled ? "Protection enabled" : "Protection disabled";
+  $("enabled-label").textContent = s.enabled ? "protection on" : "protection off";
 
   // Buddy line
   const tone = s.buddy?.tone === "tough" ? "tough" : "kind";
@@ -42,16 +42,16 @@ async function load() {
   } else {
     msg = GREETINGS[tone][Math.floor(Math.random() * GREETINGS[tone].length)];
   }
-  $("buddy-msg").textContent = s.buddy?.enabled ? msg : "Buddy is off. The blocks still hold.";
+  $("buddy-msg").textContent = s.buddy?.enabled ? msg : "buddy is off. the blocks still hold.";
 
   // What's actively protected right now
   const chips = [];
   if (dash.lockdown?.active && dash.lockdown.until > Date.now()) {
     const left = Math.ceil((dash.lockdown.until - Date.now()) / 60e3);
-    chips.push(`Lockdown: ${left >= 60 ? Math.floor(left / 60) + "h " + (left % 60) + "m" : left + "m"} left`);
+    chips.push(`lockdown: ${left >= 60 ? Math.floor(left / 60) + "h " + (left % 60) + "m" : left + "m"} left`);
   }
   if (s.enabled) {
-    if (s.shorts?.enabled) chips.push("Shorts blocked");
+    if (s.shorts?.enabled) chips.push("shorts blocked");
     if (s.adultBlock) chips.push("18+ blocked");
     const MO_NAMES = { instagram: "Instagram", linkedin: "LinkedIn", facebook: "Facebook", x: "X" };
     const mo = Object.entries(s.messagesOnly || {}).filter(([, on]) => on).map(([k]) => MO_NAMES[k]);
@@ -84,7 +84,7 @@ async function load() {
         <span class="usage-time">${formatMins(Math.round(secs / 60))}</span>
       </div>
       <div class="usage-bar"><div class="usage-fill" style="width:${Math.max(4, (secs / max) * 100)}%"></div></div>
-    </div>`).join("") || `<p class="dim" style="margin:0">No browsing tracked yet today.</p>`;
+    </div>`).join("") || `<p class="dim" style="margin:0">no browsing tracked yet today.</p>`;
 
   // Focus state
   renderFocus();

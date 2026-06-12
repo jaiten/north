@@ -33,6 +33,21 @@
 
   const COMMENTS_CSS = `ytd-comments#comments { display: none !important; }`;
 
+  // The whole left rail: expanded guide, mini guide and the hamburger that
+  // opens them. The top bar (logo, search, account) stays. History, liked
+  // videos and playlists still open by direct URL — on purpose.
+  const SIDEBAR_CSS = `
+    tp-yt-app-drawer#guide,
+    #guide.ytd-app,
+    ytd-mini-guide-renderer,
+    #guide-button.ytd-masthead,
+    ytd-masthead #guide-button {
+      display: none !important;
+    }
+    #page-manager.ytd-app {
+      margin-left: 0 !important;
+    }`;
+
   // Sidebar promo destinations: Movies & TV, Music, Live. Matched by title
   // (English UI) and by their stable hrefs as a locale-proof fallback.
   const EXPLORE_CSS = `
@@ -66,7 +81,8 @@
     if (settings.youtube?.hideRelated) css += RELATED_CSS;
     if (settings.youtube?.hideComments) css += COMMENTS_CSS;
     if (settings.youtube?.hideSubscriptions) css += SUBS_CSS;
-    if (settings.youtube?.hideExplore !== false) css += EXPLORE_CSS;
+    if (settings.youtube?.hideSidebar !== false) css += SIDEBAR_CSS;
+    else if (settings.youtube?.hideExplore !== false) css += EXPLORE_CSS;
     if (!css) return;
     const style = document.createElement("style");
     style.id = "north-yt-style";
@@ -94,9 +110,9 @@
     card.id = "north-yt-placeholder";
     card.innerHTML = `
       <div class="north-orb"></div>
-      <h2>Search with intention</h2>
+      <h2>search with intention</h2>
       <p>${(settings.buddy?.name || "Nori")} hid the feed so the feed can't choose for you.<br>
-      If you came here for something specific, search for it. If not, something better is probably waiting.</p>`;
+      if you came here for something specific, search for it. if not, something better is probably waiting.</p>`;
     const style = document.createElement("style");
     style.textContent = `
       #north-yt-placeholder { max-width: 460px; margin: 12vh auto; text-align: center;

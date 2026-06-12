@@ -11,7 +11,7 @@ const DEFAULT_SETTINGS = {
   strict: {
     enabled: true,
     waitSeconds: 60,          // how long you must wait before the challenge
-    challenge: "phrase",      // "phrase" | "math" | "both"
+    challenge: "journal",     // "journal" | "phrase" | "math" — journal is always part of it
     maxUnlockMinutes: 15
   },
   buddy: {
@@ -26,12 +26,16 @@ const DEFAULT_SETTINGS = {
   },
   // Messages-only modes: DMs stay open, the feed disappears (user opts in)
   messagesOnly: { instagram: false, linkedin: false, facebook: false, x: false },
+  // Lighter cleanups: trim the bait without blocking the site
+  linkedin: { tidyNav: true },     // hide Home + My Network in the navbar
+  twitch: { cleanHome: true },     // calm front page, no recommended channels
   lockdownAllow: [],          // the only sites reachable during a lockdown
   adultBlock: true,           // category block, always on — enforced in saveSettings and evaluate
   keywords: [],               // blocked keywords (URL + page title)
   youtube: {
     blockShorts: true,
-    hideExplore: true,        // sidebar Movies & TV, Music, Live, Gaming links
+    hideSidebar: true,        // the whole left rail; search stays, direct URLs still work
+    hideExplore: true,        // legacy: sidebar Movies & TV, Music, Live links (when sidebar shown)
     hideHomeFeed: false,
     hideRelated: false,
     hideComments: false,
@@ -42,14 +46,14 @@ const DEFAULT_SETTINGS = {
   },
   betterPlaces: [
     { label: "Khan Academy", url: "https://www.khanacademy.org" },
-    { label: "A random Wikipedia article", url: "https://en.wikipedia.org/wiki/Special:Random" },
+    { label: "a random Wikipedia article", url: "https://en.wikipedia.org/wiki/Special:Random" },
     { label: "freeCodeCamp", url: "https://www.freecodecamp.org/learn" },
-    { label: "A free classic book", url: "https://www.gutenberg.org/ebooks/search/?sort_order=downloads" },
+    { label: "a free classic book", url: "https://www.gutenberg.org/ebooks/search/?sort_order=downloads" },
     { label: "Duolingo", url: "https://www.duolingo.com" },
     { label: "MIT OpenCourseWare", url: "https://ocw.mit.edu" },
-    { label: "A TED talk", url: "https://www.ted.com/talks" },
-    { label: "Typing practice", url: "https://www.keybr.com" },
-    { label: "A math problem to chew on", url: "https://projecteuler.net/archives" }
+    { label: "a TED talk", url: "https://www.ted.com/talks" },
+    { label: "typing practice", url: "https://www.keybr.com" },
+    { label: "a math problem to chew on", url: "https://projecteuler.net/archives" }
   ],
   // Empty on purpose: nothing is blocked until the user chooses it.
   sites: []
@@ -611,7 +615,7 @@ async function enforceLimitsOnActiveTab() {
     const used = await getUsageSecondsToday(site.pattern);
     const leftMin = Math.ceil((site.limitMins * 60 - used) / 60);
     if (leftMin > 0 && leftMin <= 5 && settings.buddy.enabled) {
-      sendNudge(tab.id, `${leftMin} minute${leftMin === 1 ? "" : "s"} left on ${site.pattern} today. Make it count, then come back to what matters.`);
+      sendNudge(tab.id, `${leftMin} minute${leftMin === 1 ? "" : "s"} left on ${site.pattern} today. make it count, then head back.`);
     }
   }
 }
@@ -658,10 +662,23 @@ async function recordUnlock(domain, minutes, note) {
   // The unlock journal: their own words, kept so they can re-read them later.
   if (note) {
     const { journal = [] } = await chrome.storage.local.get("journal");
-    journal.unshift({ t: Date.now(), site: domain || "", mins: minutes, note: String(note).slice(0, 200) });
+    journal.unshift({ t: Date.now(), site: domain || "", mins: minutes, note: String(note).slice(0, 600) });
     journal.length = Math.min(journal.length, 100);
     await chrome.storage.local.set({ journal });
   }
+}
+
+// The journal entry is the unlock challenge, so it has to be real writing:
+// enough words, mostly distinct, and not keyboard mash.
+const JOURNAL_MIN_WORDS = 20;
+
+function journalNoteOk(note) {
+  const words = String(note || "").toLowerCase().split(/\s+/).filter(w => /[a-z]/i.test(w));
+  if (words.length < JOURNAL_MIN_WORDS) return false;
+  const unique = new Set(words);
+  if (unique.size < JOURNAL_MIN_WORDS / 2) return false;          // "i need it i need it…"
+  const withVowels = words.filter(w => /[aeiouy]/i.test(w)).length;
+  return withVowels >= words.length * 0.7;                        // "sdfk jhgf dkfj…"
 }
 
 // ---------------------------------------------------------------------------
@@ -692,7 +709,7 @@ async function completeFocus() {
         type: "basic",
         iconUrl: chrome.runtime.getURL("icons/icon128.png"),
         title: `${settings.buddy.name}: session complete`,
-        message: "You stayed the course. That's how momentum gets built, one honest session at a time."
+        message: "you stayed the whole way through. that's how momentum gets built — one honest session at a time."
       });
     }
   }
@@ -739,7 +756,7 @@ async function completeLockdown() {
         type: "basic",
         iconUrl: chrome.runtime.getURL("icons/icon128.png"),
         title: `${settings.buddy.name}: lockdown complete`,
-        message: "You held the line for the whole stretch. The internet is yours again — spend it like you mean it."
+        message: "you held the line for the whole stretch. the internet is yours again — spend it like you mean it."
       });
     }
   }
@@ -795,6 +812,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         const settings = await getSettings();
         const focus = await getFocus();
         if (focus.active) { sendResponse({ ok: false, error: "focus" }); break; }
+        if (!journalNoteOk(msg.note)) { sendResponse({ ok: false, error: "note" }); break; }
         const mins = Math.max(1, Math.min(settings.strict.maxUnlockMinutes, msg.minutes || 5));
         const unlocks = await getUnlocks();
         unlocks[msg.domain] = Date.now() + mins * 60e3;

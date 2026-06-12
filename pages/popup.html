@@ -12,17 +12,17 @@
       <div class="logo-mark">▲</div>
       <div>
         <div class="logo-name">North</div>
-        <div class="logo-tag" id="status-tag">Protection on</div>
+        <div class="logo-tag" id="status-tag">protection on</div>
       </div>
     </div>
-    <button class="icon-btn" id="btn-options" title="Settings">⚙</button>
+    <button class="icon-btn" id="btn-options" title="settings">⚙</button>
   </header>
 
   <section class="buddy-line">
-    <div class="mini-orb" id="mini-orb" title="Another one, Nori">
+    <div class="mini-orb" id="mini-orb" title="another one, Nori">
       <div class="eyes"><span class="eye"></span><span class="eye"></span></div>
     </div>
-    <p id="buddy-msg">Loading…</p>
+    <p id="buddy-msg">loading…</p>
   </section>
 
   <div class="prot-row" id="prot-row"></div>
@@ -30,27 +30,27 @@
   <!-- Focus session -->
   <section class="card" id="focus-card">
     <div id="focus-idle">
-      <h3>Focus session</h3>
-      <p class="dim">Blocks everything on your list. No unlocks until it ends.</p>
+      <h3>focus session</h3>
+      <p class="dim">blocks everything on your list. no unlocks until it ends.</p>
       <div class="focus-row">
         <button class="chip" data-mins="25">25 min</button>
         <button class="chip" data-mins="50">50 min</button>
         <button class="chip" data-mins="90">90 min</button>
         <input type="number" id="focus-custom" min="1" max="480" placeholder="min">
       </div>
-      <button class="btn primary full" id="btn-focus">Start focusing</button>
+      <button class="btn primary full" id="btn-focus">start focusing</button>
     </div>
     <div id="focus-active" class="hidden">
-      <h3>In session</h3>
+      <h3>in session</h3>
       <div class="focus-time" id="focus-remaining">0:00</div>
-      <p class="dim">Everything distracting is sealed. You've got this.</p>
-      <button class="btn ghost full small" id="btn-end-focus">End early (requires challenge)</button>
+      <p class="dim">everything distracting is sealed. you've got this.</p>
+      <button class="btn ghost full small" id="btn-end-focus">end early (takes the challenge)</button>
     </div>
   </section>
 
   <!-- Today -->
   <section class="card">
-    <h3>Today</h3>
+    <h3>today</h3>
     <div class="stat-row">
       <div class="stat"><div class="stat-num" id="stat-blocks">0</div><div class="stat-label">distractions<br>dodged</div></div>
       <div class="stat"><div class="stat-num" id="stat-focus">0m</div><div class="stat-label">focused<br>time</div></div>
@@ -60,15 +60,15 @@
   </section>
 
   <footer>
-    <label class="switch" title="Protection (turning off requires the challenge)">
+    <label class="switch" title="protection (turning off takes the challenge)">
       <input type="checkbox" id="toggle-enabled" checked>
       <span class="track"></span>
     </label>
-    <span class="dim" id="enabled-label">Protection enabled</span>
+    <span class="dim" id="enabled-label">protection on</span>
   </footer>
 
   <div class="incog hidden" id="incog-banner">
-    Not active in Incognito windows. <a id="incog-fix">Fix that</a>
+    not active in Incognito windows. <a id="incog-fix">fix that</a>
   </div>
 
   <script src="dev-shim.js"></script>

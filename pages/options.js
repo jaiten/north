@@ -7,9 +7,9 @@ let dash = null;
 const FEEDBACK_EMAIL = "jaitenkangis@gmail.com";
 
 const GATE_PHRASES = [
-  "I am deliberately weakening the protection I asked for",
-  "I choose convenience now over the goals I set",
-  "I am overriding a promise I made to myself"
+  "i am deliberately weakening the protection i asked for",
+  "i choose convenience now over the goals i set",
+  "i am overriding a promise i made to myself"
 ];
 
 function esc(s) {
@@ -135,21 +135,23 @@ function showGateChallenge(apply) {
     const a = 12 + Math.floor(Math.random() * 78);
     const b = 12 + Math.floor(Math.random() * 78);
     gateExpected = String(a * b);
-    $("gate-prompt").textContent = "Solve this to confirm you're acting on purpose:";
+    $("gate-prompt").textContent = "solve this to confirm you're acting on purpose:";
     $("gate-phrase").textContent = `${a} × ${b} = ?`;
   } else {
     gateExpected = GATE_PHRASES[Math.floor(Math.random() * GATE_PHRASES.length)];
-    $("gate-prompt").textContent = "Type this sentence exactly. If it doesn't feel true, cancel.";
+    $("gate-prompt").textContent = "type this sentence exactly. if it doesn't feel true, cancel.";
     $("gate-phrase").textContent = gateExpected;
   }
+  $("gate-input").classList.remove("match");
+  $("gate-confirm").classList.remove("ready");
   $("gate-input").focus();
 }
 
 const GATE_WRONG_LINES = [
-  "That doesn't match yet. It has to be word for word.",
-  "Still not it. The sentence can tell when you're skimming.",
-  "Close, but the deal is the exact words.",
-  "If it won't type, maybe it isn't true."
+  "that doesn't match yet. it has to be word for word.",
+  "still not it. the sentence can tell when you're skimming.",
+  "close, but the deal is the exact words.",
+  "if it won't type, maybe it isn't true."
 ];
 let gateWrongIdx = 0;
 
@@ -173,8 +175,14 @@ function closeGate() {
   $("gate-backdrop").classList.add("hidden");
 }
 
-// Errors only show on submit, not while typing.
-$("gate-input").addEventListener("input", () => $("gate-error").classList.add("hidden"));
+// Errors only show on submit, not while typing — but a correct answer goes
+// green immediately, so you know the moment you've got it.
+$("gate-input").addEventListener("input", e => {
+  $("gate-error").classList.add("hidden");
+  const ok = e.target.value.trim() === gateExpected;
+  e.target.classList.toggle("match", ok);
+  $("gate-confirm").classList.toggle("ready", ok);
+});
 $("gate-input").addEventListener("keydown", e => { if (e.key === "Enter") submitGate(); });
 $("gate-input").addEventListener("paste", e => e.preventDefault());
 $("gate-confirm").addEventListener("click", submitGate);
@@ -209,11 +217,11 @@ async function load() {
 function render() {
   // Theme
   northApplyTheme(S.theme || "light");
-  $("btn-theme").textContent = (S.theme || "light") === "light" ? "Switch to dark" : "Switch to light";
+  $("btn-theme").textContent = (S.theme || "light") === "light" ? "switch to dark" : "switch to light";
 
   // Master
   $("master-enabled").checked = S.enabled;
-  $("master-label").textContent = S.enabled ? "Protection on" : "Protection OFF";
+  $("master-label").textContent = S.enabled ? "protection on" : "protection OFF";
 
   // Shorts
   $("opt-shorts").checked = S.shorts.enabled;
@@ -223,12 +231,14 @@ function render() {
   $("opt-mo-linkedin").checked = !!S.messagesOnly?.linkedin;
   $("opt-mo-facebook").checked = !!S.messagesOnly?.facebook;
   $("opt-mo-x").checked = !!S.messagesOnly?.x;
-  $("opt-yt-explore").checked = S.youtube.hideExplore !== false;
+  $("opt-yt-sidebar").checked = S.youtube.hideSidebar !== false;
   $("opt-yt-home").checked = S.youtube.hideHomeFeed;
   $("opt-yt-related").checked = S.youtube.hideRelated;
   $("opt-yt-comments").checked = S.youtube.hideComments;
   $("opt-yt-subs").checked = S.youtube.hideSubscriptions;
   $("opt-yt-topic").checked = S.youtube.topicMode;
+  $("opt-li-tidy").checked = S.linkedin?.tidyNav !== false;
+  $("opt-tw-clean").checked = S.twitch?.cleanHome !== false;
 
   // Buddy
   $("opt-buddy").checked = S.buddy.enabled;
@@ -239,7 +249,7 @@ function render() {
   // Strict
   $("opt-strict").checked = S.strict.enabled;
   $("opt-wait").value = String(S.strict.waitSeconds);
-  $("opt-challenge").value = S.strict.challenge === "math" ? "math" : "phrase";
+  $("opt-challenge").value = ["math", "phrase"].includes(S.strict.challenge) ? S.strict.challenge : "journal";
   $("opt-max-unlock").value = String(S.strict.maxUnlockMinutes);
 
   renderSites();
@@ -250,10 +260,10 @@ function render() {
 
 function describeSite(site) {
   const dmNote = site.pattern === "instagram.com" ? ", DMs included" : "";
-  if (site.mode === "always") return "Blocked 24/7" + dmNote;
+  if (site.mode === "always") return "blocked 24/7" + dmNote;
   if (site.mode === "limit") return `${site.limitMins} min/day budget`;
   if (site.mode === "schedule") {
-    if (!site.schedule?.length) return "Schedule with no windows yet (never blocked!)";
+    if (!site.schedule?.length) return "schedule with no windows yet (never blocked!)";
     const DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
     return site.schedule.map(w =>
       `${(w.days || []).map(d => DAYS[d]).join("")} ${w.start}-${w.end}`).join(" · ");
@@ -264,7 +274,7 @@ function describeSite(site) {
 function renderSites() {
   const list = $("site-list");
   if (!S.sites.length) {
-    list.innerHTML = `<p class="hint">Nothing blocked yet. Add the sites that pull you in. The chips above are one click.</p>`;
+    list.innerHTML = `<p class="hint">nothing blocked yet. add the sites that pull you in — the chips above are one click.</p>`;
     return;
   }
   list.innerHTML = S.sites.map(site => `
@@ -275,8 +285,8 @@ function renderSites() {
         <div class="site-desc">${esc(describeSite(site))}</div>
       </div>
       <span class="site-badge ${site.mode}">${site.mode === "limit" ? "limit" : site.mode}</span>
-      <button class="btn ghost small act-edit">Edit</button>
-      <button class="btn ghost small act-del" title="Remove">✕</button>
+      <button class="btn ghost small act-edit">edit</button>
+      <button class="btn ghost small act-del" title="remove">✕</button>
     </div>`).join("");
 
   list.querySelectorAll(".act-edit").forEach(b =>
@@ -285,12 +295,15 @@ function renderSites() {
     b.addEventListener("click", e => {
       const id = e.target.closest(".site-row").dataset.id;
       const site = S.sites.find(s => s.id === id);
-      gate(`Removing ${site.pattern} from your blocklist makes it fully accessible again.`, async () => {
+      const remove = async () => {
         S.sites = S.sites.filter(s => s.id !== id);
         await save();
         renderSites();
         toast(`${site.pattern} removed`);
-      });
+      };
+      // Just-added sites come off free — accidental clicks shouldn't cost a challenge.
+      if (Date.now() < (graceUntil["site:" + id] || 0)) { remove(); return; }
+      gate(`removing ${site.pattern} from your blocklist makes it fully accessible again.`, remove);
     }));
 }
 
@@ -305,9 +318,11 @@ function normalizeSite(input) {
 
 async function addSite(pattern) {
   const p = normalizeSite(pattern);
-  if (!p) { toast("That doesn't look like a domain"); return; }
+  if (!p) { toast("that doesn't look like a domain"); return; }
   if (S.sites.some(s => s.pattern === p)) { toast(`${p} is already on the list`); return; }
-  S.sites.unshift({ id: "s_" + Date.now().toString(36), pattern: p, mode: "always", schedule: [], limitMins: 30 });
+  const id = "s_" + Date.now().toString(36);
+  S.sites.unshift({ id, pattern: p, mode: "always", schedule: [], limitMins: 30 });
+  graceUntil["site:" + id] = Date.now() + SITE_GRACE_MS;
   await save();
   renderSites();
 
@@ -315,19 +330,19 @@ async function addSite(pattern) {
   // surprised by that, so offer the messages-only mode right here.
   if (p === "instagram.com") {
     toast("Instagram is fully blocked — DMs included.", {
-      label: "Keep my DMs, block the rest",
+      label: "keep my DMs, block the rest",
       fn: async () => {
         S.sites = S.sites.filter(s => s.pattern !== "instagram.com");
         S.messagesOnly.instagram = true;
         await save();
         render();
         document.querySelector('.nav-item[data-section="social"]').click();
-        toast("Messages-only mode is on. DMs work, the feed doesn't.");
+        toast("messages-only mode is on. DMs work, the feed doesn't.");
       }
     });
     return;
   }
-  toast(`${p} blocked, always. Click Edit to set a schedule or limit.`);
+  toast(`${p} blocked. misclick? removing it is free for ${SITE_GRACE_MS / 1000}s — after that it takes the ${S.strict?.waitSeconds || 60}s challenge.`);
 }
 
 $("btn-add-site").addEventListener("click", () => { addSite($("add-site-input").value); $("add-site-input").value = ""; });
@@ -346,7 +361,7 @@ let editing = null; // working copy
 function openEditor(id) {
   const site = S.sites.find(s => s.id === id);
   editing = structuredClone(site);
-  $("edit-title").textContent = `Edit ${site.pattern}`;
+  $("edit-title").textContent = `edit ${site.pattern}`;
   renderEditor();
   $("edit-backdrop").classList.remove("hidden");
 }
@@ -424,12 +439,12 @@ $("edit-save").addEventListener("click", async () => {
     await save();
     $("edit-backdrop").classList.add("hidden");
     renderSites();
-    toast("Saved");
+    toast("saved");
   };
 
   if (weakening) {
     $("edit-backdrop").classList.add("hidden");
-    gate(`Loosening the rules for ${old.pattern} gives the old habit a way back in.`, commit);
+    gate(`loosening the rules for ${old.pattern} gives the old habit a way back in.`, commit);
   } else {
     await commit();
   }
@@ -442,7 +457,7 @@ $("edit-save").addEventListener("click", async () => {
 function renderKeywords() {
   renderChipList("kw-chips", S.keywords, async i => {
     const kw = S.keywords[i];
-    gate(`Removing the keyword "${kw}" lets that content through everywhere.`, async () => {
+    gate(`removing the keyword "${kw}" lets that content through everywhere.`, async () => {
       S.keywords.splice(i, 1);
       await save();
       renderKeywords();
@@ -464,7 +479,7 @@ function renderChipList(elId, arr, onRemove) {
   const box = $(elId);
   box.innerHTML = "";
   if (!arr.length) {
-    box.innerHTML = `<span class="hint" style="margin:0">Nothing here yet.</span>`;
+    box.innerHTML = `<span class="hint" style="margin:0">nothing here yet.</span>`;
     return;
   }
   arr.forEach((kw, i) => {
@@ -482,8 +497,8 @@ function renderChipList(elId, arr, onRemove) {
 async function addKeyword(inputId, arr) {
   const v = $(inputId).value.trim().toLowerCase();
   if (!v) return;
-  if (v.length < 3) { toast("Keywords under 3 characters would block half the internet"); return; }
-  if (arr.includes(v)) { toast("Already on the list"); return; }
+  if (v.length < 3) { toast("keywords under 3 characters would block half the internet"); return; }
+  if (arr.includes(v)) { toast("already on the list"); return; }
   arr.push(v);
   $(inputId).value = "";
   await save();
@@ -503,9 +518,16 @@ $("yt-topic-input").addEventListener("keydown", e => { if (e.key === "Enter") ad
 
 // Accidental clicks shouldn't cost a challenge: turning a protection ON
 // starts a short grace window during which turning it back OFF is free.
+// After that, off means the wait + challenge — and we say so up front.
 const TOGGLE_GRACE_MS = 10000;
 const SITE_GRACE_MS = 30000;
-const graceUntil = {}; // toggle elId -> timestamp
+const graceUntil = {}; // toggle elId / "site:<id>" -> timestamp
+
+function undoCostNote() {
+  return S.strict?.enabled
+    ? `undoing it later takes the ${S.strict.waitSeconds || 60}s challenge`
+    : "strict mode is off, so you can undo it anytime";
+}
 
 function bindToggle(elId, get, set, weakenDesc) {
   $(elId).addEventListener("change", async e => {
@@ -515,8 +537,12 @@ function bindToggle(elId, get, set, weakenDesc) {
       e.target.checked = true; // revert until the gate passes
       gate(weakenDesc, async () => { set(false); await save(); render(); });
     } else {
-      if (e.target.checked) graceUntil[elId] = Date.now() + TOGGLE_GRACE_MS;
-      else graceUntil[elId] = 0;
+      if (e.target.checked) {
+        graceUntil[elId] = Date.now() + TOGGLE_GRACE_MS;
+        if (weakenDesc) toast(`on. misclick? you've got ${TOGGLE_GRACE_MS / 1000}s to flip it back free — ${undoCostNote()}.`);
+      } else {
+        graceUntil[elId] = 0;
+      }
       set(e.target.checked);
       await save();
       render();
@@ -525,21 +551,21 @@ function bindToggle(elId, get, set, weakenDesc) {
 }
 
 bindToggle("master-enabled", () => S.enabled, v => { S.enabled = v; },
-  "Turning North off removes every block, limit and schedule at once.");
+  "turning North off removes every block, limit and schedule at once.");
 bindToggle("opt-shorts", () => S.shorts.enabled, v => { S.shorts.enabled = v; },
-  "Re-opening short videos invites the most addictive feeds back in.");
+  "re-opening short videos invites the most addictive feeds back in.");
 bindToggle("opt-tiktok", () => S.shorts.blockTikTokEntirely, v => { S.shorts.blockTikTokEntirely = v; },
-  "Unblocking TikTok opens an infinite short-video feed.");
+  "unblocking TikTok opens an infinite short-video feed.");
 bindToggle("opt-mo-instagram", () => S.messagesOnly.instagram, v => { S.messagesOnly.instagram = v; },
-  "Turning this off opens the full Instagram feed, Reels and Explore.");
+  "turning this off opens the full Instagram feed, Reels and Explore.");
 bindToggle("opt-mo-linkedin", () => S.messagesOnly.linkedin, v => { S.messagesOnly.linkedin = v; },
-  "Turning this off brings the LinkedIn feed back.");
+  "turning this off brings the LinkedIn feed back.");
 bindToggle("opt-mo-facebook", () => S.messagesOnly.facebook, v => { S.messagesOnly.facebook = v; },
-  "Turning this off opens the full Facebook feed, Watch and Marketplace.");
+  "turning this off opens the full Facebook feed, Watch and Marketplace.");
 bindToggle("opt-mo-x", () => S.messagesOnly.x, v => { S.messagesOnly.x = v; },
-  "Turning this off brings the X timeline and trends back.");
+  "turning this off brings the X timeline and trends back.");
 bindToggle("opt-strict", () => S.strict.enabled, v => { S.strict.enabled = v; },
-  "Without strict mode, every protection can be switched off instantly.");
+  "without strict mode, every protection can be switched off instantly.");
 
 // Narrow allowance, no gate either way.
 $("opt-shorts-shared").addEventListener("change", async e => {
@@ -547,8 +573,8 @@ $("opt-shorts-shared").addEventListener("change", async e => {
   await save();
 });
 
-// YouTube focus tools are quality-of-life, no gate.
-$("opt-yt-explore").addEventListener("change", async e => { S.youtube.hideExplore = e.target.checked; await save(); });
+// YouTube / LinkedIn / Twitch cleanups are quality-of-life, no gate.
+$("opt-yt-sidebar").addEventListener("change", async e => { S.youtube.hideSidebar = e.target.checked; await save(); });
 $("opt-yt-home").addEventListener("change", async e => { S.youtube.hideHomeFeed = e.target.checked; await save(); });
 $("opt-yt-related").addEventListener("change", async e => { S.youtube.hideRelated = e.target.checked; await save(); });
 $("opt-yt-comments").addEventListener("change", async e => { S.youtube.hideComments = e.target.checked; await save(); });
@@ -557,8 +583,18 @@ $("opt-yt-topic").addEventListener("change", async e => {
   S.youtube.topicMode = e.target.checked;
   await save();
   if (e.target.checked && !(S.youtube.allowedKeywords || []).length) {
-    toast("Add a few topics below or every video will be hidden");
+    toast("add a few topics below or every video will be hidden");
   }
+});
+$("opt-li-tidy").addEventListener("change", async e => {
+  S.linkedin = S.linkedin || {};
+  S.linkedin.tidyNav = e.target.checked;
+  await save();
+});
+$("opt-tw-clean").addEventListener("change", async e => {
+  S.twitch = S.twitch || {};
+  S.twitch.cleanHome = e.target.checked;
+  await save();
 });
 
 // Theme toggle — cosmetic, no gate.
@@ -580,11 +616,11 @@ $("tone-tough").addEventListener("click", async () => { S.buddy.tone = "tough"; 
 
 // Clicking the preview orb makes Nori say something else.
 const PREVIEW_LINES = [
-  '"Every blocked tab is a small vote for the person you\'re becoming."',
-  '"The feed misses you. Don\'t text back."',
-  '"I\'d wave, but I\'m a sphere."',
-  '"You bring the goals. I\'ll bring the stubbornness."',
-  '"North is up. I checked."'
+  '"every blocked tab is a small vote for the person you\'re becoming."',
+  '"the feed misses you. don\'t text back."',
+  '"i\'d wave, but i\'m a sphere."',
+  '"you bring the goals. i\'ll bring the stubbornness."',
+  '"north is up. i checked."'
 ];
 let previewIdx = 0;
 $("buddy-preview-orb").addEventListener("click", () => {
@@ -601,7 +637,7 @@ $("opt-wait").addEventListener("change", async e => {
   const v = Number(e.target.value);
   if (v < S.strict.waitSeconds) {
     e.target.value = String(S.strict.waitSeconds);
-    gate("A shorter wait makes impulsive unlocks easier.", async () => {
+    gate("a shorter wait makes impulsive unlocks easier.", async () => {
       S.strict.waitSeconds = v; await save(); render();
     });
   } else {
@@ -613,7 +649,7 @@ $("opt-max-unlock").addEventListener("change", async e => {
   const v = Number(e.target.value);
   if (v > S.strict.maxUnlockMinutes) {
     e.target.value = String(S.strict.maxUnlockMinutes);
-    gate("Longer unlocks mean longer detours.", async () => {
+    gate("longer unlocks mean longer detours.", async () => {
       S.strict.maxUnlockMinutes = v; await save(); render();
     });
   } else {
@@ -656,7 +692,7 @@ function renderLockdown() {
 
 $("btn-ld-add").addEventListener("click", async () => {
   const p = normalizeSite($("ld-input").value);
-  if (!p) { toast("That doesn't look like a domain"); return; }
+  if (!p) { toast("that doesn't look like a domain"); return; }
   S.lockdownAllow = S.lockdownAllow || [];
   if (S.lockdownAllow.includes(p)) { toast(`${p} is already on the allowlist`); return; }
   S.lockdownAllow.push(p);
@@ -670,26 +706,26 @@ $("ld-input").addEventListener("keydown", e => { if (e.key === "Enter") $("btn-l
 $("btn-ld-start").addEventListener("click", async () => {
   const mins = Number($("ld-duration").value);
   if (!(S.lockdownAllow || []).length) {
-    toast("Add at least one site to the allowlist first — or you'll lock out the entire internet.");
+    toast("add at least one site to the allowlist first — or you'll lock out the entire internet.");
     return;
   }
   if (!ldArmed) {
     ldArmed = true;
-    $("btn-ld-start").textContent = "Click again to commit";
+    $("btn-ld-start").textContent = "click again to commit";
     $("btn-ld-start").classList.add("arm");
     setTimeout(() => {
       ldArmed = false;
-      $("btn-ld-start").textContent = "Start";
+      $("btn-ld-start").textContent = "start";
       $("btn-ld-start").classList.remove("arm");
     }, 6000);
     return;
   }
   await chrome.runtime.sendMessage({ type: "startLockdown", minutes: mins });
   ldArmed = false;
-  $("btn-ld-start").textContent = "Start";
+  $("btn-ld-start").textContent = "start";
   $("btn-ld-start").classList.remove("arm");
   await load();
-  toast("Lockdown started. See you on the other side.");
+  toast("lockdown started. see you on the other side.");
 });
 
 // ---------------------------------------------------------------------------
@@ -701,7 +737,7 @@ function renderBetterPlaces() {
   const places = S.betterPlaces || [];
   box.innerHTML = "";
   if (!places.length) {
-    box.innerHTML = `<p class="hint" style="margin:0">Nowhere better yet. The block page will just send you back.</p>`;
+    box.innerHTML = `<p class="hint" style="margin:0">nowhere better yet. the block page will just send you back.</p>`;
     return;
   }
   places.forEach((p, i) => {
@@ -729,9 +765,9 @@ function renderBetterPlaces() {
 $("btn-add-bp").addEventListener("click", async () => {
   const label = $("bp-label").value.trim();
   let url = $("bp-url").value.trim();
-  if (!label || !url) { toast("Needs both a label and a URL"); return; }
+  if (!label || !url) { toast("needs both a label and a URL"); return; }
   if (!/^https?:\/\//i.test(url)) url = "https://" + url;
-  try { new URL(url); } catch { toast("That URL doesn't parse"); return; }
+  try { new URL(url); } catch { toast("that URL doesn't parse"); return; }
   S.betterPlaces = S.betterPlaces || [];
   S.betterPlaces.push({ label, url });
   $("bp-label").value = "";
@@ -765,7 +801,7 @@ $("btn-export").addEventListener("click", () => {
   a.download = "north-settings.json";
   a.click();
   URL.revokeObjectURL(a.href);
-  toast("Settings exported");
+  toast("settings exported");
 });
 
 $("btn-import").addEventListener("click", () => $("import-file").click());
@@ -775,20 +811,20 @@ $("import-file").addEventListener("change", async e => {
   e.target.value = "";
   if (!file) return;
   let data;
-  try { data = JSON.parse(await file.text()); } catch { toast("That file isn't valid JSON"); return; }
+  try { data = JSON.parse(await file.text()); } catch { toast("that file isn't valid JSON"); return; }
   const incoming = data?.settings;
   if (data?.north !== 1 || !incoming || typeof incoming !== "object" || !Array.isArray(incoming.sites)) {
-    toast("That doesn't look like a North settings file");
+    toast("that doesn't look like a North settings file");
     return;
   }
   const applyImport = async () => {
     S = incoming;
     await save();
     render();
-    toast("Settings imported");
+    toast("settings imported");
   };
   if (protectionScore(incoming) < protectionScore(S)) {
-    gate("The file you're importing is weaker than your current protection.", applyImport);
+    gate("the file you're importing is weaker than your current protection.", applyImport);
   } else {
     await applyImport();
   }
@@ -871,7 +907,7 @@ function renderStats() {
   const top = Object.entries(siteCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
   $("top-blocked").innerHTML = top.length
     ? top.map(([site, n]) => `<div class="top-blocked-row"><span>${esc(site)}</span><span class="n">${n}×</span></div>`).join("")
-    : `<p class="hint">No blocks recorded yet. Either very good or very new.</p>`;
+    : `<p class="hint">no blocks recorded yet. either very good or very new.</p>`;
 
   // Unlock journal: your own reasons, read back to you.
   const journal = dash.journal || [];
@@ -885,7 +921,7 @@ function renderStats() {
           <span class="journal-note">"${esc(j.note)}"</span>
         </div>`;
       }).join("")
-    : `<p class="hint" style="margin:0">Empty, and that's the best version of this page. Every unlock you talk yourself through ends up here, in your own words.</p>`;
+    : `<p class="hint" style="margin:0">empty, and that's the best version of this page. every unlock you talk yourself through ends up here, in your own words.</p>`;
 }
 
 // ---------------------------------------------------------------------------
@@ -902,17 +938,17 @@ function handleHash() {
   if (!m) return;
   history.replaceState(null, "", location.pathname);
   if (m[1] === "disable") {
-    gate("Turning North off removes every block, limit and schedule at once.", async () => {
+    gate("turning North off removes every block, limit and schedule at once.", async () => {
       S.enabled = false;
       await save();
       render();
-      toast("Protection disabled. Nori will be here when you're ready.");
+      toast("protection off. Nori will be here when you're ready.");
     });
   }
   if (m[1] === "endFocus") {
-    gate("Ending the focus session early breaks the commitment you just made.", async () => {
+    gate("ending the focus session early breaks the commitment you just made.", async () => {
       await chrome.runtime.sendMessage({ type: "endFocus" });
-      toast("Focus session ended.");
+      toast("focus session ended.");
     });
   }
 }
@@ -924,7 +960,7 @@ $("wel-apply").addEventListener("click", async () => {
   await save();
   render();
   $("welcome-backdrop").classList.add("hidden");
-  toast("Good start. Now add the sites that pull you in.");
+  toast("good start. now add the sites that pull you in.");
   $("add-site-input").focus();
 });
 

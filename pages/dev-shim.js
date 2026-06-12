@@ -8,14 +8,16 @@
   const fixtureSettings = {
     enabled: true,
     theme: "light",
-    strict: { enabled: true, waitSeconds: 8, challenge: "phrase", maxUnlockMinutes: 15 },
+    strict: { enabled: true, waitSeconds: 8, challenge: "journal", maxUnlockMinutes: 15 },
     buddy: { enabled: true, name: "Nori", tone: "kind" },
     shorts: { enabled: true, blockTikTokEntirely: true, allowSharedLinks: true },
     messagesOnly: { instagram: true, linkedin: false, facebook: false, x: true },
+    linkedin: { tidyNav: true },
+    twitch: { cleanHome: true },
     lockdownAllow: ["docs.google.com", "wikipedia.org", "khanacademy.org"],
     adultBlock: true,
     keywords: ["celebrity gossip", "drama"],
-    youtube: { blockShorts: true, hideExplore: true, hideHomeFeed: true, hideRelated: false, hideComments: false, hideSubscriptions: false, titleKeywords: ["reaction", "gone wrong"], topicMode: true, allowedKeywords: ["guitar", "python", "calculus"] },
+    youtube: { blockShorts: true, hideSidebar: true, hideExplore: true, hideHomeFeed: true, hideRelated: false, hideComments: false, hideSubscriptions: false, titleKeywords: ["reaction", "gone wrong"], topicMode: true, allowedKeywords: ["guitar", "python", "calculus"] },
     betterPlaces: [
       { label: "Learn something on Khan Academy", url: "https://www.khanacademy.org" },
       { label: "A random Wikipedia article", url: "https://en.wikipedia.org/wiki/Special:Random" },

@@ -15,117 +15,117 @@ const $ = id => document.getElementById(id);
 const LINES = {
   shorts: {
     kind: [
-      "Short videos are built to eat your time in 15 second bites. You had better plans for this hour.",
-      "The algorithm wanted your next 40 minutes. I said no for you.",
-      "Nothing in that feed will matter tomorrow. The thing you're avoiding probably will."
+      "short videos are built to eat your time in 15 second bites. you had better plans for this hour.",
+      "the algorithm wanted your next 40 minutes. i said no for you.",
+      "nothing in that feed will matter tomorrow. the thing you're avoiding probably will."
     ],
     tough: [
-      "Shorts again? You know exactly how that ends.",
-      "That feed is a slot machine. You're better than a slot machine.",
-      "You didn't even want this. Your thumb did."
+      "shorts again? you know exactly how that ends.",
+      "that feed is a slot machine. you're better than a slot machine.",
+      "you didn't even want this. your thumb did."
     ],
-    headline: "Short videos stay closed."
+    headline: "short videos stay closed."
   },
   instagram: {
     kind: [
-      "Your messages still work. The feed can wait. It's designed to wait forever.",
-      "I kept your DMs open in case someone real needs you. The rest is a rabbit hole."
+      "your messages still work. the feed can wait — it's designed to wait forever.",
+      "i kept your DMs open in case someone real needs you. the rest is a rabbit hole."
     ],
     tough: [
-      "Messages only. The feed is a trap with good lighting.",
-      "If it's not a message from a real person, it can wait."
+      "messages only. the feed is a trap with good lighting.",
+      "if it's not a message from a real person, it can wait."
     ],
     headline: "Instagram is messages-only right now."
   },
   dmonly: {
     kind: [
-      "Your messages still work. The feed doesn't, and honestly, it won't miss you.",
-      "I kept the conversations and closed the scroll. Real people get through. Algorithms don't."
+      "your messages still work. the feed doesn't, and honestly, it won't miss you.",
+      "i kept the conversations and closed the scroll. real people get through. algorithms don't."
     ],
     tough: [
-      "Messages only. Everything else on this site is bait.",
-      "If a human wrote it to you, it's open. If a feed ranked it for you, it's not."
+      "messages only. everything else on this site is bait.",
+      "if a human wrote it to you, it's open. if a feed ranked it for you, it's not."
     ],
-    headline: "This site is messages-only right now."
+    headline: "this site is messages-only right now."
   },
   lockdown: {
     kind: [
-      "Lockdown is on. You chose a short list of places that matter, and this isn't one of them.",
-      "You set this up in a clear-headed moment. I'm just keeping the promise for you."
+      "lockdown is on. you chose a short list of places that matter, and this isn't one of them.",
+      "you set this up in a clear-headed moment. i'm just keeping the promise for you."
     ],
     tough: [
-      "Lockdown. Your list, your rules, no exceptions.",
-      "You knew this moment would come when you started the clock. Hold."
+      "lockdown. your list, your rules, no exceptions.",
+      "you knew this moment would come when you started the clock. hold."
     ],
-    headline: "Lockdown is on."
+    headline: "lockdown is on."
   },
   keyword: {
     kind: [
-      "You asked me to keep this topic away from you. The you who wrote that rule was thinking clearly.",
-      "This matched a keyword you blocked. Future you says thanks."
+      "you asked me to keep this topic away from you. the you who wrote that rule was thinking clearly.",
+      "this matched a keyword you blocked. future you says thanks."
     ],
     tough: [
-      "You wrote this keyword down as a no-go. Hold the line.",
-      "Blocked by your own rule. Don't negotiate with yourself mid-craving."
+      "you wrote this keyword down as a no-go. hold the line.",
+      "blocked by your own rule. don't negotiate with yourself mid-craving."
     ],
-    headline: "That topic is off limits."
+    headline: "that topic is off limits."
   },
   schedule: {
     kind: [
-      "This site is scheduled off right now. You set that schedule to protect this exact moment.",
-      "It'll still be there when the window opens. Right now belongs to your real work."
+      "this site is scheduled off right now. you set that schedule to protect this exact moment.",
+      "it'll still be there when the window opens. right now belongs to your real work."
     ],
     tough: [
-      "These are blocked hours. You set them. Honor them.",
-      "The clock says focus time. The site will survive without you."
+      "these are blocked hours. you set them. honor them.",
+      "the clock says focus time. the site will survive without you."
     ],
-    headline: "Not during these hours."
+    headline: "not during these hours."
   },
   limit: {
     kind: [
-      "You used your time here today, and that's fine. It was budgeted. Now the budget is spent.",
-      "Today's allowance for this site is done. It resets at midnight."
+      "you used your time here today, and that's fine. it was budgeted. now the budget is spent.",
+      "today's allowance for this site is done. it resets at midnight."
     ],
     tough: [
-      "Time's up. More scrolling won't find what the first 20 minutes didn't.",
-      "Daily limit hit. The feed has no ending. Your day does."
+      "time's up. more scrolling won't find what the first 20 minutes didn't.",
+      "daily limit hit. the feed has no ending. your day does."
     ],
-    headline: "You've hit today's limit."
+    headline: "you've hit today's limit."
   },
   focus: {
     kind: [
-      "You're in the middle of a focus session, and you're doing well. Don't trade that for a scroll.",
-      "The session you started is still running. Finish it and this pull will be gone."
+      "you're mid focus session, and you're doing well. don't trade that for a scroll.",
+      "the session you started is still running. finish it and this pull will be gone."
     ],
     tough: [
-      "You started a focus session. Finish what you started.",
-      "Mid-session. No exceptions. Back to work."
+      "you started a focus session. finish what you started.",
+      "mid-session. no exceptions. back to work."
     ],
-    headline: "Focus session in progress."
+    headline: "focus session in progress."
   },
   adult: {
     kind: [
-      "That content is filtered out. Not a judgment, just a boundary you get to keep.",
-      "This category stays closed. Your attention has better places to live."
+      "that content is filtered out. not a judgment, just a boundary you get to keep.",
+      "this category stays closed. your attention has better places to live."
     ],
     tough: [
-      "Blocked category. Not negotiable, not unlockable.",
-      "No. Go build something instead."
+      "blocked category. not negotiable, not unlockable.",
+      "no. go build something instead."
     ],
-    headline: "That content stays closed."
+    headline: "that content stays closed."
   },
   blocklist: {
     kind: [
-      "You put this site on your blocklist for a reason. The reason hasn't changed. Only the urge has.",
-      "Habit brought you here, not intention. Let's point that energy somewhere real.",
-      "Right now is where the new habit gets built. One closed tab at a time."
+      "you put this site on your blocklist for a reason. the reason hasn't changed. only the urge has.",
+      "habit brought you here, not intention. let's point that energy somewhere real.",
+      "right now is where the new habit gets built. one closed tab at a time."
     ],
     tough: [
-      "You blocked this yourself. Past you doesn't trust this moment, and past you was right.",
-      "Muscle memory typed that URL. You don't actually want to be here.",
-      "Nope. You have things to do and this isn't one of them."
+      "you blocked this yourself. past you doesn't trust this moment, and past you was right.",
+      "muscle memory typed that URL. you don't actually want to be here.",
+      "nope. you have things to do and this isn't one of them."
     ],
-    headline: "This isn't the way."
+    headline: "this isn't it."
   }
 };
 
@@ -133,16 +133,16 @@ const LINES = {
 // don't feel canned.
 const WRONG_LINES = {
   kind: [
-    "Not quite — it has to be word for word. I'll wait.",
-    "Close. But the deal is the exact sentence.",
-    "Almost. Slow down and try once more.",
-    "Still not it. Maybe that's a sign worth listening to."
+    "not quite — it has to be word for word. i'll wait.",
+    "close. but the deal is the exact sentence.",
+    "almost. slow down and try once more.",
+    "still not it. maybe that's a sign worth listening to."
   ],
   tough: [
-    "Wrong. Type it like you mean it.",
-    "Not it. The sentence can tell when you're skimming.",
-    "Miss. Again, word for word.",
-    "If you can't even type it, you definitely shouldn't unlock it."
+    "wrong. type it like you mean it.",
+    "not it. the sentence can tell when you're skimming.",
+    "miss. again, word for word.",
+    "if you can't even type it, you definitely shouldn't unlock it."
   ]
 };
 let wrongIdx = 0;
@@ -164,11 +164,11 @@ function linePack() {
 }
 
 const PHRASES = [
-  "I am choosing distraction over my own goals right now",
-  "This site matters more to me than my focus today",
-  "I am trading my attention away with open eyes",
-  "I accept that this break is a choice, not an accident",
-  "My future self is watching me make this decision"
+  "i am choosing distraction over my own goals right now",
+  "this site matters more to me than my focus today",
+  "i am trading my attention away with open eyes",
+  "i accept that this break is a choice, not an accident",
+  "my future self is watching me make this decision"
 ];
 
 // ---------------------------------------------------------------------------
@@ -215,19 +215,19 @@ async function init() {
     $("btn-unlock").classList.add("hidden");
     const left = Math.max(1, Math.ceil((Number(detail) - Date.now()) / 60e3));
     const h = Math.floor(left / 60), m = left % 60;
-    $("footnote").textContent = `Lockdown ends in ${h ? h + "h " : ""}${m}m. No unlocks, no exceptions — that's the deal you made with yourself.`;
+    $("footnote").textContent = `lockdown ends in ${h ? h + "h " : ""}${m}m. no unlocks, no exceptions — that's the deal you made with yourself.`;
   } else if (reason === "shorts") {
     $("btn-unlock").classList.add("hidden");
-    $("footnote").textContent = "Short videos can't be unlocked. That's the whole point. A reel or short a friend sends you still opens, just that one.";
+    $("footnote").textContent = "short videos can't be unlocked. that's the whole point. a reel or short a friend sends you still opens — just that one.";
   } else if (reason === "adult") {
     $("btn-unlock").classList.add("hidden");
-    $("footnote").textContent = "This category can't be unlocked.";
+    $("footnote").textContent = "this category can't be unlocked.";
   } else if (dash.focus?.active) {
     $("btn-unlock").classList.add("hidden");
     const mins = Math.max(1, Math.ceil((dash.focus.until - Date.now()) / 60e3));
-    $("footnote").textContent = `Focus session running, ${mins} min to go. Unlocks are paused until it ends.`;
+    $("footnote").textContent = `focus session running, ${mins} min to go. unlocks are paused until it ends.`;
   } else {
-    $("footnote").textContent = `Unlocking takes a ${strict.waitSeconds}s wait and an honest sentence. That's deliberate.`;
+    $("footnote").textContent = `unlocking takes a ${strict.waitSeconds}s wait and a short journal entry. that's deliberate.`;
   }
 }
 
@@ -296,9 +296,9 @@ function startBreath() {
   });
   (async () => {
     while (!stopped) {
-      await phase("Breathe in", [{ transform: "scale(0.55)", opacity: 0.55 }, { transform: "scale(1.05)", opacity: 1 }], 4000);
-      await phase("Hold", null, 4000);
-      await phase("Breathe out", [{ transform: "scale(1.05)", opacity: 1 }, { transform: "scale(0.55)", opacity: 0.55 }], 6000);
+      await phase("breathe in", [{ transform: "scale(0.55)", opacity: 0.55 }, { transform: "scale(1.05)", opacity: 1 }], 4000);
+      await phase("hold", null, 4000);
+      await phase("breathe out", [{ transform: "scale(1.05)", opacity: 1 }, { transform: "scale(0.55)", opacity: 0.55 }], 6000);
     }
   })();
   breathStop = () => { stopped = true; };
@@ -359,34 +359,59 @@ function cancelUnlock() {
   $("challenge-input").value = "";
   $("challenge-why").value = "";
   $("challenge-error").classList.add("hidden");
+  updateReady();
 }
 
 $("btn-cancel-wait").addEventListener("click", cancelUnlock);
 $("btn-cancel-challenge").addEventListener("click", cancelUnlock);
 
-// --- Challenge ---
+// --- Challenge: the journal entry is the main event ---------------------
+// You write to future you about why you need this, in at least MIN_WORDS
+// real words. Phrase / math are optional extras on top (set in strictness).
 
-let expected = "";
+const MIN_WORDS = 20;
+let expected = null; // typed phrase/math answer, when that extra is on
+
+// Same bar the background worker enforces: enough words, mostly distinct,
+// and not keyboard mash.
+function journalWords(note) {
+  return String(note || "").toLowerCase().split(/\s+/).filter(w => /[a-z]/i.test(w));
+}
+function journalNoteOk(note) {
+  const words = journalWords(note);
+  if (words.length < MIN_WORDS) return false;
+  if (new Set(words).size < MIN_WORDS / 2) return false;
+  const withVowels = words.filter(w => /[aeiouy]/i.test(w)).length;
+  return withVowels >= words.length * 0.7;
+}
 
 function showChallenge() {
   $("step-wait").classList.add("hidden");
   $("step-challenge").classList.remove("hidden");
 
-  const mode = strict.challenge || "phrase";
+  const mode = strict.challenge || "journal";
   if (mode === "math") {
     const a = 12 + Math.floor(Math.random() * 78);
     const b = 12 + Math.floor(Math.random() * 78);
     expected = String(a * b);
-    $("challenge-prompt").textContent = "Solve this to prove you're acting on purpose, not on autopilot:";
+    $("extra-challenge").classList.remove("hidden");
+    $("challenge-prompt").textContent = "solve this first, then tell future you why you're here:";
     $("challenge-phrase").textContent = `${a} × ${b} = ?`;
-    $("challenge-input").placeholder = "Answer, then press Enter";
-  } else {
+    $("challenge-input").placeholder = "answer";
+  } else if (mode === "phrase") {
     expected = PHRASES[Math.floor(Math.random() * PHRASES.length)];
-    $("challenge-prompt").textContent = "Type this sentence exactly. If it doesn't feel true, close the tab instead.";
+    $("extra-challenge").classList.remove("hidden");
+    $("challenge-prompt").textContent = "type this sentence exactly, then tell future you why you're here:";
     $("challenge-phrase").textContent = expected;
-    $("challenge-input").placeholder = "Type it, then press Enter";
+    $("challenge-input").placeholder = "type it here";
+  } else {
+    expected = null;
+    $("extra-challenge").classList.add("hidden");
+    $("challenge-prompt").textContent =
+      `write future you a note about why you need this — at least ${MIN_WORDS} words. if you can't fill ${MIN_WORDS} words, you probably don't need it.`;
   }
-  $("challenge-input").focus();
+  (expected ? $("challenge-input") : $("challenge-why")).focus();
+  updateReady();
 
   // Hide duration options above the strict max
   document.querySelectorAll("#durations .chip").forEach(c => {
@@ -394,23 +419,42 @@ function showChallenge() {
   });
 }
 
+// Live feedback: the typed answer goes green the moment it matches, the word
+// counter fills up, and the unlock button goes green when the whole case is
+// made. No surprises on submit.
+function updateReady() {
+  const phraseOk = !expected || $("challenge-input").value.trim() === expected;
+  const noteOk = journalNoteOk($("challenge-why").value);
+  $("challenge-input").classList.toggle("match", !!expected && phraseOk);
+
+  const n = journalWords($("challenge-why").value).length;
+  const counter = $("word-count");
+  counter.textContent = noteOk ? `${n} words ✓`
+    : n >= MIN_WORDS ? `${n} words — make them real ones`
+    : `${n} / ${MIN_WORDS} words`;
+  counter.classList.toggle("done", noteOk);
+
+  $("btn-confirm-unlock").classList.toggle("ready", phraseOk && noteOk);
+}
+
 // Errors only show on submit, not while typing.
 $("challenge-input").addEventListener("input", () => {
   $("challenge-error").classList.add("hidden");
+  updateReady();
 });
 $("challenge-input").addEventListener("keydown", e => {
   if (e.key === "Enter") $("challenge-why").focus();
 });
 $("challenge-why").addEventListener("input", () => {
   $("challenge-error").classList.add("hidden");
-});
-$("challenge-why").addEventListener("keydown", e => {
-  if (e.key === "Enter") submitChallenge();
+  updateReady();
 });
 
-// The sentence must be typed, not pasted.
+// The sentence and the journal must be typed, not pasted.
 $("challenge-input").addEventListener("paste", e => e.preventDefault());
 $("challenge-input").addEventListener("drop", e => e.preventDefault());
+$("challenge-why").addEventListener("paste", e => e.preventDefault());
+$("challenge-why").addEventListener("drop", e => e.preventDefault());
 
 document.querySelectorAll("#durations .chip").forEach(chip => {
   chip.addEventListener("click", () => {
@@ -419,28 +463,36 @@ document.querySelectorAll("#durations .chip").forEach(chip => {
   });
 });
 
+function challengeFail(msg, focusEl) {
+  $("challenge-error").textContent = msg;
+  $("challenge-error").classList.remove("hidden");
+  noriWince();
+  if (focusEl) focusEl.focus();
+}
+
 async function submitChallenge() {
-  if ($("challenge-input").value.trim() !== expected) {
-    $("challenge-error").textContent = WRONG_LINES[buddyTone][wrongIdx++ % WRONG_LINES[buddyTone].length];
-    $("challenge-error").classList.remove("hidden");
-    noriWince();
+  if (expected && $("challenge-input").value.trim() !== expected) {
+    challengeFail(WRONG_LINES[buddyTone][wrongIdx++ % WRONG_LINES[buddyTone].length], $("challenge-input"));
     return;
   }
   const note = $("challenge-why").value.trim();
-  if (note.length < 5) {
-    $("challenge-error").textContent = "The journal line is part of the deal. One honest reason, in your own words.";
-    $("challenge-error").classList.remove("hidden");
-    noriWince();
-    $("challenge-why").focus();
+  if (!journalNoteOk(note)) {
+    const words = journalWords(note).length;
+    challengeFail(words < MIN_WORDS
+      ? `that's ${words} word${words === 1 ? "" : "s"}. the deal is ${MIN_WORDS} honest ones — keep going.`
+      : "that doesn't read like a real reason yet. write it like you'd explain it to a friend.",
+      $("challenge-why"));
     return;
   }
   const mins = Number(document.querySelector("#durations .chip.selected")?.dataset.mins || 5);
   const res = await chrome.runtime.sendMessage({ type: "requestUnlock", domain: site, minutes: mins, note });
   if (res?.ok && fromUrl) {
     location.href = fromUrl;
+  } else if (res?.error === "note") {
+    challengeFail("that doesn't read like a real reason yet. write it like you'd explain it to a friend.", $("challenge-why"));
   } else if (res?.error === "focus") {
     cancelUnlock();
-    $("footnote").textContent = "A focus session is running. Unlocks are paused.";
+    $("footnote").textContent = "a focus session is running. unlocks are paused.";
   }
 }
 

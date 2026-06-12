@@ -15,7 +15,13 @@
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "src/background.js",
-    "type": "module"
+    "scripts": ["src/background.js"]
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "north@northfocus.app",
+      "strict_min_version": "121.0"
+    }
   },
   "action": {
     "default_popup": "pages/popup.html",
@@ -43,6 +49,16 @@
     {
       "matches": ["*://www.instagram.com/*", "*://instagram.com/*"],
       "js": ["content/instagram.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["*://www.linkedin.com/*"],
+      "js": ["content/linkedin.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["*://www.twitch.tv/*", "*://twitch.tv/*"],
+      "js": ["content/twitch.js"],
       "run_at": "document_start"
     },
     {

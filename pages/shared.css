@@ -101,7 +101,7 @@ h1, h2, h3 { font-weight: 650; letter-spacing: -0.01em; margin: 0; }
 }
 
 /* Inputs */
-input[type="text"], input[type="number"], input[type="time"], select {
+input[type="text"], input[type="number"], input[type="time"], select, textarea {
   font: 500 14px var(--font);
   background: var(--bg-elev-2);
   color: var(--text);
@@ -111,8 +111,23 @@ input[type="text"], input[type="number"], input[type="time"], select {
   outline: none;
   transition: border-color 0.15s;
 }
-input:focus, select:focus { border-color: var(--accent); }
-input::placeholder { color: var(--text-faint); }
+textarea { line-height: 1.55; resize: vertical; }
+input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+input::placeholder, textarea::placeholder { color: var(--text-faint); }
+
+/* Live "you got it right" feedback on typed challenges */
+input.match, textarea.match { border-color: var(--ok) !important; }
+.btn.primary.ready {
+  background: linear-gradient(135deg, #10b981, #2dd4bf);
+  background-origin: border-box;
+  box-shadow: 0 6px 24px rgba(16, 185, 129, 0.35);
+}
+.btn.primary.ready:hover { box-shadow: 0 8px 32px rgba(16, 185, 129, 0.5); }
+.btn.danger.ready {
+  background: rgba(16, 185, 129, 0.14);
+  color: var(--ok);
+  border-color: rgba(16, 185, 129, 0.4);
+}
 
 /* Toggle switch */
 .switch { position: relative; width: 42px; height: 24px; flex: none; cursor: pointer; }
@@ -143,6 +158,23 @@ input::placeholder { color: var(--text-faint); }
 /* Locked switch: on, and staying that way */
 .switch.locked { cursor: not-allowed; }
 .switch.locked .track { opacity: 0.45; }
+
+/* Marks settings whose undo goes through the wait + challenge */
+.undo-tag {
+  display: inline-block;
+  vertical-align: 1px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #b45309;
+  background: rgba(251, 191, 36, 0.13);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  border-radius: 999px;
+  padding: 3px 9px;
+  margin-left: 8px;
+}
+:root:not([data-theme="light"]) .undo-tag { color: #fcd34d; }
 
 .lock-tag {
   display: inline-block;
