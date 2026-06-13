@@ -27,7 +27,11 @@
 
   const RELATED_CSS = `
     ytd-watch-flexy #secondary ytd-watch-next-secondary-results-renderer,
-    ytd-watch-flexy #related {
+    ytd-watch-flexy #related,
+    /* the wall of "watch next" thumbnails YouTube overlays once a video ends */
+    .html5-endscreen,
+    .ytp-endscreen-content,
+    .ytp-ce-element {
       display: none !important;
     }`;
 
