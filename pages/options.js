@@ -4,7 +4,7 @@ const $ = id => document.getElementById(id);
 let S = null;        // settings (live copy)
 let dash = null;
 
-const SUGGEST_URL = "https://suggest.northfocus.app/";
+const SUGGEST_URL = "https://northfocus.app/suggest.html";
 
 const GATE_PHRASES = [
   "i am deliberately weakening the protection i asked for",
