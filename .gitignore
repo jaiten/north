@@ -1,0 +1,5 @@
+# Generated Chrome Web Store images (regenerate with the scripts in scripts/):
+#   node scripts/create-store-screenshots.js
+#   node scripts/create-ad-screenshots.js
+store-screenshots/
+store-ad-screenshots/
