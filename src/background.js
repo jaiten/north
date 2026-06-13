@@ -312,7 +312,7 @@ function messagesOnlyVerdict(url, settings) {
     const path = u.pathname;
     if (path === "/" || path === "") return { redirect: site.home };
     if (site.allow.some(p => path.startsWith(p))) return null; // allowed
-    return { block: true, site: site.host };
+    return { block: true, site: site.host, home: site.home };
   }
   return null;
 }
@@ -395,7 +395,7 @@ async function evaluate(url, { title = "", tabId = null } = {}) {
   if (!isUnlocked && !shared) {
     const v = messagesOnlyVerdict(url, settings);
     if (v?.redirect) return { reason: "msg-redirect", redirect: v.redirect };
-    if (v?.block) return { reason: "dmonly", site: v.site };
+    if (v?.block) return { reason: "dmonly", site: v.site, detail: v.home };
   }
 
   // 3. Keyword blocking (URL + title).

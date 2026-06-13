@@ -203,6 +203,15 @@ async function init() {
   }
   $("meta").innerHTML = pills.join("");
 
+  // Messages-only blocks leave a door open: a misclick onto the feed shouldn't
+  // strand you. Offer a one-tap return to the part you're still allowed to use
+  // (the inbox), passed through as `detail`.
+  if (reason === "dmonly" && /^https?:\/\//.test(detail)) {
+    $("btn-allowed").classList.remove("hidden");
+    // the inbox is the natural primary action here; demote "somewhere better".
+    $("btn-back").classList.replace("primary", "ghost");
+  }
+
   // Unlock availability
   if (reason === "lockdown") {
     $("btn-unlock").classList.add("hidden");
@@ -239,6 +248,11 @@ $("subline").addEventListener("click", () => {
 // ---------------------------------------------------------------------------
 // "Take me somewhere better": picked at random the moment you click.
 // ---------------------------------------------------------------------------
+
+// Messages-only escape hatch: jump straight to the inbox (the allowed area).
+$("btn-allowed").addEventListener("click", () => {
+  if (/^https?:\/\//.test(detail)) location.href = detail;
+});
 
 $("btn-back").addEventListener("click", () => {
   const places = dash?.settings?.betterPlaces || [];
