@@ -4,7 +4,7 @@ const $ = id => document.getElementById(id);
 let S = null;        // settings (live copy)
 let dash = null;
 
-const FEEDBACK_EMAIL = "jaitenkangis@gmail.com";
+const SUGGEST_URL = "https://suggest.northfocus.app/";
 
 const GATE_PHRASES = [
   "i am deliberately weakening the protection i asked for",
@@ -833,21 +833,11 @@ $("import-file").addEventListener("change", async e => {
 });
 
 // ---------------------------------------------------------------------------
-// Feature requests, by email
+// Feature requests: the suggestion box lives on its own little site now.
 // ---------------------------------------------------------------------------
 
 $("btn-feature").addEventListener("click", () => {
-  const body = [
-    "Hi, I'd like to request a feature for North:",
-    "",
-    "What I want:",
-    "",
-    "Why it would help me:",
-    "",
-    `(North v1.0, sent from the settings page)`
-  ].join("\n");
-  const url = `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent("North feature request")}&body=${encodeURIComponent(body)}`;
-  window.open(url, "_blank");
+  window.open(SUGGEST_URL, "_blank", "noopener");
 });
 
 // ---------------------------------------------------------------------------
