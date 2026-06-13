@@ -44,7 +44,7 @@
     card = document.createElement("div");
     card.id = "north-twitch-home";
     card.innerHTML = `
-      <div class="north-mark">▲</div>
+      <div class="north-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 19 20.5 12 17 5 20.5Z"/></svg></div>
       <h2>watch on purpose</h2>
       <p>North cleared the homepage so it can't pick for you.<br>
       your followed channels are in the sidebar. if no one you follow is live, that might be your answer.</p>
@@ -56,6 +56,7 @@
         #north-twitch-home .north-mark { width: 56px; height: 56px; margin-bottom: 20px;
           display: grid; place-items: center; font-size: 24px; color: #fff;
           border-radius: 16px; background: linear-gradient(135deg,#6366f1,#2dd4bf); }
+        #north-twitch-home .north-mark svg { width: 54%; height: 54%; fill: #fff; }
         #north-twitch-home h2 { font-size: 22px; font-weight: 600; margin: 0 0 10px; }
         #north-twitch-home p { font-size: 14px; line-height: 1.6; opacity: .75; margin: 0; }
       </style>`;

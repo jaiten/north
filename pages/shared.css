@@ -100,6 +100,11 @@ h1, h2, h3 { font-weight: 650; letter-spacing: -0.01em; margin: 0; }
   color: var(--accent-text);
 }
 
+/* Brand mark: the North arrow, white inside its gradient tile. Scales to
+   whatever tile it sits in (logo-mark, brand-mark, north-mark) via %. */
+.north-arrow { width: 54%; height: 54%; fill: currentColor; }
+.north-arrow.inline { width: 1em; height: 1em; vertical-align: -0.14em; }
+
 /* Inputs */
 input[type="text"], input[type="number"], input[type="time"], select, textarea {
   font: 500 14px var(--font);
