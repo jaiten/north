@@ -3,7 +3,7 @@
   "name": "North: Focus & Distraction Blocker",
   "short_name": "North",
   "version": "1.0.0",
-  "description": "Free for life. Blocks Shorts, Reels, TikTok, distracting sites and keywords, with schedules, time limits and an unlock you have to mean.",
+  "description": "Free forever. Blocks Short Form Content, distracting sites and keywords, with schedules, time limits and an unlock you have to mean.",
   "permissions": [
     "storage",
     "tabs",
