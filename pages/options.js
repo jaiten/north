@@ -933,6 +933,7 @@ function renderStats() {
 function handleHash() {
   if (location.hash === "#welcome") {
     history.replaceState(null, "", location.pathname);
+    setWelcomeTheme(S.theme || "light");
     $("welcome-backdrop").classList.remove("hidden");
     return;
   }
@@ -955,10 +956,21 @@ function handleHash() {
   }
 }
 
+// Welcome theme picker: light/dark chips apply live and seed S.theme.
+function setWelcomeTheme(theme) {
+  const t = theme === "dark" ? "dark" : "light";
+  $("wel-light").classList.toggle("selected", t === "light");
+  $("wel-dark").classList.toggle("selected", t === "dark");
+  northApplyTheme(t);
+}
+$("wel-light").addEventListener("click", () => setWelcomeTheme("light"));
+$("wel-dark").addEventListener("click", () => setWelcomeTheme("dark"));
+
 $("wel-apply").addEventListener("click", async () => {
   S.shorts.enabled = $("wel-shorts").checked;
   S.messagesOnly.instagram = $("wel-ig").checked;
   S.strict.enabled = $("wel-strict").checked;
+  S.theme = $("wel-dark").classList.contains("selected") ? "dark" : "light";
   await save();
   render();
   $("welcome-backdrop").classList.add("hidden");
