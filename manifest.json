@@ -62,6 +62,23 @@
       "run_at": "document_start"
     },
     {
+      "matches": [
+        "*://*.nytimes.com/*", "*://*.washingtonpost.com/*", "*://*.theguardian.com/*",
+        "*://*.bbc.com/*", "*://*.bbc.co.uk/*", "*://*.cnn.com/*", "*://*.foxnews.com/*",
+        "*://*.reuters.com/*", "*://*.apnews.com/*", "*://*.bloomberg.com/*",
+        "*://*.forbes.com/*", "*://*.businessinsider.com/*", "*://*.nbcnews.com/*",
+        "*://*.abcnews.go.com/*", "*://*.cbsnews.com/*", "*://*.usatoday.com/*",
+        "*://*.theverge.com/*", "*://*.techcrunch.com/*", "*://*.arstechnica.com/*",
+        "*://*.wired.com/*", "*://*.vox.com/*", "*://*.politico.com/*", "*://*.npr.org/*",
+        "*://*.aljazeera.com/*", "*://*.time.com/*", "*://*.newsweek.com/*",
+        "*://*.thehill.com/*", "*://*.dailymail.co.uk/*", "*://*.telegraph.co.uk/*",
+        "*://*.independent.co.uk/*", "*://*.huffpost.com/*", "*://*.latimes.com/*",
+        "*://*.nypost.com/*", "*://*.cnbc.com/*"
+      ],
+      "js": ["content/news.js"],
+      "run_at": "document_start"
+    },
+    {
       "matches": ["http://*/*", "https://*/*"],
       "js": ["content/global.js"],
       "run_at": "document_idle"

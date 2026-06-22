@@ -259,17 +259,14 @@ function render() {
   $("opt-mo-x").checked = !!S.messagesOnly?.x;
   $("opt-yt-sidebar").checked = S.youtube.hideSidebar !== false;
   $("opt-yt-home").checked = S.youtube.hideHomeFeed;
+  $("opt-yt-calm").checked = S.youtube.calmHomeFeed;
   $("opt-yt-related").checked = S.youtube.hideRelated;
   $("opt-yt-comments").checked = S.youtube.hideComments;
   $("opt-yt-subs").checked = S.youtube.hideSubscriptions;
   $("opt-yt-topic").checked = S.youtube.topicMode;
   $("opt-li-tidy").checked = S.linkedin?.tidyNav !== false;
   $("opt-tw-clean").checked = S.twitch?.cleanHome !== false;
-
-  // Nudges
-  $("opt-buddy").checked = S.buddy.enabled;
-  $("tone-kind").classList.toggle("selected", S.buddy.tone !== "tough");
-  $("tone-tough").classList.toggle("selected", S.buddy.tone === "tough");
+  $("opt-news").checked = !!S.news?.declutter;
 
   // Strict
   $("opt-strict").checked = S.strict.enabled;
@@ -283,15 +280,37 @@ function render() {
   renderLockdown();
 }
 
+const DAYS_SHORT = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+
+// "weekdays" / "weekends" / "every day" when the set matches, else "Mo Tu We".
+function friendlyDays(days) {
+  const key = [...new Set(days)].sort((a, b) => a - b).join(",");
+  if (key === "1,2,3,4,5") return "weekdays";
+  if (key === "0,6") return "weekends";
+  if (key === "0,1,2,3,4,5,6") return "every day";
+  if (!key) return "no days";
+  return key.split(",").map(d => DAYS_SHORT[d]).join(" ");
+}
+
+// "09:00" -> "9am", "17:30" -> "5:30pm".
+function to12h(t) {
+  const [h, m] = (t || "0:00").split(":").map(Number);
+  const ampm = h < 12 ? "am" : "pm";
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return m ? `${h12}:${String(m).padStart(2, "0")}${ampm}` : `${h12}${ampm}`;
+}
+
+function friendlyWindow(w) {
+  return `${friendlyDays(w.days || [])} ${to12h(w.start)}–${to12h(w.end)}`;
+}
+
 function describeSite(site) {
   const dmNote = site.pattern === "instagram.com" ? ", DMs included" : "";
   if (site.mode === "always") return "blocked 24/7" + dmNote;
   if (site.mode === "limit") return `${site.limitMins} min/day budget`;
   if (site.mode === "schedule") {
     if (!site.schedule?.length) return "schedule with no windows yet (never blocked!)";
-    const DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
-    return site.schedule.map(w =>
-      `${(w.days || []).map(d => DAYS[d]).join("")} ${w.start}-${w.end}`).join(" · ");
+    return site.schedule.map(friendlyWindow).join(" · ");
   }
   return "";
 }
@@ -367,7 +386,11 @@ async function addSite(pattern) {
     });
     return;
   }
-  toast(`${p} blocked. misclick? removing it is free for ${SITE_GRACE_MS / 1000}s. after that it takes the ${S.strict?.waitSeconds || 60}s challenge.`);
+  // Drop straight into the editor so choosing always / schedule / limit happens
+  // now, while it's free. Switching to a softer mode within the grace window
+  // skips the challenge — deciding how to block shouldn't cost a wait.
+  openEditor(id);
+  toast(`${p} added. set how to block it. changing your mind is free for ${SITE_GRACE_MS / 1000}s.`);
 }
 
 $("btn-add-site").addEventListener("click", () => { addSite($("add-site-input").value); $("add-site-input").value = ""; });
@@ -400,7 +423,12 @@ function renderEditor() {
   renderWindows();
 }
 
-const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
+const DAY_LABELS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+const DAY_PRESETS = [
+  { label: "weekdays", days: [1, 2, 3, 4, 5] },
+  { label: "weekends", days: [0, 6] },
+  { label: "every day", days: [0, 1, 2, 3, 4, 5, 6] }
+];
 
 function renderWindows() {
   const box = $("windows");
@@ -408,6 +436,24 @@ function renderWindows() {
   (editing.schedule || []).forEach((w, i) => {
     const row = document.createElement("div");
     row.className = "window-row";
+    const dayKey = () => [...new Set(w.days || [])].sort((a, b) => a - b).join(",");
+
+    // Top line: one-click presets, and the remove button pushed to the end.
+    const quick = document.createElement("div");
+    quick.className = "quick";
+    DAY_PRESETS.forEach(p => {
+      const b = document.createElement("button");
+      b.className = "chip" + (dayKey() === p.days.join(",") ? " selected" : "");
+      b.textContent = p.label;
+      b.onclick = () => { w.days = [...p.days]; renderWindows(); };
+      quick.appendChild(b);
+    });
+    const rm = document.createElement("button");
+    rm.className = "rm"; rm.textContent = "✕"; rm.title = "remove this window";
+    rm.onclick = () => { editing.schedule.splice(i, 1); renderWindows(); };
+    quick.appendChild(rm);
+
+    // Middle line: individual day toggles for fine-tuning.
     const days = document.createElement("div");
     days.className = "days";
     DAY_LABELS.forEach((lbl, d) => {
@@ -420,18 +466,21 @@ function renderWindows() {
       };
       days.appendChild(b);
     });
+
+    // Bottom line: the time range, read like a sentence.
+    const time = document.createElement("div");
+    time.className = "time-range";
+    const fromL = document.createElement("span"); fromL.textContent = "from";
     const start = document.createElement("input");
     start.type = "time"; start.value = w.start || "09:00";
     start.onchange = () => { w.start = start.value; };
-    const sep = document.createElement("span");
-    sep.textContent = "to"; sep.style.color = "var(--text-faint)";
+    const sep = document.createElement("span"); sep.textContent = "to";
     const end = document.createElement("input");
     end.type = "time"; end.value = w.end || "17:00";
     end.onchange = () => { w.end = end.value; };
-    const rm = document.createElement("button");
-    rm.className = "rm"; rm.textContent = "✕";
-    rm.onclick = () => { editing.schedule.splice(i, 1); renderWindows(); };
-    row.append(days, start, sep, end, rm);
+    time.append(fromL, start, sep, end);
+
+    row.append(quick, days, time);
     box.appendChild(row);
   });
 }
@@ -467,7 +516,10 @@ $("edit-save").addEventListener("click", async () => {
     toast("saved");
   };
 
-  if (weakening) {
+  // Just-added sites are still in their grace window: picking a softer mode
+  // right after adding is free, same as removing a fresh add is.
+  const inGrace = Date.now() < (graceUntil["site:" + editing.id] || 0);
+  if (weakening && !inGrace) {
     $("edit-backdrop").classList.add("hidden");
     gate(`loosening the rules for ${old.pattern} gives the old habit a way back in.`, commit);
   } else {
@@ -601,6 +653,7 @@ $("opt-shorts-shared").addEventListener("change", async e => {
 // YouTube / LinkedIn / Twitch cleanups are quality-of-life, no gate.
 $("opt-yt-sidebar").addEventListener("change", async e => { S.youtube.hideSidebar = e.target.checked; await save(); });
 $("opt-yt-home").addEventListener("change", async e => { S.youtube.hideHomeFeed = e.target.checked; await save(); });
+$("opt-yt-calm").addEventListener("change", async e => { S.youtube.calmHomeFeed = e.target.checked; await save(); });
 $("opt-yt-related").addEventListener("change", async e => { S.youtube.hideRelated = e.target.checked; await save(); });
 $("opt-yt-comments").addEventListener("change", async e => { S.youtube.hideComments = e.target.checked; await save(); });
 $("opt-yt-subs").addEventListener("change", async e => { S.youtube.hideSubscriptions = e.target.checked; await save(); });
@@ -621,6 +674,24 @@ $("opt-tw-clean").addEventListener("change", async e => {
   S.twitch.cleanHome = e.target.checked;
   await save();
 });
+$("opt-news").addEventListener("change", async e => {
+  S.news = S.news || {};
+  S.news.declutter = e.target.checked;
+  await save();
+});
+
+// One click sets the YouTube switches most people end up wanting: a quiet
+// home, no related-video rabbit hole, no comment threads, no subs feed.
+$("btn-yt-suggested").addEventListener("click", async () => {
+  S.youtube.hideSidebar = true;
+  S.youtube.calmHomeFeed = true;
+  S.youtube.hideRelated = true;
+  S.youtube.hideSubscriptions = true;
+  S.youtube.hideComments = true;
+  await save();
+  render();
+  toast("applied North's suggested YouTube setup. tweak any switch you like.");
+});
 
 // Theme toggle — cosmetic, no gate.
 $("btn-theme").addEventListener("click", async () => {
@@ -628,11 +699,6 @@ $("btn-theme").addEventListener("click", async () => {
   await save();
   render();
 });
-
-// Nudges
-$("opt-buddy").addEventListener("change", async e => { S.buddy.enabled = e.target.checked; await save(); });
-$("tone-kind").addEventListener("click", async () => { S.buddy.tone = "kind"; await save(); render(); });
-$("tone-tough").addEventListener("click", async () => { S.buddy.tone = "tough"; await save(); render(); });
 
 // Strict tuning. Lowering the wait or extending unlocks is a weakening.
 $("opt-wait").addEventListener("change", async e => {

@@ -28,6 +28,7 @@ const DEFAULT_SETTINGS = {
   // Lighter cleanups: trim the bait without blocking the site
   linkedin: { tidyNav: true },     // hide Home + My Network in the navbar
   twitch: { cleanHome: true },     // calm front page, no recommended channels
+  news: { declutter: false },      // strip recommended/trending rails on news outlets
   lockdownAllow: [],          // the only sites reachable during a lockdown
   adultBlock: true,           // category block, always on — enforced in saveSettings and evaluate
   keywords: [],               // blocked keywords (URL + page title)
@@ -36,6 +37,7 @@ const DEFAULT_SETTINGS = {
     hideSidebar: true,        // the whole left rail; search stays, direct URLs still work
     hideExplore: true,        // legacy: sidebar Movies & TV, Music, Live links (when sidebar shown)
     hideHomeFeed: false,
+    calmHomeFeed: false,      // keep only the first 3 recs, drop the chip bar, shrink thumbnails
     hideRelated: false,
     hideComments: false,
     hideSubscriptions: false,

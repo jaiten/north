@@ -25,6 +25,21 @@
       display: none !important;
     }`;
 
+  // A softer alternative to hiding the home feed: keep just the first three
+  // recommendations, drop the All / Gaming / Music chip bar, and shrink the
+  // thumbnails so the page stops shouting. Hiding the continuation sentinel
+  // stops infinite scroll from loading a fourth.
+  const CALM_HOME_CSS = `
+    ytd-browse[page-subtype="home"] ytd-feed-filter-chip-bar-renderer { display: none !important; }
+    ytd-browse[page-subtype="home"] ytd-rich-grid-renderer #contents > ytd-rich-item-renderer:nth-of-type(n+4),
+    ytd-browse[page-subtype="home"] ytd-rich-grid-renderer #contents > ytd-rich-section-renderer,
+    ytd-browse[page-subtype="home"] ytd-rich-grid-renderer #contents > ytd-continuation-item-renderer {
+      display: none !important;
+    }
+    ytd-browse[page-subtype="home"] ytd-rich-grid-renderer {
+      --ytd-rich-grid-items-per-row: 5 !important;
+    }`;
+
   const RELATED_CSS = `
     ytd-watch-flexy #secondary ytd-watch-next-secondary-results-renderer,
     ytd-watch-flexy #related,
@@ -82,6 +97,7 @@
     let css = "";
     if (settings.shorts?.enabled || settings.youtube?.blockShorts) css += SHORTS_CSS;
     if (settings.youtube?.hideHomeFeed) css += HOME_FEED_CSS;
+    else if (settings.youtube?.calmHomeFeed) css += CALM_HOME_CSS;
     if (settings.youtube?.hideRelated) css += RELATED_CSS;
     if (settings.youtube?.hideComments) css += COMMENTS_CSS;
     if (settings.youtube?.hideSubscriptions) css += SUBS_CSS;

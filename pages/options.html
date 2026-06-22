@@ -21,17 +21,18 @@
       </div>
 
       <nav>
-        <p class="nav-label">blocking</p>
+        <p class="nav-label">block</p>
         <button class="nav-item active" data-section="blocklist">sites</button>
         <button class="nav-item" data-section="shorts">short videos</button>
-        <button class="nav-item" data-section="social">social media</button>
-        <button class="nav-item" data-section="youtube">youtube</button>
         <button class="nav-item" data-section="keywords">filters</button>
-        <p class="nav-label">discipline</p>
+        <p class="nav-label">declutter</p>
+        <button class="nav-item" data-section="youtube">youtube</button>
+        <button class="nav-item" data-section="social">social media</button>
+        <button class="nav-item" data-section="news">news</button>
+        <p class="nav-label">commit</p>
         <button class="nav-item" data-section="strict">strictness</button>
         <button class="nav-item" data-section="lockdown">lockdown</button>
-        <p class="nav-label">you</p>
-        <button class="nav-item" data-section="buddy">nudges</button>
+        <p class="nav-label">review</p>
         <button class="nav-item" data-section="stats">progress</button>
         <button class="nav-item" data-section="more">more</button>
       </nav>
@@ -164,20 +165,45 @@
         </div>
       </section>
 
+      <!-- ================= News ================= -->
+      <section class="section" id="sec-news">
+        <h1>news</h1>
+        <p class="lede">read the article you came for, not the ten the page wants you to read next.</p>
+        <div class="setting-card">
+          <div class="setting-row">
+            <div>
+              <h3>calm news outlets</h3>
+              <p>on major news sites, North strips the noise around the story: "recommended for you", trending and most-read rails, "more from", and the Taboola / Outbrain chum boxes at the bottom. the article, the search and the sections stay. flips back anytime, no challenge.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="opt-news"><span class="track"></span></label>
+          </div>
+          <p class="hint">covers the big outlets: NYT, the Guardian, BBC, CNN, the Post, Reuters, the Verge, and dozens more. if a site you read isn't calmed, the suggestion box under "more" is the place to name it.</p>
+        </div>
+      </section>
+
       <!-- ================= YouTube ================= -->
       <section class="section" id="sec-youtube">
         <h1>youtube</h1>
         <p class="lede">keep the useful parts. lose the parts that keep you there. Shorts are handled under short videos.</p>
 
         <div class="setting-card">
-          <h3 class="card-title">focus tools</h3>
-          <p class="card-sub">each switch trims one hook.</p>
+          <div class="card-head">
+            <div>
+              <h3 class="card-title">focus tools</h3>
+              <p class="card-sub">each switch trims one hook.</p>
+            </div>
+            <button class="btn ghost small" id="btn-yt-suggested">use suggested settings</button>
+          </div>
           <div class="setting-row sub-row" style="border-top:none;margin-top:0;padding-top:6px">
             <div><h3>hide the sidebar</h3><p>the whole left rail goes: home shortcuts, explore, the channel list. the search bar stays. your history, liked videos and playlists still open by URL or from your profile menu.</p></div>
             <label class="switch"><input type="checkbox" id="opt-yt-sidebar"><span class="track"></span></label>
           </div>
           <div class="setting-row sub-row">
-            <div><h3>hide the home feed</h3><p>replaces recommendations with a calm prompt to search with intention.</p></div>
+            <div><h3>calm the home feed</h3><p>the gentle option: keeps just the first three recommendations, drops the All / Gaming / Music chip bar, and shrinks the thumbnails so the page stops shouting. ignored if you hide the feed entirely below.</p></div>
+            <label class="switch"><input type="checkbox" id="opt-yt-calm"><span class="track"></span></label>
+          </div>
+          <div class="setting-row sub-row">
+            <div><h3>hide the home feed</h3><p>the strict option: replaces recommendations entirely with a calm prompt to search with intention. overrides "calm the home feed" above.</p></div>
             <label class="switch"><input type="checkbox" id="opt-yt-home"><span class="track"></span></label>
           </div>
           <div class="setting-row sub-row">
@@ -246,36 +272,6 @@
         </div>
       </section>
 
-      <!-- ================= Nudges ================= -->
-      <section class="section" id="sec-buddy">
-        <h1>nudges</h1>
-        <p class="lede">North talks back a little: a line on every block page, a heads-up when a budget runs low, a note when a session ends. tune it or turn it off.</p>
-        <div class="setting-card">
-          <div class="setting-row">
-            <div><h3>nudges on</h3><p>messages on the block page, warnings when limits run low, a note when a focus session or lockdown ends.</p></div>
-            <label class="switch"><input type="checkbox" id="opt-buddy"><span class="track"></span></label>
-          </div>
-          <div class="setting-row sub-row">
-            <div><h3>tone</h3><p>gentle keeps it warm. direct doesn't sugarcoat.</p></div>
-            <div class="seg">
-              <button class="chip" data-tone="kind" id="tone-kind">gentle</button>
-              <button class="chip" data-tone="tough" id="tone-tough">direct</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="setting-card">
-          <h3 class="card-title">"take me somewhere better"</h3>
-          <p class="card-sub">the block page's escape hatch sends you to one of these, picked at random each time. make them places you actually grow in.</p>
-          <div class="kw-add">
-            <input type="text" id="bp-label" placeholder="label, like practice piano theory">
-            <input type="text" id="bp-url" placeholder="https://…">
-            <button class="btn primary small" id="btn-add-bp">add</button>
-          </div>
-          <div id="bp-list"></div>
-        </div>
-      </section>
-
       <!-- ================= Strictness ================= -->
       <section class="section" id="sec-strict">
         <h1>strictness</h1>
@@ -297,9 +293,9 @@
           <div class="setting-row sub-row">
             <div><h3>unlock challenge</h3><p>every unlock requires a 20-word journal entry to future you. you can stack a second step on top.</p></div>
             <select id="opt-challenge">
-              <option value="journal">journal entry only</option>
-              <option value="phrase">journal + typed reflection sentence</option>
-              <option value="math">journal + a multiplication</option>
+              <option value="journal">journal only</option>
+              <option value="phrase">journal + sentence</option>
+              <option value="math">journal + math</option>
             </select>
           </div>
           <div class="setting-row sub-row">
@@ -378,6 +374,17 @@
       <section class="section" id="sec-more">
         <h1>more</h1>
         <p class="lede">backups, requests, and the honest fine print.</p>
+
+        <div class="setting-card">
+          <h3 class="card-title">"take me somewhere better"</h3>
+          <p class="card-sub">the block page's escape hatch sends you to one of these, picked at random each time. make them places you actually grow in.</p>
+          <div class="kw-add">
+            <input type="text" id="bp-label" placeholder="label, like practice piano theory">
+            <input type="text" id="bp-url" placeholder="https://…">
+            <button class="btn primary small" id="btn-add-bp">add</button>
+          </div>
+          <div id="bp-list"></div>
+        </div>
 
         <div class="setting-card">
           <h3 class="card-title">backup &amp; restore</h3>
@@ -494,7 +501,7 @@
       </label>
       <label class="welcome-opt">
         <input type="checkbox" id="wel-strict" checked>
-        <div><strong>strict mode <span class="undo-tag">hard to undo</span></strong><span>weakening any protection takes a wait and a typed challenge.</span></div>
+        <div><strong>strict mode <span class="undo-tag">hard to undo</span></strong><span>weakening any protection takes a 60-second breathing wait, then a typed challenge.</span></div>
       </label>
       <div class="welcome-theme">
         <span>and how should North look?</span>

@@ -14,10 +14,11 @@
     messagesOnly: { instagram: true, linkedin: false, facebook: false, x: true },
     linkedin: { tidyNav: true },
     twitch: { cleanHome: true },
+    news: { declutter: true },
     lockdownAllow: ["docs.google.com", "wikipedia.org", "khanacademy.org"],
     adultBlock: true,
     keywords: ["celebrity gossip", "drama"],
-    youtube: { blockShorts: true, hideSidebar: true, hideExplore: true, hideHomeFeed: true, hideRelated: false, hideComments: false, hideSubscriptions: false, titleKeywords: ["reaction", "gone wrong"], topicMode: true, allowedKeywords: ["guitar", "python", "calculus"] },
+    youtube: { blockShorts: true, hideSidebar: true, hideExplore: true, hideHomeFeed: false, calmHomeFeed: true, hideRelated: false, hideComments: false, hideSubscriptions: false, titleKeywords: ["reaction", "gone wrong"], topicMode: true, allowedKeywords: ["guitar", "python", "calculus"] },
     betterPlaces: [
       { label: "Learn something on Khan Academy", url: "https://www.khanacademy.org" },
       { label: "A random Wikipedia article", url: "https://en.wikipedia.org/wiki/Special:Random" },
