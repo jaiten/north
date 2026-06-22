@@ -287,7 +287,8 @@ const MESSAGES_ONLY = {
   linkedin: {
     host: "linkedin.com",
     home: "https://www.linkedin.com/messaging/",
-    allow: ["/messaging", "/jobs", "/job", "/login", "/checkpoint", "/uas",
+    allow: ["/messaging", "/jobs", "/job", "/my-items/saved-jobs",
+      "/login", "/checkpoint", "/uas",
       "/authwall", "/psettings", "/mypreferences", "/legal", "/help"]
   },
   facebook: {
