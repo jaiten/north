@@ -431,6 +431,36 @@ h1 { font-size: 26px; margin-bottom: 6px; }
 }
 .welcome-theme > span { font-size: 13.5px; font-weight: 600; }
 
+/* The wait slider on the welcome screen. Same shape as .welcome-theme, but the
+   slider needs the full column width the range-field expects. */
+.welcome-wait {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  text-align: left;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 13px 16px;
+  margin-bottom: 10px;
+  transition: opacity 0.2s var(--ease);
+}
+.welcome-wait strong { display: block; font-size: 13.5px; }
+.welcome-wait .range-field { width: 190px; }
+.welcome-wait > div:first-child span { font-size: 12px; color: var(--text-faint); }
+/* Strict mode off means the wait never runs; show that rather than hiding it. */
+.welcome-wait.dim { opacity: 0.45; }
+.welcome-wait.dim .range { pointer-events: none; }
+
+/* A protection holding an unspent one-time reversal. Reads as an allowance
+   rather than a warning, so it needs the opposite colour to .undo-tag. */
+.undo-tag.free-tag {
+  color: var(--ok);
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.38);
+}
+
 .phrase {
   font-size: 14.5px; font-weight: 600;
   background: var(--bg-elev-2);

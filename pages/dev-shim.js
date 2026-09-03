@@ -9,6 +9,7 @@
     enabled: true,
     theme: "light",
     strict: { enabled: true, waitSeconds: 10, challenge: "journal", maxUnlockMinutes: 15 },
+    freeUndoUsed: {},
     buddy: { enabled: true, tone: "kind" },
     shorts: { enabled: true, blockTikTokEntirely: true, allowSharedLinks: true },
     messagesOnly: { instagram: true, linkedin: false, facebook: false, x: true },

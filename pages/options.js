@@ -297,6 +297,16 @@ function render() {
   $("opt-tw-clean").checked = S.twitch?.cleanHome !== false;
   $("opt-news").checked = !!S.news?.declutter;
 
+  // Protections carrying an unspent one-time reversal say so, so the pass is
+  // discoverable from the row rather than only from a toast.
+  for (const elId of Object.keys(FREE_FIRST_UNDO)) {
+    const tag = $("tag-" + elId.replace(/^opt-/, ""));
+    if (!tag) continue;
+    const free = freeUndoAvailable(elId);
+    tag.textContent = free ? "One free undo" : "Hard to undo";
+    tag.classList.toggle("free-tag", free);
+  }
+
   // Strict
   $("opt-strict").checked = S.strict.enabled;
   paintWait(S.strict.waitSeconds);
@@ -633,6 +643,35 @@ const TOGGLE_GRACE_MS = 10000;
 const SITE_GRACE_MS = 30000;
 const graceUntil = {}; // toggle elId / "site:<id>" -> timestamp
 
+// A second, longer-lived allowance: some protections get exactly one free
+// reversal, ever, no timer. These are the ones you can switch on — or accept
+// from the welcome screen — before you know what they do, and where undoing a
+// mistake shouldn't cost a wait you only agreed to in principle.
+//
+// Deliberately NOT on this list:
+//   • master protection and strict mode, which govern the friction itself;
+//   • wait time, which prices every other change;
+//   • sites and keywords, where "the first one" would mean "each of them",
+//     because they're per-item — those keep their misclick grace window;
+//   • short videos and TikTok, which North promises are the hard ones.
+const FREE_FIRST_UNDO = {
+  "opt-mo-instagram": "Instagram messages-only",
+  "opt-mo-linkedin": "LinkedIn messages-only",
+  "opt-mo-facebook": "Facebook messages-only",
+  "opt-mo-x": "X messages-only"
+};
+
+function freeUndoAvailable(elId) {
+  return elId in FREE_FIRST_UNDO && !(S.freeUndoUsed || {})[elId];
+}
+
+/** Spend the one-time pass. Persisted, so it doesn't come back next session. */
+async function spendFreeUndo(elId) {
+  S.freeUndoUsed = S.freeUndoUsed || {};
+  S.freeUndoUsed[elId] = true;
+  await save();
+}
+
 function undoCostNote() {
   return S.strict?.enabled
     ? `undoing it later takes the ${formatWait(S.strict.waitSeconds || 60)} wait and the challenge`
@@ -643,13 +682,26 @@ function bindToggle(elId, get, set, weakenDesc) {
   $(elId).addEventListener("change", async e => {
     const turningOff = !e.target.checked && get();
     const inGrace = Date.now() < (graceUntil[elId] || 0);
+    // Order matters: the misclick window is free and silent, the one-time pass
+    // is free but spent and announced, and everything after that is gated.
+    if (turningOff && weakenDesc && !inGrace && freeUndoAvailable(elId)) {
+      set(false);
+      await spendFreeUndo(elId);
+      render();
+      toast(`${FREE_FIRST_UNDO[elId]} is off. That was your one free reversal for it — turning it off again later takes the wait and the challenge.`);
+      return;
+    }
     if (turningOff && weakenDesc && !inGrace) {
       e.target.checked = true; // revert until the gate passes
       gate(weakenDesc, async () => { set(false); await save(); render(); });
     } else {
       if (e.target.checked) {
         graceUntil[elId] = Date.now() + TOGGLE_GRACE_MS;
-        if (weakenDesc) toast(`On. If that was a misclick, you have ${TOGGLE_GRACE_MS / 1000} seconds to switch it back for free — after that, ${undoCostNote()}.`);
+        if (weakenDesc) {
+          toast(freeUndoAvailable(elId)
+            ? `On. You can switch this one back off once for free, whenever you like — after that, ${undoCostNote()}.`
+            : `On. If that was a misclick, you have ${TOGGLE_GRACE_MS / 1000} seconds to switch it back for free — after that, ${undoCostNote()}.`);
+        }
       } else {
         graceUntil[elId] = 0;
       }
@@ -926,7 +978,11 @@ $("import-file").addEventListener("change", async e => {
     return;
   }
   const applyImport = async () => {
+    // A spent free reversal stays spent: take the union, so importing an older
+    // export can't hand the passes back.
+    const spent = { ...(S.freeUndoUsed || {}), ...(incoming.freeUndoUsed || {}) };
     S = incoming;
+    S.freeUndoUsed = spent;
     await save();
     render();
     toast("Settings imported.");
@@ -1030,6 +1086,8 @@ function handleHash() {
   if (location.hash === "#welcome") {
     history.replaceState(null, "", location.pathname);
     setWelcomeTheme(S.theme || "light");
+    $("wel-wait").value = String(S.strict.waitSeconds || 60);
+    paintWelcomeWait(Number($("wel-wait").value));
     $("welcome-backdrop").classList.remove("hidden");
     return;
   }
@@ -1062,10 +1120,27 @@ function setWelcomeTheme(theme) {
 $("wel-light").addEventListener("click", () => setWelcomeTheme("light"));
 $("wel-dark").addEventListener("click", () => setWelcomeTheme("dark"));
 
+// Welcome-screen wait slider. Nothing is committed yet, so this one is free in
+// both directions — it's the only place the wait can be shortened without the
+// challenge, because there is no protection to weaken until "Start with these".
+function paintWelcomeWait(sec) {
+  const el = $("wel-wait");
+  el.style.setProperty("--fill", `${((sec - WAIT_MIN) / (WAIT_MAX - WAIT_MIN)) * 100}%`);
+  $("wel-wait-value").textContent = formatWait(sec);
+  // The strict-mode blurb above quotes this number, so keep the two in step.
+  $("wel-strict-wait").textContent = formatWait(sec);
+}
+$("wel-wait").addEventListener("input", e => paintWelcomeWait(Number(e.target.value)));
+
+// The wait only applies while strict mode is on; dim it when it isn't.
+$("wel-strict").addEventListener("change", e =>
+  $("wel-wait-row").classList.toggle("dim", !e.target.checked));
+
 $("wel-apply").addEventListener("click", async () => {
   S.shorts.enabled = $("wel-shorts").checked;
   S.messagesOnly.instagram = $("wel-ig").checked;
   S.strict.enabled = $("wel-strict").checked;
+  S.strict.waitSeconds = Number($("wel-wait").value);
   S.theme = $("wel-dark").classList.contains("selected") ? "dark" : "light";
   await save();
   render();

@@ -134,19 +134,19 @@
           <h3 class="card-title">Messages only</h3>
           <p class="card-sub">Each site opens straight to your inbox. Everything else on it stops loading.</p>
           <div class="setting-row sub-row" style="border-top:none;margin-top:0;padding-top:6px">
-            <div><h3>Instagram <span class="undo-tag">Hard to undo</span></h3><p>DMs work fully. The feed, Explore, Reels and profiles are blocked.</p></div>
+            <div><h3>Instagram <span class="undo-tag" id="tag-mo-instagram">Hard to undo</span></h3><p>DMs work fully. The feed, Explore, Reels and profiles are blocked.</p></div>
             <label class="switch"><input type="checkbox" id="opt-mo-instagram"><span class="track"></span></label>
           </div>
           <div class="setting-row sub-row">
-            <div><h3>LinkedIn <span class="undo-tag">Hard to undo</span></h3><p>Messages and job listings stay. The feed goes.</p></div>
+            <div><h3>LinkedIn <span class="undo-tag" id="tag-mo-linkedin">Hard to undo</span></h3><p>Messages and job listings stay. The feed goes.</p></div>
             <label class="switch"><input type="checkbox" id="opt-mo-linkedin"><span class="track"></span></label>
           </div>
           <div class="setting-row sub-row">
-            <div><h3>Facebook <span class="undo-tag">Hard to undo</span></h3><p>facebook.com/messages works; the rest doesn't. messenger.com is never touched.</p></div>
+            <div><h3>Facebook <span class="undo-tag" id="tag-mo-facebook">Hard to undo</span></h3><p>facebook.com/messages works; the rest doesn't. messenger.com is never touched.</p></div>
             <label class="switch"><input type="checkbox" id="opt-mo-facebook"><span class="track"></span></label>
           </div>
           <div class="setting-row sub-row">
-            <div><h3>X / Twitter <span class="undo-tag">Hard to undo</span></h3><p>DMs stay open. The timeline, trends and quote-post threads are gone.</p></div>
+            <div><h3>X / Twitter <span class="undo-tag" id="tag-mo-x">Hard to undo</span></h3><p>DMs stay open. The timeline, trends and quote-post threads are gone.</p></div>
             <label class="switch"><input type="checkbox" id="opt-mo-x"><span class="track"></span></label>
           </div>
         </div>
@@ -497,12 +497,24 @@
       </label>
       <label class="welcome-opt">
         <input type="checkbox" id="wel-ig">
-        <div><strong>Instagram: messages only <span class="undo-tag">Hard to undo</span></strong><span>Keep DMs; close the feed, Explore and Reels.</span></div>
+        <div><strong>Instagram: messages only <span class="undo-tag free-tag">One free undo</span></strong><span>Keep DMs; close the feed, Explore and Reels. You can switch this one back off once for free.</span></div>
       </label>
       <label class="welcome-opt">
         <input type="checkbox" id="wel-strict" checked>
-        <div><strong>Strict mode <span class="undo-tag">Hard to undo</span></strong><span>Weakening any protection takes a 60-second wait, then a typed challenge.</span></div>
+        <div><strong>Strict mode <span class="undo-tag">Hard to undo</span></strong><span>Weakening any protection takes a <span id="wel-strict-wait">60 second</span> wait, then a typed challenge.</span></div>
       </label>
+      <div class="welcome-wait" id="wel-wait-row">
+        <div>
+          <strong>How long should that wait be?</strong>
+          <span>Setting it now is free. Shortening it later takes the challenge.</span>
+        </div>
+        <div class="range-field">
+          <span class="range-value" id="wel-wait-value">60 seconds</span>
+          <input type="range" class="range" id="wel-wait" min="10" max="120" step="5" value="60"
+                 aria-label="Wait time before the unlock challenge">
+          <div class="range-ends"><span>10 sec</span><span>2 min</span></div>
+        </div>
+      </div>
       <div class="welcome-theme">
         <span>How should North look?</span>
         <div class="seg">

@@ -11,8 +11,10 @@ no data leaving your browser.
 ### 🔒 Hard to deactivate, by design
 - Disabling protection, removing a blocked site, raising a limit or loosening a
   schedule all require a **wait timer** followed by a **challenge**. The wait
-  is set on a slider in Settings, anywhere from 10 seconds to 2 minutes, and
-  shortening it is itself a change that takes the challenge. The timer only
+  is set on a slider — first on the welcome screen, then in Settings — anywhere
+  from 10 seconds to 2 minutes. Setting it during onboarding is free, since
+  nothing is protected yet; shortening it afterwards is itself a change that
+  takes the challenge. The timer only
   runs while you're focused on the page; switching tabs, apps or windows
   restarts it from zero.
 - The challenge is the **unlock journal**: at least 20 honest words to your
@@ -20,6 +22,12 @@ no data leaving your browser.
   typed reflection sentence or a multiplication can be stacked on top.
 - Misclicks are cheap: protective toggles get a 10s free undo, fresh site adds
   get 30s, and "hard to undo" tags show exactly which settings cost a challenge.
+- The four messages-only modes additionally carry **one free reversal each**,
+  with no timer and no expiry, because they're the protections people accept
+  before they know what they do. The pass is spent the first time it's used and
+  recorded in settings, so it doesn't return next session (or via an import).
+  Master protection, strict mode, the wait length, short videos, TikTok, and
+  removing sites or keywords never get one.
 - Temporary unlocks are capped (5/10/15/30 min max, configurable) and counted.
   During a focus session, no unlocks at all.
 

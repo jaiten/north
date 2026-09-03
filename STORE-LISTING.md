@@ -35,7 +35,7 @@ What North does:
 
 • Keyword and 18+ blocking. Block pages by what they are about, across every site at once. Adult content is filtered out and can never be unlocked.
 
-• An unlock you have to mean. There is no quick disable. You sit with a breathing timer that only counts while you stay on the page, then write at least 20 honest words to your future self about why you need the site. Pasting is blocked, and keyboard mashing does not count. You set the wait yourself on a slider, from 10 seconds to 2 minutes, and shortening it later takes the same challenge.
+• An unlock you have to mean. There is no quick disable. You sit with a breathing timer that only counts while you stay on the page, then write at least 20 honest words to your future self about why you need the site. Pasting is blocked, and keyboard mashing does not count. You set the wait yourself on a slider when you first install North, anywhere from 10 seconds to 2 minutes, and shortening it later takes the same challenge.
 
 • Progress, counted. Every distraction blocked and every focused minute, recorded honestly.
 

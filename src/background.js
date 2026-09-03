@@ -25,6 +25,11 @@ const DEFAULT_SETTINGS = {
   },
   // Messages-only modes: DMs stay open, the feed disappears (user opts in)
   messagesOnly: { instagram: false, linkedin: false, facebook: false, x: false },
+  // One-time free reversals, keyed by control id. A protection you switched on
+  // before you knew what it did can be switched off once without the wait; the
+  // key is set the moment that pass is spent, and never cleared. Only the
+  // controls in FREE_FIRST_UNDO (options.js) are eligible.
+  freeUndoUsed: {},
   // Lighter cleanups: trim the bait without blocking the site
   linkedin: { tidyNav: true },     // hide Home + My Network in the navbar
   twitch: { cleanHome: true },     // calm front page, no recommended channels
@@ -47,14 +52,14 @@ const DEFAULT_SETTINGS = {
   },
   betterPlaces: [
     { label: "Khan Academy", url: "https://www.khanacademy.org" },
-    { label: "a random Wikipedia article", url: "https://en.wikipedia.org/wiki/Special:Random" },
+    { label: "A random Wikipedia article", url: "https://en.wikipedia.org/wiki/Special:Random" },
     { label: "freeCodeCamp", url: "https://www.freecodecamp.org/learn" },
-    { label: "a free classic book", url: "https://www.gutenberg.org/ebooks/search/?sort_order=downloads" },
+    { label: "A free classic book", url: "https://www.gutenberg.org/ebooks/search/?sort_order=downloads" },
     { label: "Duolingo", url: "https://www.duolingo.com" },
     { label: "MIT OpenCourseWare", url: "https://ocw.mit.edu" },
-    { label: "a TED talk", url: "https://www.ted.com/talks" },
-    { label: "typing practice", url: "https://www.keybr.com" },
-    { label: "a math problem to chew on", url: "https://projecteuler.net/archives" }
+    { label: "A TED talk", url: "https://www.ted.com/talks" },
+    { label: "Typing practice", url: "https://www.keybr.com" },
+    { label: "A maths problem to chew on", url: "https://projecteuler.net/archives" }
   ],
   // Empty on purpose: nothing is blocked until the user chooses it.
   sites: []
