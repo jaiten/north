@@ -48,14 +48,14 @@
           position: fixed; bottom: 28px; right: 28px; z-index: 2147483647;
           display: flex; align-items: center; gap: 12px;
           max-width: 360px; padding: 14px 18px;
-          background: rgba(13, 18, 32, .96); color: #e7ecf5;
-          border: 1px solid rgba(91, 110, 245, .35);
+          background: rgba(31, 25, 19, .97); color: #f2eae0;
+          border: 1px solid rgba(169, 85, 47, .4);
           border-radius: 14px; box-shadow: 0 12px 40px rgba(0,0,0,.45);
           font: 13.5px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
           animation: in .35s cubic-bezier(.2,.9,.3,1.2);
         }
         .orb { flex: 0 0 30px; width: 30px; height: 30px; border-radius: 50%;
-          background: linear-gradient(135deg,#5b6ef5,#2dd4bf);
+          background: linear-gradient(150deg,#c9743f,#a9552f 52%,#8a3f22);
           animation: breathe 3s ease-in-out infinite; }
         .x { margin-left: 4px; cursor: pointer; opacity: .5; font-size: 16px;
           background: none; border: none; color: inherit; }

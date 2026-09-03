@@ -129,7 +129,7 @@ function html(title, body, extraClass = "") {
   .phone:nth-child(1) { left: 24px; top: 34px; --r: -9deg; }
   .phone:nth-child(2) { left: 188px; top: 118px; --r: 8deg; }
   .phone:nth-child(3) { left: 92px; top: 350px; --r: -4deg; }
-  .screen { width: 100%; height: 100%; border-radius: 20px; background: linear-gradient(160deg, #fb7185, #6366f1 62%, #2dd4bf); position: relative; overflow: hidden; }
+  .screen { width: 100%; height: 100%; border-radius: 20px; background: linear-gradient(160deg, #fb7185, #a9552f 62%, #7f9c62); position: relative; overflow: hidden; }
   .screen:before { content: ""; position: absolute; inset: 18px; border-radius: 18px; border: 3px solid rgba(255,255,255,.84); }
   .blocked { position: absolute; inset: 0; display: grid; place-items: center; color: white; font-size: 82px; font-weight: 900; background: rgba(18,23,54,.35); }
   .slash { width: 92px; height: 92px; border-radius: 50%; border: 8px solid white; position: relative; }
@@ -155,10 +155,10 @@ function html(title, body, extraClass = "") {
   .bar i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #5c65f2, #28c4bd); }
   .feed-clean { position: absolute; right: 74px; top: 92px; width: 548px; height: 612px; padding: 30px; }
   .feed-row { display: grid; grid-template-columns: 58px 1fr auto; gap: 16px; align-items: center; padding: 18px 0; border-bottom: 1px solid #e4e8f6; }
-  .avatar { width: 58px; height: 58px; border-radius: 18px; background: linear-gradient(135deg,#5c65f2,#2dd4bf); }
+  .avatar { width: 58px; height: 58px; border-radius: 18px; background: linear-gradient(135deg,#5c65f2,#7f9c62); }
   .feed-row b { display: block; font-size: 18px; }
   .feed-row span { color: #667098; font-size: 15px; font-weight: 750; }
-  .toggle { width: 62px; height: 34px; border-radius: 999px; background: #6366f1; position: relative; }
+  .toggle { width: 62px; height: 34px; border-radius: 999px; background: #a9552f; position: relative; }
   .toggle:after { content: ""; width: 26px; height: 26px; border-radius: 50%; background: white; position: absolute; top: 4px; right: 4px; }
   .clean-banner { margin-top: 24px; padding: 24px; border-radius: 22px; background: linear-gradient(135deg, rgba(92,101,242,.1), rgba(45,212,191,.16)); border: 1px solid rgba(99,102,241,.15); }
   .clean-banner b { display: block; font-size: 26px; margin-bottom: 8px; }

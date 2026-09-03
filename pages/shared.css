@@ -1,65 +1,94 @@
-/* North — shared design system */
+/* ===========================================================================
+   North — design system: "Ground"
+   ---------------------------------------------------------------------------
+   North interrupts a compulsive loop, so the interface has to feel like
+   stepping outside rather than hitting an error. Three rules hold it together:
+
+   1. Warm neutral ground — paper and clay, never glass and neon. The palette
+      is drawn from earth: unbleached paper, fired clay, moss, ochre.
+   2. A serif for the voice, a sans for the machinery. Headlines and the lines
+      North speaks to you are set in a humanist serif; labels, numbers and
+      controls stay sans. You can tell what is talking and what is a button.
+   3. Texture, not glow. A faint grain and a low horizon wash give the page a
+      surface. Nothing pulses, nothing shines.
+   ======================================================================== */
 
 :root {
-  /* Ink-blue ground. Calm, low-chroma, so the accent is the only loud thing. */
-  --bg: #0c1120;
-  --bg-elev: #131a2c;
-  --bg-elev-2: #1b2338;
-  --line: rgba(148, 163, 196, 0.16);
-  --line-strong: rgba(148, 163, 196, 0.32);
-  --text: #e8ecf5;
-  --text-dim: #a2aec5;
-  --text-faint: #6b7893;
-  /* Deep enough that white button text clears 4.5:1 on it, light enough that
-     the focus ring still separates from the dark ground. */
-  --accent: #5566ee;
-  --accent-hover: #6b7bf5;
-  --accent-soft: rgba(91, 110, 245, 0.18);
-  --accent-2: #2dd4bf;
-  --accent-text: #b9c2ff;
-  /* Reserved for the brand mark. Buttons and bars use flat colour so the
-     interface reads as a tool rather than a landing page. */
-  --grad: linear-gradient(135deg, #5b6ef5, #2dd4bf);
-  --danger: #f87171;
-  --danger-soft: rgba(248, 113, 113, 0.14);
-  --ok: #34d399;
-  --warn: #fcd34d;
-  --warn-soft: rgba(251, 191, 36, 0.13);
-  --warn-line: rgba(251, 191, 36, 0.35);
-  --radius: 14px;
+  /* Daylight. Warm paper under morning light. */
+  --bg: #f7f3ec;
+  --bg-elev: #fffdfa;
+  --bg-elev-2: #efe8dd;
+  --line: rgba(74, 58, 44, 0.13);
+  --line-strong: rgba(74, 58, 44, 0.26);
+  --text: #2c2420;
+  --text-dim: #6b5d52;
+  --text-faint: #7a6b5e;
+
+  /* Fired clay: every action North wants you to take. */
+  --accent: #a9552f;
+  --accent-hover: #8e4526;
+  --accent-soft: rgba(169, 85, 47, 0.10);
+  --accent-text: #8e4526;
+  /* Moss: protection holding, time well spent, an answer accepted. */
+  --accent-2: #4a6b3a;
+  --ok: #4a6b3a;
+  --ok-soft: rgba(74, 107, 58, 0.12);
+  /* Ochre marks the settings that cost something to undo. */
+  --warn: #8a6218;
+  --warn-soft: rgba(180, 130, 40, 0.14);
+  --warn-line: rgba(138, 98, 24, 0.32);
+  --danger: #a33a2a;
+  --danger-soft: rgba(163, 58, 42, 0.09);
+
+  /* Reserved for the brand mark alone. */
+  --grad: linear-gradient(150deg, #c9743f, #a9552f 52%, #8a3f22);
+
+  --radius: 16px;
   --radius-sm: 10px;
-  --shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
-  --ring: 0 0 0 3px var(--accent-soft);
+  --shadow-sm: 0 1px 2px rgba(60, 44, 32, 0.07);
+  --shadow: 0 1px 2px rgba(60, 44, 32, 0.06), 0 10px 30px rgba(60, 44, 32, 0.09);
+  --ring: 0 0 0 3px rgba(169, 85, 47, 0.18);
+
+  /* Charter and Iowan Old Style are warm, humanist and already on most
+     machines; Georgia carries Windows. No webfont, so nothing to wait for. */
+  --font-display: Charter, "Bitstream Charter", "Iowan Old Style", ui-serif,
+                  Georgia, "Times New Roman", serif;
   --font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
           Roboto, "Helvetica Neue", Arial, sans-serif;
-  --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+  /* Breath-paced: everything eases out slowly, nothing springs back. */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-/* Daylight theme. Toggled from settings, stored per-device. */
-:root[data-theme="light"] {
-  --bg: #f5f6fb;
-  --bg-elev: #ffffff;
-  --bg-elev-2: #edeff7;
-  --line: rgba(32, 35, 90, 0.11);
-  --line-strong: rgba(32, 35, 90, 0.24);
-  --text: #1b1e3d;
-  --text-dim: #515777;
-  --text-faint: #878cad;
-  --accent: #4f46e5;
-  --accent-hover: #4338ca;
-  --accent-soft: rgba(79, 70, 229, 0.12);
-  --accent-2: #0d9488;
-  --accent-text: #4338ca;
-  --danger: #dc2626;
-  --danger-soft: rgba(220, 38, 38, 0.09);
-  --ok: #0f766e;
-  --warn: #b45309;
-  --warn-soft: rgba(251, 191, 36, 0.16);
-  --warn-line: rgba(180, 83, 9, 0.3);
-  --shadow: 0 12px 40px rgba(60, 60, 140, 0.14);
-  --shadow-sm: 0 1px 4px rgba(32, 35, 90, 0.1);
+/* Dusk. The same room with the lights low — warm brown-black, not blue. */
+:root:not([data-theme="light"]) { color-scheme: dark; }
+:root[data-theme="dark"] {
+  --bg: #17120e;
+  --bg-elev: #1f1913;
+  --bg-elev-2: #2a231b;
+  --line: rgba(226, 208, 186, 0.14);
+  --line-strong: rgba(226, 208, 186, 0.28);
+  --text: #f2eae0;
+  --text-dim: #b6a594;
+  --text-faint: #8c7c6c;
+
+  --accent: #b45c33;
+  --accent-hover: #c86a3e;
+  --accent-soft: rgba(180, 92, 51, 0.20);
+  --accent-text: #e0a179;
+  --accent-2: #86a96b;
+  --ok: #86a96b;
+  --ok-soft: rgba(134, 169, 107, 0.16);
+  --warn: #d9a441;
+  --warn-soft: rgba(217, 164, 65, 0.13);
+  --warn-line: rgba(217, 164, 65, 0.34);
+  --danger: #d9705c;
+  --danger-soft: rgba(217, 112, 92, 0.13);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 12px 34px rgba(0, 0, 0, 0.5);
+  --ring: 0 0 0 3px rgba(180, 92, 51, 0.3);
 }
+:root[data-theme="light"] { color-scheme: light; }
 
 * { box-sizing: border-box; }
 
@@ -74,7 +103,16 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-h1, h2, h3 { font-weight: 650; letter-spacing: -0.015em; margin: 0; line-height: 1.25; }
+/* North's own voice. Slightly loose, because a serif set tight reads urgent. */
+h1, h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  line-height: 1.22;
+  margin: 0;
+}
+/* Row and card titles are labels, not speech — they stay sans. */
+h3 { font-weight: 640; letter-spacing: -0.01em; line-height: 1.3; margin: 0; }
 
 .hidden { display: none !important; }
 
@@ -85,15 +123,15 @@ h1, h2, h3 { font-weight: 650; letter-spacing: -0.015em; margin: 0; line-height:
   border-radius: 8px;
 }
 
-/* Buttons */
+/* Buttons ---------------------------------------------------------------- */
 .btn {
   font: 600 14px/1 var(--font);
   padding: 11px 20px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   border: 1px solid transparent;
   cursor: pointer;
-  transition: background 0.16s var(--ease), border-color 0.16s var(--ease),
-              color 0.16s var(--ease), box-shadow 0.16s var(--ease), opacity 0.16s;
+  transition: background 0.2s var(--ease), border-color 0.2s var(--ease),
+              color 0.2s var(--ease), box-shadow 0.2s var(--ease), opacity 0.2s;
 }
 .btn:active { transform: translateY(1px); }
 .btn.primary {
@@ -106,14 +144,14 @@ h1, h2, h3 { font-weight: 650; letter-spacing: -0.015em; margin: 0; line-height:
 .btn.ghost {
   background: transparent;
   color: var(--text-dim);
-  border-color: var(--line);
+  border-color: var(--line-strong);
 }
-.btn.ghost:hover { color: var(--text); border-color: var(--line-strong); background: var(--bg-elev-2); }
+.btn.ghost:hover { color: var(--text); border-color: var(--text-faint); background: var(--bg-elev-2); }
 .btn.danger { background: var(--danger-soft); color: var(--danger); border-color: var(--danger); }
-.btn.danger:hover { background: var(--danger); color: #fff; }
+.btn.danger:hover { background: var(--danger); color: var(--bg-elev); }
 .btn.small { padding: 8px 14px; font-size: 12.5px; border-radius: 8px; }
 
-/* Chips */
+/* Chips ------------------------------------------------------------------ */
 .chip {
   font: 600 12.5px/1 var(--font);
   padding: 8px 14px;
@@ -122,7 +160,7 @@ h1, h2, h3 { font-weight: 650; letter-spacing: -0.015em; margin: 0; line-height:
   background: var(--bg-elev);
   color: var(--text-dim);
   cursor: pointer;
-  transition: background 0.15s var(--ease), border-color 0.15s var(--ease), color 0.15s var(--ease);
+  transition: background 0.18s var(--ease), border-color 0.18s var(--ease), color 0.18s var(--ease);
 }
 .chip:hover { border-color: var(--line-strong); color: var(--text); }
 .chip.selected {
@@ -131,23 +169,23 @@ h1, h2, h3 { font-weight: 650; letter-spacing: -0.015em; margin: 0; line-height:
   color: var(--accent-text);
 }
 
-/* Brand mark: the North arrow, white inside its gradient tile. Scales to
-   whatever tile it sits in (logo-mark, brand-mark, north-mark) via %. */
+/* Brand mark: the North arrow, white inside its clay tile. Scales to whatever
+   tile it sits in (logo-mark, brand-mark, north-mark) via %. */
 .north-arrow { width: 54%; height: 54%; fill: currentColor; }
 .north-arrow.inline { width: 1em; height: 1em; vertical-align: -0.14em; }
 
-/* Inputs */
+/* Inputs ----------------------------------------------------------------- */
 input[type="text"], input[type="number"], input[type="time"], select, textarea {
   font: 500 14px var(--font);
-  background: var(--bg-elev-2);
+  background: var(--bg-elev);
   color: var(--text);
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
   padding: 10px 13px;
   outline: none;
-  transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
+  transition: border-color 0.18s var(--ease), box-shadow 0.18s var(--ease);
 }
-textarea { line-height: 1.55; resize: vertical; }
+textarea { line-height: 1.6; resize: vertical; }
 input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: var(--ring); }
 input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; }
 
@@ -156,19 +194,20 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { outline: non
 select {
   appearance: none;
   -webkit-appearance: none;
-  background-color: var(--bg-elev-2);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238c90af' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a6b5e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 34px;
   cursor: pointer;
 }
+:root[data-theme="dark"] select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238c7c6c' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
 input::placeholder, textarea::placeholder { color: var(--text-faint); }
 
-/* ---------------------------------------------------------------------------
-   Range slider. Styled from scratch in both engines so the track reads as a
-   filled progress bar: --fill is set from script as a 0-100 percentage.
-   --------------------------------------------------------------------------- */
+/* Range slider ------------------------------------------------------------
+   Styled from scratch in both engines so the track reads as a filled bar:
+   --fill is set from script as a 0-100 percentage. */
 .range {
   --fill: 50%;
   -webkit-appearance: none;
@@ -199,28 +238,25 @@ input::placeholder, textarea::placeholder { color: var(--text-faint); }
   width: 18px; height: 18px;
   margin-top: -7px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--bg-elev);
   border: 2px solid var(--accent);
   box-shadow: var(--shadow-sm);
-  transition: transform 0.12s var(--ease), box-shadow 0.15s var(--ease);
+  transition: transform 0.15s var(--ease), box-shadow 0.18s var(--ease);
 }
 .range::-moz-range-thumb {
   width: 18px; height: 18px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--bg-elev);
   border: 2px solid var(--accent);
   box-shadow: var(--shadow-sm);
-  transition: transform 0.12s var(--ease), box-shadow 0.15s var(--ease);
+  transition: transform 0.15s var(--ease), box-shadow 0.18s var(--ease);
 }
 .range:hover::-webkit-slider-thumb { transform: scale(1.12); }
 .range:hover::-moz-range-thumb { transform: scale(1.12); }
-.range:active::-webkit-slider-thumb { box-shadow: var(--ring); }
-.range:active::-moz-range-thumb { box-shadow: var(--ring); }
 .range:focus-visible { outline: none; }
 .range:focus-visible::-webkit-slider-thumb { box-shadow: var(--ring); }
 .range:focus-visible::-moz-range-thumb { box-shadow: var(--ring); }
 
-/* Label + endpoints that sit under a range slider. */
 .range-field { width: 210px; flex: none; }
 .range-value {
   display: block;
@@ -243,23 +279,19 @@ input::placeholder, textarea::placeholder { color: var(--text-faint); }
 /* Live "you got it right" feedback on typed challenges */
 input.match, textarea.match { border-color: var(--ok) !important; }
 .btn.primary.ready { background: var(--ok); }
-.btn.primary.ready:hover { background: var(--ok); filter: brightness(1.08); }
-.btn.danger.ready {
-  background: transparent;
-  color: var(--ok);
-  border-color: var(--ok);
-}
-.btn.danger.ready:hover { background: var(--ok); color: #fff; }
+.btn.primary.ready:hover { background: var(--ok); filter: brightness(0.92); }
+.btn.danger.ready { background: transparent; color: var(--ok); border-color: var(--ok); }
+.btn.danger.ready:hover { background: var(--ok); color: var(--bg-elev); }
 
-/* Toggle switch */
+/* Toggle switch ---------------------------------------------------------- */
 .switch { position: relative; width: 42px; height: 24px; flex: none; cursor: pointer; }
 .switch input { opacity: 0; width: 0; height: 0; }
 .switch .track {
   position: absolute; inset: 0;
   background: var(--bg-elev-2);
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: 999px;
-  transition: background 0.2s var(--ease), border-color 0.2s var(--ease);
+  transition: background 0.22s var(--ease), border-color 0.22s var(--ease);
 }
 .switch .track::after {
   content: "";
@@ -267,88 +299,70 @@ input.match, textarea.match { border-color: var(--ok) !important; }
   width: 18px; height: 18px;
   background: var(--text-faint);
   border-radius: 50%;
-  transition: transform 0.2s var(--ease), background 0.2s var(--ease);
+  transition: transform 0.22s var(--ease), background 0.22s var(--ease);
 }
-.switch input:checked + .track { background: var(--accent); border-color: var(--accent); }
+/* On reads as moss, not clay: a protection holding is an affirmation, and clay
+   is reserved for things you click. */
+.switch input:checked + .track { background: var(--ok); border-color: var(--ok); }
 .switch input:checked + .track::after { transform: translateX(18px); background: #fff; }
 .switch input:focus-visible + .track { box-shadow: var(--ring); }
-
-/* Daylight theme: grey when off, solid indigo when on. These have to outrank
-   the base checked rule above, which they only do because of the theme
-   attribute — so the checked state needs its own light-theme rule too. */
-:root[data-theme="light"] .switch .track { background: #d9dcee; border-color: #c3c7e0; }
-:root[data-theme="light"] .switch .track::after { background: #fff; box-shadow: 0 1px 4px rgba(32, 35, 90, 0.35); }
-:root[data-theme="light"] .switch input:checked + .track { background: var(--accent); border-color: var(--accent); }
+:root[data-theme="dark"] .switch input:checked + .track::after { background: #1f1913; }
 
 /* Locked switch: on, and staying that way */
 .switch.locked { cursor: not-allowed; }
-.switch.locked .track { opacity: 0.45; }
+.switch.locked .track { opacity: 0.5; }
 
-/* Marks settings whose undo goes through the wait + challenge */
-.undo-tag {
+/* Tags ------------------------------------------------------------------- */
+.undo-tag, .lock-tag {
   display: inline-block;
   vertical-align: 1px;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--warn);
-  background: var(--warn-soft);
-  border: 1px solid var(--warn-line);
   border-radius: 999px;
   padding: 2px 8px;
   margin-left: 8px;
 }
+.undo-tag { color: var(--warn); background: var(--warn-soft); border: 1px solid var(--warn-line); }
+.lock-tag { color: var(--text-dim); background: var(--bg-elev-2); border: 1px solid var(--line); }
 
-.lock-tag {
-  display: inline-block;
-  vertical-align: 1px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  background: var(--bg-elev-2);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 2px 8px;
-  margin-left: 8px;
-}
-
-/* Aurora background flourish. Restrained: a wash, not a light show. */
+/* Ground ------------------------------------------------------------------
+   Not a light show. A low horizon wash, warm from above and grounded below,
+   plus a fine grain so the page has a surface rather than a glow. Kept on the
+   .aurora element every page already carries. */
 .aurora {
-  position: fixed; inset: -20%;
+  position: fixed; inset: 0;
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(40% 35% at 25% 20%, rgba(91, 110, 245, 0.12), transparent 70%),
-    radial-gradient(35% 30% at 75% 70%, rgba(45, 212, 191, 0.07), transparent 70%);
-  animation: aurora-drift 30s ease-in-out infinite alternate;
+    radial-gradient(120% 60% at 50% 100%, rgba(150, 110, 70, 0.13), transparent 72%),
+    radial-gradient(90% 50% at 50% -10%, rgba(214, 176, 122, 0.16), transparent 70%);
 }
-@keyframes aurora-drift {
-  from { transform: translate3d(-1.5%, -1%, 0) scale(1); }
-  to   { transform: translate3d(1.5%, 1.5%, 0) scale(1.04); }
+.aurora::after {
+  content: "";
+  position: absolute; inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
-:root[data-theme="light"] .aurora {
+:root[data-theme="dark"] .aurora {
   background:
-    radial-gradient(40% 35% at 25% 20%, rgba(79, 70, 229, 0.08), transparent 70%),
-    radial-gradient(35% 30% at 75% 70%, rgba(45, 212, 191, 0.08), transparent 70%);
+    radial-gradient(120% 60% at 50% 100%, rgba(120, 78, 44, 0.20), transparent 72%),
+    radial-gradient(90% 50% at 50% -10%, rgba(150, 112, 66, 0.13), transparent 70%);
 }
+:root[data-theme="dark"] .aurora::after { opacity: 0.055; }
 
 /* Scrollbars */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--bg-elev-2); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: #263250; }
+::-webkit-scrollbar-thumb:hover { background: var(--line-strong); }
 ::-webkit-scrollbar-track { background: transparent; }
-:root[data-theme="light"] ::-webkit-scrollbar-thumb { background: #d6d9ec; }
-:root[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #bcc0da; }
 
-/* Respect the system setting: keep the interface legible, drop the motion. */
+/* Respect the system setting: keep the interface, drop the motion. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
-  .aurora { animation: none; }
 }

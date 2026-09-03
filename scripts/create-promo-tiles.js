@@ -111,7 +111,7 @@ function doc(width, height, body) {
   .tag {
     display: inline-flex; align-items: center; align-self: flex-start;
     padding: 6px 13px; border-radius: 999px; font-weight: 800;
-    background: rgba(99,102,241,.12); color: #4f46e5; border: 1px solid rgba(99,102,241,.18);
+    background: rgba(99,102,241,.12); color: #8e4526; border: 1px solid rgba(99,102,241,.18);
   }
   h1 { margin: 0; line-height: .98; letter-spacing: -0.01em; font-weight: 850; }
   p { margin: 0; color: #515b88; line-height: 1.34; }

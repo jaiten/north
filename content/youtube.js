@@ -139,7 +139,7 @@
         font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--yt-spec-text-primary, #f1f1f1); }
       #north-yt-placeholder .north-mark { width: 56px; height: 56px; margin: 0 auto 20px;
         display: grid; place-items: center; font-size: 24px; color: #fff;
-        border-radius: 16px; background: linear-gradient(135deg,#5b6ef5,#2dd4bf); }
+        border-radius: 16px; background: linear-gradient(150deg,#c9743f,#a9552f 52%,#8a3f22); }
       #north-yt-placeholder .north-mark svg { width: 54%; height: 54%; fill: #fff; }
       #north-yt-placeholder h2 { font-size: 22px; font-weight: 600; margin: 0 0 10px; }
       #north-yt-placeholder p { font-size: 14px; line-height: 1.6; opacity: .75; margin: 0; }`;
