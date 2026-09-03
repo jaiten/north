@@ -17,7 +17,8 @@ body {
   position: relative;
   z-index: 1;
   width: min(520px, 94vw);
-  background: var(--bg-elev);
+  background-color: var(--bg-elev);
+  background-image: var(--paper-grain-card);
   border: 1px solid var(--line);
   border-radius: 20px;
   box-shadow: var(--shadow);
@@ -122,9 +123,9 @@ h2 { font-size: 22px; margin-bottom: 10px; }
   inset: 12px;
   border-radius: 50%;
   background: radial-gradient(circle at 50% 50%,
-    rgba(169, 85, 47, 0.30) 0%,
-    rgba(169, 85, 47, 0.18) 52%,
-    rgba(169, 85, 47, 0.04) 74%,
+    rgba(53, 107, 82, 0.26) 0%,
+    rgba(53, 107, 82, 0.15) 52%,
+    rgba(53, 107, 82, 0.04) 74%,
     transparent 80%);
   opacity: 0.8;
   transform: scale(0.55);
@@ -132,9 +133,9 @@ h2 { font-size: 22px; margin-bottom: 10px; }
 }
 :root[data-theme="dark"] .breath-orb {
   background: radial-gradient(circle at 50% 50%,
-    rgba(214, 130, 82, 0.34) 0%,
-    rgba(200, 106, 62, 0.20) 52%,
-    rgba(180, 92, 51, 0.05) 74%,
+    rgba(143, 191, 159, 0.30) 0%,
+    rgba(110, 160, 128, 0.18) 52%,
+    rgba(71, 128, 95, 0.05) 74%,
     transparent 80%);
 }
 

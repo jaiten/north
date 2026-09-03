@@ -24,7 +24,9 @@ header {
   box-shadow: var(--shadow-sm);
 }
 .logo-name { font-family: var(--font-display); font-weight: 600; font-size: 17px; }
-.logo-tag { font-size: 11.5px; color: var(--ok); font-weight: 600; }
+/* --accent-2 rather than --ok: in lights out the fill green is deep enough
+   that this 11.5px label would sit under 4.5:1 on the card. */
+.logo-tag { font-size: 11.5px; color: var(--accent-2); font-weight: 600; }
 .logo-tag.off { color: var(--danger); }
 
 .icon-btn {
@@ -40,7 +42,8 @@ header {
 .icon-btn:hover { color: var(--text); border-color: var(--text-faint); background: var(--bg-elev-2); }
 
 .card {
-  background: var(--bg-elev);
+  background-color: var(--bg-elev);
+  background-image: var(--paper-grain-card);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);

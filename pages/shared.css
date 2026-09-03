@@ -1,53 +1,65 @@
 /* ===========================================================================
-   North — design system: "Ground"
+   North — design system: "Paper"
    ---------------------------------------------------------------------------
    North interrupts a compulsive loop, so the interface has to feel like
    stepping outside rather than hitting an error. Three rules hold it together:
 
-   1. Warm neutral ground — paper and clay, never glass and neon. The palette
-      is drawn from earth: unbleached paper, fired clay, moss, ochre.
+   1. One green, on cream. A single soothing pine green carries every action
+      and every protection that is holding; cream carries everything else.
+      Ochre and brick appear only to warn. A single-accent palette is calmer
+      than a coordinated one, and it makes the green mean something.
    2. A serif for the voice, a sans for the machinery. Headlines and the lines
-      North speaks to you are set in a humanist serif; labels, numbers and
-      controls stay sans. You can tell what is talking and what is a button.
-   3. Texture, not glow. A faint grain and a low horizon wash give the page a
-      surface. Nothing pulses, nothing shines.
+      North speaks are set in a humanist serif; labels, numbers and controls
+      stay sans. You can tell what is talking and what is a button.
+   3. The page is a sheet of paper. Not a screen with a noise filter over it:
+      a tonal mottle for the cloudiness real stock has, a fine fibre grain on
+      top, and a soft vignette as though it were lit from above. Nothing
+      glows, nothing drifts.
    ======================================================================== */
 
 :root {
-  /* Daylight. Warm paper under morning light. */
-  --bg: #f7f3ec;
-  --bg-elev: #fffdfa;
-  --bg-elev-2: #efe8dd;
-  --line: rgba(74, 58, 44, 0.13);
-  --line-strong: rgba(74, 58, 44, 0.26);
-  --text: #2c2420;
-  --text-dim: #6b5d52;
-  --text-faint: #7a6b5e;
+  /* Daylight. Cream stock, pine ink. */
+  --bg: #f6f1e5;
+  --bg-elev: #fdfbf4;
+  --bg-elev-2: #ede7d7;
+  --line: rgba(52, 62, 48, 0.14);
+  --line-strong: rgba(52, 62, 48, 0.27);
+  --text: #28302b;
+  --text-dim: #5a6259;
+  --text-faint: #656d63;
 
-  /* Fired clay: every action North wants you to take. */
-  --accent: #a9552f;
-  --accent-hover: #8e4526;
-  --accent-soft: rgba(169, 85, 47, 0.10);
-  --accent-text: #8e4526;
-  /* Moss: protection holding, time well spent, an answer accepted. */
-  --accent-2: #4a6b3a;
-  --ok: #4a6b3a;
-  --ok-soft: rgba(74, 107, 58, 0.12);
-  /* Ochre marks the settings that cost something to undo. */
-  --warn: #8a6218;
-  --warn-soft: rgba(180, 130, 40, 0.14);
-  --warn-line: rgba(138, 98, 24, 0.32);
-  --danger: #a33a2a;
-  --danger-soft: rgba(163, 58, 42, 0.09);
+  /* The one green. Actions, protections holding, anything affirming. */
+  --accent: #356b52;
+  --accent-hover: #2a5642;
+  --accent-soft: rgba(53, 107, 82, 0.10);
+  --accent-text: #2a5642;
+  --accent-2: #356b52;
+  --ok: #356b52;
+  --ok-soft: rgba(53, 107, 82, 0.12);
+  /* Ochre marks what costs something to undo; brick is only ever danger. */
+  --warn: #7a5a1e;
+  --warn-soft: rgba(150, 110, 30, 0.13);
+  --warn-line: rgba(122, 90, 30, 0.32);
+  --danger: #a2402e;
+  --danger-soft: rgba(162, 64, 46, 0.09);
 
   /* Reserved for the brand mark alone. */
-  --grad: linear-gradient(150deg, #c9743f, #a9552f 52%, #8a3f22);
+  --grad: linear-gradient(150deg, #4e8c6a, #356b52 52%, #24503c);
 
   --radius: 16px;
   --radius-sm: 10px;
-  --shadow-sm: 0 1px 2px rgba(60, 44, 32, 0.07);
-  --shadow: 0 1px 2px rgba(60, 44, 32, 0.06), 0 10px 30px rgba(60, 44, 32, 0.09);
-  --ring: 0 0 0 3px rgba(169, 85, 47, 0.18);
+  --shadow-sm: 0 1px 2px rgba(40, 48, 43, 0.07);
+  --shadow: 0 1px 2px rgba(40, 48, 43, 0.06), 0 10px 30px rgba(40, 48, 43, 0.09);
+  --ring: 0 0 0 3px rgba(53, 107, 82, 0.2);
+
+  /* Paper. The mottle is what sells it — uniform noise reads as a filter,
+     while low-frequency cloudiness reads as stock; the grain is the fibre on
+     top. Alpha is baked into each filter (feFuncA slope), so both layer
+     straight over any colour with no blend mode and no stacking surprises. */
+  --paper-mottle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='700'%3E%3Cfilter id='m' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.005' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.13'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='700' height='700' filter='url(%23m)'/%3E%3C/svg%3E");
+  --paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.62' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.11'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+  /* Card stock is the same fibre, dialled back — a sheet laid on the sheet. */
+  --paper-grain-card: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.62' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.07'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
 
   /* Charter and Iowan Old Style are warm, humanist and already on most
      machines; Georgia carries Windows. No webfont, so nothing to wait for. */
@@ -59,34 +71,39 @@
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-/* Dusk. The same room with the lights low — warm brown-black, not blue. */
+/* Lights out. The same green, the lamp off — near-black with a green cast,
+   and cream stays the ink. */
 :root:not([data-theme="light"]) { color-scheme: dark; }
 :root[data-theme="dark"] {
-  --bg: #17120e;
-  --bg-elev: #1f1913;
-  --bg-elev-2: #2a231b;
-  --line: rgba(226, 208, 186, 0.14);
-  --line-strong: rgba(226, 208, 186, 0.28);
-  --text: #f2eae0;
-  --text-dim: #b6a594;
-  --text-faint: #8c7c6c;
+  --bg: #12150f;
+  --bg-elev: #1a1e16;
+  --bg-elev-2: #242a1f;
+  --line: rgba(219, 224, 205, 0.13);
+  --line-strong: rgba(219, 224, 205, 0.26);
+  --text: #ede8d8;
+  --text-dim: #a8ae9c;
+  --text-faint: #7e8676;
 
-  --accent: #b45c33;
-  --accent-hover: #c86a3e;
-  --accent-soft: rgba(180, 92, 51, 0.20);
-  --accent-text: #e0a179;
-  --accent-2: #86a96b;
-  --ok: #86a96b;
-  --ok-soft: rgba(134, 169, 107, 0.16);
-  --warn: #d9a441;
-  --warn-soft: rgba(217, 164, 65, 0.13);
-  --warn-line: rgba(217, 164, 65, 0.34);
-  --danger: #d9705c;
-  --danger-soft: rgba(217, 112, 92, 0.13);
+  /* Lifted just far enough to read on near-black while white text on it still
+     clears 4.5:1. Hover goes deeper rather than lighter, for the same reason. */
+  --accent: #47805f;
+  --accent-hover: #3e7353;
+  --accent-soft: rgba(71, 128, 95, 0.22);
+  --accent-text: #8fbf9f;
+  --accent-2: #8fbf9f;
+  --ok: #47805f;
+  --ok-soft: rgba(71, 128, 95, 0.18);
+  --warn: #d9b36a;
+  --warn-soft: rgba(217, 179, 106, 0.12);
+  --warn-line: rgba(217, 179, 106, 0.32);
+  --danger: #de8272;
+  --danger-soft: rgba(222, 130, 114, 0.12);
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 12px 34px rgba(0, 0, 0, 0.5);
-  --ring: 0 0 0 3px rgba(180, 92, 51, 0.3);
+  --grad: linear-gradient(150deg, #5b9b76, #47805f 52%, #2f5c45);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 34px rgba(0, 0, 0, 0.55);
+  --ring: 0 0 0 3px rgba(71, 128, 95, 0.32);
 }
 :root[data-theme="light"] { color-scheme: light; }
 
@@ -327,30 +344,53 @@ input.match, textarea.match { border-color: var(--ok) !important; }
 .undo-tag { color: var(--warn); background: var(--warn-soft); border: 1px solid var(--warn-line); }
 .lock-tag { color: var(--text-dim); background: var(--bg-elev-2); border: 1px solid var(--line); }
 
-/* Ground ------------------------------------------------------------------
-   Not a light show. A low horizon wash, warm from above and grounded below,
-   plus a fine grain so the page has a surface rather than a glow. Kept on the
-   .aurora element every page already carries. */
+/* The sheet ---------------------------------------------------------------
+   Three layers on the .aurora element every page already carries: a tonal
+   wash, the cloudiness of real stock, and the fibre grain. It sits behind the
+   content (z-index 0), so none of it touches text rendering. */
 .aurora {
   position: fixed; inset: 0;
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(120% 60% at 50% 100%, rgba(150, 110, 70, 0.13), transparent 72%),
-    radial-gradient(90% 50% at 50% -10%, rgba(214, 176, 122, 0.16), transparent 70%);
+    radial-gradient(115% 70% at 50% 0%, rgba(255, 252, 240, 0.7), transparent 62%),
+    radial-gradient(120% 60% at 50% 108%, rgba(88, 104, 78, 0.14), transparent 70%);
 }
+/* Cloudiness, scaled well past its tile so it never reads as a repeat. */
+.aurora::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: var(--paper-mottle);
+  background-size: 1100px 1100px;
+}
+/* Fibre, plus the faint laid lines a felt-finish stock is pressed with. The
+   lines are near-invisible alone; together with the grain they are what stops
+   the page reading as flat colour. */
 .aurora::after {
   content: "";
   position: absolute; inset: 0;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-image:
+    var(--paper-grain),
+    repeating-linear-gradient(0deg,
+      rgba(52, 62, 48, 0.016) 0px, rgba(52, 62, 48, 0.016) 1px,
+      transparent 1px, transparent 4px);
+}
+:root[data-theme="dark"] .aurora::after {
+  background-image:
+    var(--paper-grain),
+    repeating-linear-gradient(0deg,
+      rgba(219, 224, 205, 0.014) 0px, rgba(219, 224, 205, 0.014) 1px,
+      transparent 1px, transparent 4px);
 }
 :root[data-theme="dark"] .aurora {
   background:
-    radial-gradient(120% 60% at 50% 100%, rgba(120, 78, 44, 0.20), transparent 72%),
-    radial-gradient(90% 50% at 50% -10%, rgba(150, 112, 66, 0.13), transparent 70%);
+    radial-gradient(115% 70% at 50% 0%, rgba(126, 148, 112, 0.11), transparent 62%),
+    radial-gradient(120% 60% at 50% 108%, rgba(53, 107, 82, 0.15), transparent 70%);
 }
-:root[data-theme="dark"] .aurora::after { opacity: 0.055; }
+
+/* Any surface that should feel like stock rather than a flat panel. Applied
+   alongside the surface's own background-color, never instead of it. */
+.paper-surface { background-image: var(--paper-grain-card); }
 
 /* Scrollbars */
 ::-webkit-scrollbar { width: 10px; height: 10px; }

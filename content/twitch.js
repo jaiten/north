@@ -55,7 +55,7 @@
           font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #efeff1; }
         #north-twitch-home .north-mark { width: 56px; height: 56px; margin-bottom: 20px;
           display: grid; place-items: center; font-size: 24px; color: #fff;
-          border-radius: 16px; background: linear-gradient(150deg,#c9743f,#a9552f 52%,#8a3f22); }
+          border-radius: 16px; background: linear-gradient(150deg,#4e8c6a,#356b52 52%,#24503c); }
         #north-twitch-home .north-mark svg { width: 54%; height: 54%; fill: #fff; }
         #north-twitch-home h2 { font-size: 22px; font-weight: 600; margin: 0 0 10px; }
         #north-twitch-home p { font-size: 14px; line-height: 1.6; opacity: .75; margin: 0; }
