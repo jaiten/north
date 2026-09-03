@@ -617,7 +617,7 @@ async function enforceLimitsOnActiveTab() {
     const used = await getUsageSecondsToday(site.pattern);
     const leftMin = Math.ceil((site.limitMins * 60 - used) / 60);
     if (leftMin > 0 && leftMin <= 5 && settings.buddy.enabled) {
-      sendNudge(tab.id, `${leftMin} minute${leftMin === 1 ? "" : "s"} left on ${site.pattern} today. make it count, then head back.`);
+      sendNudge(tab.id, `${leftMin} minute${leftMin === 1 ? "" : "s"} left on ${site.pattern} today. Make it count, then head back.`);
     }
   }
 }
@@ -711,7 +711,7 @@ async function completeFocus() {
         type: "basic",
         iconUrl: chrome.runtime.getURL("icons/icon128.png"),
         title: "North: session complete",
-        message: "you stayed the whole way through. that's how momentum gets built, one honest session at a time."
+        message: "You stayed with it the whole way through. That's how momentum gets built — one session at a time."
       });
     }
   }
@@ -758,7 +758,7 @@ async function completeLockdown() {
         type: "basic",
         iconUrl: chrome.runtime.getURL("icons/icon128.png"),
         title: "North: lockdown complete",
-        message: "you held the line for the whole stretch. the internet is yours again. spend it like you mean it."
+        message: "You held the line for the full stretch. The internet is yours again — spend it deliberately."
       });
     }
   }

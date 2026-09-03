@@ -1,39 +1,62 @@
 /* North — shared design system */
 
 :root {
-  --bg: #0b1020;
-  --bg-elev: #11182c;
-  --bg-elev-2: #182138;
-  --line: rgba(148, 163, 196, 0.14);
-  --text: #e7ecf5;
-  --text-dim: #9aa7c0;
-  --text-faint: #5d6b88;
-  --accent: #6366f1;
+  /* Ink-blue ground. Calm, low-chroma, so the accent is the only loud thing. */
+  --bg: #0c1120;
+  --bg-elev: #131a2c;
+  --bg-elev-2: #1b2338;
+  --line: rgba(148, 163, 196, 0.16);
+  --line-strong: rgba(148, 163, 196, 0.32);
+  --text: #e8ecf5;
+  --text-dim: #a2aec5;
+  --text-faint: #6b7893;
+  --accent: #5b6ef5;
+  --accent-hover: #7183ff;
+  --accent-soft: rgba(91, 110, 245, 0.16);
   --accent-2: #2dd4bf;
-  --accent-text: #c7caff;
-  --grad: linear-gradient(135deg, #6366f1, #2dd4bf);
+  --accent-text: #b9c2ff;
+  /* Reserved for the brand mark. Buttons and bars use flat colour so the
+     interface reads as a tool rather than a landing page. */
+  --grad: linear-gradient(135deg, #5b6ef5, #2dd4bf);
   --danger: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.14);
   --ok: #34d399;
-  --radius: 16px;
+  --warn: #fcd34d;
+  --warn-soft: rgba(251, 191, 36, 0.13);
+  --warn-line: rgba(251, 191, 36, 0.35);
+  --radius: 14px;
   --radius-sm: 10px;
-  --shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
-  --font: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+  --shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --ring: 0 0 0 3px var(--accent-soft);
+  --font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, "Helvetica Neue", Arial, sans-serif;
+  --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
 }
 
 /* Daylight theme. Toggled from settings, stored per-device. */
 :root[data-theme="light"] {
-  --bg: #f6f7fd;
+  --bg: #f5f6fb;
   --bg-elev: #ffffff;
-  --bg-elev-2: #eef0fa;
-  --line: rgba(32, 35, 90, 0.12);
-  --text: #20234a;
-  --text-dim: #565b82;
-  --text-faint: #8c90af;
-  --accent-2: #0ea5a0;
-  --accent-text: #4f46e5;
+  --bg-elev-2: #edeff7;
+  --line: rgba(32, 35, 90, 0.11);
+  --line-strong: rgba(32, 35, 90, 0.24);
+  --text: #1b1e3d;
+  --text-dim: #515777;
+  --text-faint: #878cad;
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-soft: rgba(79, 70, 229, 0.12);
+  --accent-2: #0d9488;
+  --accent-text: #4338ca;
   --danger: #dc2626;
+  --danger-soft: rgba(220, 38, 38, 0.09);
   --ok: #0f766e;
-  --shadow: 0 16px 48px rgba(60, 60, 140, 0.16);
+  --warn: #b45309;
+  --warn-soft: rgba(251, 191, 36, 0.16);
+  --warn-line: rgba(180, 83, 9, 0.3);
+  --shadow: 0 12px 40px rgba(60, 60, 140, 0.14);
+  --shadow-sm: 0 1px 4px rgba(32, 35, 90, 0.1);
 }
 
 * { box-sizing: border-box; }
@@ -46,41 +69,47 @@ body {
   font-size: 14px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-h1, h2, h3 { font-weight: 650; letter-spacing: -0.01em; margin: 0; }
+h1, h2, h3 { font-weight: 650; letter-spacing: -0.015em; margin: 0; line-height: 1.25; }
 
 .hidden { display: none !important; }
+
+/* One focus treatment for everything keyboard-reachable. */
+:where(button, input, select, textarea, a, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
 
 /* Buttons */
 .btn {
   font: 600 14px/1 var(--font);
-  padding: 12px 20px;
-  border-radius: 12px;
+  padding: 11px 20px;
+  border-radius: 10px;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: transform 0.12s ease, box-shadow 0.2s ease, background 0.2s ease, opacity 0.2s;
+  transition: background 0.16s var(--ease), border-color 0.16s var(--ease),
+              color 0.16s var(--ease), box-shadow 0.16s var(--ease), opacity 0.16s;
 }
-.btn:active { transform: scale(0.97); }
+.btn:active { transform: translateY(1px); }
 .btn.primary {
-  background: var(--grad);
-  /* Paint the gradient across the border ring too; otherwise it repeats
-     into the 1px transparent border and tints the edge pixels. */
-  background-origin: border-box;
+  background: var(--accent);
   color: #fff;
-  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.35);
+  box-shadow: var(--shadow-sm);
 }
-.btn.primary:hover { box-shadow: 0 8px 32px rgba(99, 102, 241, 0.5); }
-.btn.primary:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+.btn.primary:hover { background: var(--accent-hover); }
+.btn.primary:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
 .btn.ghost {
   background: transparent;
   color: var(--text-dim);
   border-color: var(--line);
 }
-.btn.ghost:hover { color: var(--text); border-color: rgba(148, 163, 196, 0.35); }
-.btn.danger { background: rgba(248, 113, 113, 0.12); color: var(--danger); border-color: rgba(248, 113, 113, 0.3); }
-.btn.danger:hover { background: rgba(248, 113, 113, 0.2); }
-.btn.small { padding: 8px 14px; font-size: 12.5px; border-radius: 9px; }
+.btn.ghost:hover { color: var(--text); border-color: var(--line-strong); background: var(--bg-elev-2); }
+.btn.danger { background: var(--danger-soft); color: var(--danger); border-color: var(--danger); }
+.btn.danger:hover { background: var(--danger); color: #fff; }
+.btn.small { padding: 8px 14px; font-size: 12.5px; border-radius: 8px; }
 
 /* Chips */
 .chip {
@@ -91,11 +120,11 @@ h1, h2, h3 { font-weight: 650; letter-spacing: -0.01em; margin: 0; }
   background: var(--bg-elev);
   color: var(--text-dim);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.15s var(--ease), border-color 0.15s var(--ease), color 0.15s var(--ease);
 }
-.chip:hover { border-color: var(--accent); color: var(--text); }
+.chip:hover { border-color: var(--line-strong); color: var(--text); }
 .chip.selected {
-  background: rgba(99, 102, 241, 0.18);
+  background: var(--accent-soft);
   border-color: var(--accent);
   color: var(--accent-text);
 }
@@ -112,12 +141,13 @@ input[type="text"], input[type="number"], input[type="time"], select, textarea {
   color: var(--text);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  padding: 11px 14px;
+  padding: 10px 13px;
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
 }
 textarea { line-height: 1.55; resize: vertical; }
-input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: var(--ring); }
+input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; }
 
 /* Selects: drop the native arrow for one chevron pinned a fixed distance from
    the right edge, so the control hugs its label instead of leaving an odd gap. */
@@ -133,19 +163,91 @@ select {
 }
 input::placeholder, textarea::placeholder { color: var(--text-faint); }
 
+/* ---------------------------------------------------------------------------
+   Range slider. Styled from scratch in both engines so the track reads as a
+   filled progress bar: --fill is set from script as a 0-100 percentage.
+   --------------------------------------------------------------------------- */
+.range {
+  --fill: 50%;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--accent) var(--fill), var(--bg-elev-2) var(--fill));
+  border: 1px solid var(--line);
+}
+.range::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--line);
+}
+.range::-moz-range-progress { height: 6px; border-radius: 999px; background: var(--accent); }
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px; height: 18px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--accent);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.12s var(--ease), box-shadow 0.15s var(--ease);
+}
+.range::-moz-range-thumb {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--accent);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.12s var(--ease), box-shadow 0.15s var(--ease);
+}
+.range:hover::-webkit-slider-thumb { transform: scale(1.12); }
+.range:hover::-moz-range-thumb { transform: scale(1.12); }
+.range:active::-webkit-slider-thumb { box-shadow: var(--ring); }
+.range:active::-moz-range-thumb { box-shadow: var(--ring); }
+.range:focus-visible { outline: none; }
+.range:focus-visible::-webkit-slider-thumb { box-shadow: var(--ring); }
+.range:focus-visible::-moz-range-thumb { box-shadow: var(--ring); }
+
+/* Label + endpoints that sit under a range slider. */
+.range-field { width: 210px; flex: none; }
+.range-value {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  text-align: right;
+  margin-bottom: 4px;
+}
+.range-ends {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+
 /* Live "you got it right" feedback on typed challenges */
 input.match, textarea.match { border-color: var(--ok) !important; }
-.btn.primary.ready {
-  background: linear-gradient(135deg, #10b981, #2dd4bf);
-  background-origin: border-box;
-  box-shadow: 0 6px 24px rgba(16, 185, 129, 0.35);
-}
-.btn.primary.ready:hover { box-shadow: 0 8px 32px rgba(16, 185, 129, 0.5); }
+.btn.primary.ready { background: var(--ok); }
+.btn.primary.ready:hover { background: var(--ok); filter: brightness(1.08); }
 .btn.danger.ready {
-  background: rgba(16, 185, 129, 0.14);
+  background: transparent;
   color: var(--ok);
-  border-color: rgba(16, 185, 129, 0.4);
+  border-color: var(--ok);
 }
+.btn.danger.ready:hover { background: var(--ok); color: #fff; }
 
 /* Toggle switch */
 .switch { position: relative; width: 42px; height: 24px; flex: none; cursor: pointer; }
@@ -155,7 +257,7 @@ input.match, textarea.match { border-color: var(--ok) !important; }
   background: var(--bg-elev-2);
   border: 1px solid var(--line);
   border-radius: 999px;
-  transition: background 0.2s, border-color 0.2s;
+  transition: background 0.2s var(--ease), border-color 0.2s var(--ease);
 }
 .switch .track::after {
   content: "";
@@ -163,12 +265,15 @@ input.match, textarea.match { border-color: var(--ok) !important; }
   width: 18px; height: 18px;
   background: var(--text-faint);
   border-radius: 50%;
-  transition: transform 0.2s cubic-bezier(0.3, 1.4, 0.5, 1), background 0.2s;
+  transition: transform 0.2s var(--ease), background 0.2s var(--ease);
 }
-.switch input:checked + .track { background: rgba(99, 102, 241, 0.35); border-color: var(--accent); }
+.switch input:checked + .track { background: var(--accent); border-color: var(--accent); }
 .switch input:checked + .track::after { transform: translateX(18px); background: #fff; }
+.switch input:focus-visible + .track { box-shadow: var(--ring); }
 
-/* Daylight theme: iOS-style contrast — grey when off, solid indigo when on */
+/* Daylight theme: grey when off, solid indigo when on. These have to outrank
+   the base checked rule above, which they only do because of the theme
+   attribute — so the checked state needs its own light-theme rule too. */
 :root[data-theme="light"] .switch .track { background: #d9dcee; border-color: #c3c7e0; }
 :root[data-theme="light"] .switch .track::after { background: #fff; box-shadow: 0 1px 4px rgba(32, 35, 90, 0.35); }
 :root[data-theme="light"] .switch input:checked + .track { background: var(--accent); border-color: var(--accent); }
@@ -183,58 +288,65 @@ input.match, textarea.match { border-color: var(--ok) !important; }
   vertical-align: 1px;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #b45309;
-  background: rgba(251, 191, 36, 0.13);
-  border: 1px solid rgba(251, 191, 36, 0.35);
+  color: var(--warn);
+  background: var(--warn-soft);
+  border: 1px solid var(--warn-line);
   border-radius: 999px;
-  padding: 3px 9px;
+  padding: 2px 8px;
   margin-left: 8px;
 }
-:root:not([data-theme="light"]) .undo-tag { color: #fcd34d; }
 
 .lock-tag {
   display: inline-block;
   vertical-align: 1px;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-dim);
   background: var(--bg-elev-2);
   border: 1px solid var(--line);
   border-radius: 999px;
-  padding: 3px 9px;
+  padding: 2px 8px;
   margin-left: 8px;
 }
 
-/* Aurora background flourish */
+/* Aurora background flourish. Restrained: a wash, not a light show. */
 .aurora {
   position: fixed; inset: -20%;
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(40% 35% at 25% 20%, rgba(99, 102, 241, 0.16), transparent 70%),
-    radial-gradient(35% 30% at 75% 70%, rgba(45, 212, 191, 0.10), transparent 70%),
-    radial-gradient(30% 25% at 60% 15%, rgba(168, 85, 247, 0.08), transparent 70%);
-  animation: aurora-drift 24s ease-in-out infinite alternate;
+    radial-gradient(40% 35% at 25% 20%, rgba(91, 110, 245, 0.12), transparent 70%),
+    radial-gradient(35% 30% at 75% 70%, rgba(45, 212, 191, 0.07), transparent 70%);
+  animation: aurora-drift 30s ease-in-out infinite alternate;
 }
 @keyframes aurora-drift {
-  from { transform: translate3d(-2%, -1%, 0) scale(1); }
-  to   { transform: translate3d(2%, 2%, 0) scale(1.06); }
+  from { transform: translate3d(-1.5%, -1%, 0) scale(1); }
+  to   { transform: translate3d(1.5%, 1.5%, 0) scale(1.04); }
 }
 :root[data-theme="light"] .aurora {
   background:
-    radial-gradient(40% 35% at 25% 20%, rgba(255, 196, 86, 0.22), transparent 70%),
-    radial-gradient(35% 30% at 75% 70%, rgba(45, 212, 191, 0.14), transparent 70%),
-    radial-gradient(30% 25% at 60% 15%, rgba(99, 102, 241, 0.10), transparent 70%);
+    radial-gradient(40% 35% at 25% 20%, rgba(79, 70, 229, 0.08), transparent 70%),
+    radial-gradient(35% 30% at 75% 70%, rgba(45, 212, 191, 0.08), transparent 70%);
 }
 
 /* Scrollbars */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--bg-elev-2); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: #233050; }
+::-webkit-scrollbar-thumb:hover { background: #263250; }
 ::-webkit-scrollbar-track { background: transparent; }
 :root[data-theme="light"] ::-webkit-scrollbar-thumb { background: #d6d9ec; }
 :root[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #bcc0da; }
+
+/* Respect the system setting: keep the interface legible, drop the motion. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .aurora { animation: none; }
+}

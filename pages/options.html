@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>North settings</title>
+  <title>North — Settings</title>
   <link rel="stylesheet" href="shared.css">
   <link rel="stylesheet" href="options.css">
 </head>
@@ -16,38 +16,38 @@
         <div class="logo-mark"><svg class="north-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 19 20.5 12 17 5 20.5Z"/></svg></div>
         <div>
           <div class="logo-name">North</div>
-          <div class="logo-tag">free for life</div>
+          <div class="logo-tag">Free for life</div>
         </div>
       </div>
 
       <nav>
-        <p class="nav-label">block</p>
-        <button class="nav-item active" data-section="blocklist">sites</button>
-        <button class="nav-item" data-section="shorts">short videos</button>
-        <button class="nav-item" data-section="keywords">filters</button>
-        <p class="nav-label">declutter</p>
-        <button class="nav-item" data-section="youtube">youtube</button>
-        <button class="nav-item" data-section="social">social media</button>
-        <button class="nav-item" data-section="news">news</button>
-        <p class="nav-label">commit</p>
-        <button class="nav-item" data-section="strict">strictness</button>
-        <button class="nav-item" data-section="lockdown">lockdown</button>
-        <p class="nav-label">review</p>
-        <button class="nav-item" data-section="stats">progress</button>
-        <button class="nav-item" data-section="more">more</button>
+        <p class="nav-label">Block</p>
+        <button class="nav-item active" data-section="blocklist">Sites</button>
+        <button class="nav-item" data-section="shorts">Short videos</button>
+        <button class="nav-item" data-section="keywords">Filters</button>
+        <p class="nav-label">Declutter</p>
+        <button class="nav-item" data-section="youtube">YouTube</button>
+        <button class="nav-item" data-section="social">Social media</button>
+        <button class="nav-item" data-section="news">News</button>
+        <p class="nav-label">Commit</p>
+        <button class="nav-item" data-section="strict">Strictness</button>
+        <button class="nav-item" data-section="lockdown">Lockdown</button>
+        <p class="nav-label">Review</p>
+        <button class="nav-item" data-section="stats">Progress</button>
+        <button class="nav-item" data-section="more">More</button>
       </nav>
 
       <div class="sidebar-foot">
-        <a class="btn ghost small donate" href="https://ko-fi.com/jaiten" target="_blank" rel="noopener">♥ tip jar</a>
-        <button class="btn ghost small" id="btn-theme">switch to dark</button>
+        <a class="btn ghost small donate" href="https://ko-fi.com/jaiten" target="_blank" rel="noopener">♥ Tip jar</a>
+        <button class="btn ghost small" id="btn-theme">Switch to dark</button>
         <div class="master-toggle">
           <label class="switch">
             <input type="checkbox" id="master-enabled" checked>
             <span class="track"></span>
           </label>
-          <span id="master-label">protection on</span>
+          <span id="master-label">Protection on</span>
         </div>
-        <p class="version">North v1.1</p>
+        <p class="version">North v1.3</p>
       </div>
     </aside>
 
@@ -56,70 +56,70 @@
       <div class="banner hidden" id="incognito-banner">
         <div>
           <strong>North isn't covering Incognito windows.</strong>
-          distractions love a side door. allow North in Incognito so the blocks hold everywhere.
+          A blocker with a side door isn't a blocker. Allow North in Incognito so the blocks hold everywhere.
         </div>
-        <button class="btn small primary" id="btn-incognito">open extension settings</button>
+        <button class="btn small primary" id="btn-incognito">Open extension settings</button>
       </div>
 
       <!-- ================= Blocked sites ================= -->
       <section class="section active" id="sec-blocklist">
-        <h1>blocked sites</h1>
-        <p class="lede">each site can be blocked always, on a schedule, or after a daily time budget runs out.</p>
+        <h1>Blocked sites</h1>
+        <p class="lede">Each site can be blocked always, on a schedule, or once a daily time budget runs out.</p>
 
         <div class="add-row">
-          <input type="text" id="add-site-input" placeholder="add a site, like reddit.com">
-          <button class="btn primary" id="btn-add-site">add</button>
+          <input type="text" id="add-site-input" placeholder="Add a site, e.g. reddit.com" aria-label="Add a site to the blocklist">
+          <button class="btn primary" id="btn-add-site">Add</button>
         </div>
         <div class="presets" id="presets">
-          <span class="dur-label">popular:</span>
-          <button class="chip" data-site="reddit.com" title="front page, subreddits and infinite comment threads">Reddit</button>
-          <button class="chip" data-site="youtube.com" title="all of YouTube. for finer control use the youtube tab">YouTube</button>
-          <button class="chip" data-site="twitch.tv" title="live streams that never end. to just calm the homepage, see social media">Twitch</button>
-          <button class="chip" data-site="netflix.com" title="one more episode is never one more episode">Netflix</button>
+          <span class="dur-label">Popular</span>
+          <button class="chip" data-site="reddit.com" title="The front page, subreddits and endless comment threads">Reddit</button>
+          <button class="chip" data-site="youtube.com" title="All of YouTube. For finer control, use the YouTube tab.">YouTube</button>
+          <button class="chip" data-site="twitch.tv" title="Live streams that never end. To just calm the homepage, see Social media.">Twitch</button>
+          <button class="chip" data-site="netflix.com" title="One more episode is rarely one more episode">Netflix</button>
         </div>
         <div class="presets" id="presets-social">
-          <span class="dur-label">socials:</span>
-          <button class="chip" data-site="instagram.com" title="blocks ALL of Instagram, DMs included. to keep DMs, see social media">Instagram</button>
-          <button class="chip" data-site="tiktok.com" title="the whole app, it is all short videos">TikTok</button>
-          <button class="chip" data-site="x.com" title="timeline, trends and arguments with strangers">X / Twitter</button>
-          <button class="chip" data-site="facebook.com" title="the feed, marketplace, groups, all of it">Facebook</button>
-          <button class="chip" data-site="linkedin.com" title="the feed and its hustle theatre">LinkedIn</button>
-          <button class="chip" data-site="snapchat.com" title="stories and Spotlight on the web">Snapchat</button>
+          <span class="dur-label">Social</span>
+          <button class="chip" data-site="instagram.com" title="Blocks all of Instagram, DMs included. To keep DMs, see Social media.">Instagram</button>
+          <button class="chip" data-site="tiktok.com" title="The whole site — it is all short videos">TikTok</button>
+          <button class="chip" data-site="x.com" title="The timeline, trends and arguments with strangers">X / Twitter</button>
+          <button class="chip" data-site="facebook.com" title="The feed, Marketplace, groups, all of it">Facebook</button>
+          <button class="chip" data-site="linkedin.com" title="The feed and everything performed for it">LinkedIn</button>
+          <button class="chip" data-site="snapchat.com" title="Stories and Spotlight on the web">Snapchat</button>
         </div>
         <div class="presets" id="presets-games">
-          <span class="dur-label">games:</span>
-          <button class="chip" data-site="chess.com" title="online chess. one more game becomes ten">Chess.com</button>
-          <button class="chip" data-site="lichess.org" title="free online chess, equally bottomless">Lichess</button>
-          <button class="chip" data-site="colonist.io" title="online Settlers of Catan">Colonist</button>
-          <button class="chip" data-site="poki.com" title="a portal of hundreds of browser games">Poki</button>
-          <button class="chip" data-site="crazygames.com" title="another endless browser game portal">CrazyGames</button>
+          <span class="dur-label">Games</span>
+          <button class="chip" data-site="chess.com" title="Online chess. One more game becomes ten.">Chess.com</button>
+          <button class="chip" data-site="lichess.org" title="Free online chess, equally bottomless">Lichess</button>
+          <button class="chip" data-site="colonist.io" title="Online Settlers of Catan">Colonist</button>
+          <button class="chip" data-site="poki.com" title="A portal of hundreds of browser games">Poki</button>
+          <button class="chip" data-site="crazygames.com" title="Another endless browser-game portal">CrazyGames</button>
           <button class="chip" data-site="roblox.com" title="Roblox games and discovery">Roblox</button>
-          <button class="chip" data-site="store.steampowered.com" title="the Steam store and its daily deals">Steam Store</button>
+          <button class="chip" data-site="store.steampowered.com" title="The Steam store and its daily deals">Steam Store</button>
         </div>
-        <p class="hint" style="margin-bottom:22px">hover a chip to see what gets blocked. removing a fresh add is free for 30 seconds. after that it takes the challenge, so add with intent.</p>
+        <p class="hint" style="margin-bottom:22px">Hover a chip to see what it blocks. Removing a site you just added is free for 30 seconds; after that it takes the challenge, so add with intent.</p>
 
         <div id="site-list"></div>
       </section>
 
       <!-- ================= Short videos ================= -->
       <section class="section" id="sec-shorts">
-        <h1>short videos</h1>
-        <p class="lede">the most engineered-to-addict content on the internet, handled as a category.</p>
+        <h1>Short videos</h1>
+        <p class="lede">The most engineered format on the internet, handled as a single category.</p>
 
         <div class="setting-card">
           <div class="setting-row">
             <div>
-              <h3>block all short videos <span class="undo-tag">hard to undo</span></h3>
-              <p>YouTube Shorts, Instagram Reels, Facebook Reels, Snapchat Spotlight. hidden in feeds and unreachable by URL. <strong>never unlockable.</strong></p>
+              <h3>Block all short videos <span class="undo-tag">Hard to undo</span></h3>
+              <p>YouTube Shorts, Instagram Reels, Facebook Reels and Snapchat Spotlight — hidden in feeds and unreachable by URL. <strong>Never unlockable.</strong></p>
             </div>
             <label class="switch"><input type="checkbox" id="opt-shorts"><span class="track"></span></label>
           </div>
           <div class="setting-row sub-row">
-            <div><h3>treat TikTok as short videos <span class="undo-tag">hard to undo</span></h3><p>blocks tiktok.com entirely.</p></div>
+            <div><h3>Treat TikTok as short videos <span class="undo-tag">Hard to undo</span></h3><p>Blocks tiktok.com entirely.</p></div>
             <label class="switch"><input type="checkbox" id="opt-tiktok"><span class="track"></span></label>
           </div>
           <div class="setting-row sub-row">
-            <div><h3>allow links friends send me</h3><p>a short, reel or post opened from a DM, another app or a pasted link plays. just that one, for 5 minutes, at most one new pass every 10 minutes. swiping to the next is still blocked.</p></div>
+            <div><h3>Allow links people send me</h3><p>A short, reel or post opened from a DM, another app or a pasted link plays — just that one, for five minutes, with at most one new pass every ten minutes. Swiping to the next is still blocked.</p></div>
             <label class="switch"><input type="checkbox" id="opt-shorts-shared"><span class="track"></span></label>
           </div>
         </div>
@@ -127,39 +127,39 @@
 
       <!-- ================= Social media ================= -->
       <section class="section" id="sec-social">
-        <h1>social media</h1>
-        <p class="lede">surgical tools for what happens <em>inside</em> the socials: keep the conversations, lose the feeds, trim the bait. to block a whole site, use the sites tab.</p>
+        <h1>Social media</h1>
+        <p class="lede">Precise control over what happens <em>inside</em> each network: keep the conversations, close the feeds. To block a site outright, use the Sites tab.</p>
 
         <div class="setting-card">
-          <h3 class="card-title">messages only</h3>
-          <p class="card-sub">keep the conversations, lose the feed. each site goes straight to your inbox; everything else on it stops existing.</p>
+          <h3 class="card-title">Messages only</h3>
+          <p class="card-sub">Each site opens straight to your inbox. Everything else on it stops loading.</p>
           <div class="setting-row sub-row" style="border-top:none;margin-top:0;padding-top:6px">
-            <div><h3>Instagram <span class="undo-tag">hard to undo</span></h3><p>DMs work fully. the feed, Explore, Reels and profiles are blocked.</p></div>
+            <div><h3>Instagram <span class="undo-tag">Hard to undo</span></h3><p>DMs work fully. The feed, Explore, Reels and profiles are blocked.</p></div>
             <label class="switch"><input type="checkbox" id="opt-mo-instagram"><span class="track"></span></label>
           </div>
           <div class="setting-row sub-row">
-            <div><h3>LinkedIn <span class="undo-tag">hard to undo</span></h3><p>messages and job listings stay. the feed and its hustle theatre go.</p></div>
+            <div><h3>LinkedIn <span class="undo-tag">Hard to undo</span></h3><p>Messages and job listings stay. The feed goes.</p></div>
             <label class="switch"><input type="checkbox" id="opt-mo-linkedin"><span class="track"></span></label>
           </div>
           <div class="setting-row sub-row">
-            <div><h3>Facebook <span class="undo-tag">hard to undo</span></h3><p>facebook.com/messages works, the rest doesn't. messenger.com is never touched.</p></div>
+            <div><h3>Facebook <span class="undo-tag">Hard to undo</span></h3><p>facebook.com/messages works; the rest doesn't. messenger.com is never touched.</p></div>
             <label class="switch"><input type="checkbox" id="opt-mo-facebook"><span class="track"></span></label>
           </div>
           <div class="setting-row sub-row">
-            <div><h3>X / Twitter <span class="undo-tag">hard to undo</span></h3><p>DMs stay open. the timeline, trends and quote-tweet fights are gone.</p></div>
+            <div><h3>X / Twitter <span class="undo-tag">Hard to undo</span></h3><p>DMs stay open. The timeline, trends and quote-post threads are gone.</p></div>
             <label class="switch"><input type="checkbox" id="opt-mo-x"><span class="track"></span></label>
           </div>
         </div>
 
         <div class="setting-card">
-          <h3 class="card-title">lighter touch</h3>
-          <p class="card-sub">not blocking, just decluttering. these flip back anytime, no challenge.</p>
+          <h3 class="card-title">Lighter touch</h3>
+          <p class="card-sub">Decluttering rather than blocking. These switch back at any time, with no challenge.</p>
           <div class="setting-row sub-row" style="border-top:none;margin-top:0;padding-top:6px">
-            <div><h3>LinkedIn: hide Home &amp; My Network</h3><p>the two navbar buttons that lead to the feed disappear. messaging, jobs and notifications stay where they were.</p></div>
+            <div><h3>LinkedIn: hide Home and My Network</h3><p>The two nav buttons that lead to the feed disappear. Messaging, jobs and notifications stay where they are.</p></div>
             <label class="switch"><input type="checkbox" id="opt-li-tidy"><span class="track"></span></label>
           </div>
           <div class="setting-row sub-row">
-            <div><h3>Twitch: calm it down</h3><p>no front-page carousel, no recommended channels or categories, no Browse, Following or For You tabs, no notification bell. your followed channels in the sidebar and the search bar still work.</p></div>
+            <div><h3>Twitch: calm it down</h3><p>No front-page carousel, no recommended channels or categories, no Browse, Following or For You tabs, no notification bell. Your followed channels in the sidebar and the search bar still work.</p></div>
             <label class="switch"><input type="checkbox" id="opt-tw-clean"><span class="track"></span></label>
           </div>
         </div>
@@ -167,76 +167,76 @@
 
       <!-- ================= News ================= -->
       <section class="section" id="sec-news">
-        <h1>news</h1>
-        <p class="lede">read the article you came for, not the ten the page wants you to read next.</p>
+        <h1>News</h1>
+        <p class="lede">Read the article you came for, not the ten the page lines up next.</p>
         <div class="setting-card">
           <div class="setting-row">
             <div>
-              <h3>calm news outlets</h3>
-              <p>on major news sites, North strips the noise around the story: "recommended for you", trending and most-read rails, "more from", and the Taboola / Outbrain chum boxes at the bottom. the article, the search and the sections stay. flips back anytime, no challenge.</p>
+              <h3>Calm news outlets</h3>
+              <p>On major news sites, North strips the noise around the story: "recommended for you", trending and most-read rails, "more from", and the Taboola and Outbrain modules at the foot of the page. The article, search and sections stay. Switches back at any time, with no challenge.</p>
             </div>
             <label class="switch"><input type="checkbox" id="opt-news"><span class="track"></span></label>
           </div>
-          <p class="hint">covers the big outlets: NYT, the Guardian, BBC, CNN, the Post, Reuters, the Verge, and dozens more. if a site you read isn't calmed, the suggestion box under "more" is the place to name it.</p>
+          <p class="hint">Covers the major outlets: the New York Times, the Guardian, the BBC, CNN, the Washington Post, Reuters, the Verge and dozens more. If a site you read isn't covered, name it in the suggestion box under More.</p>
         </div>
       </section>
 
       <!-- ================= YouTube ================= -->
       <section class="section" id="sec-youtube">
-        <h1>youtube</h1>
-        <p class="lede">keep the useful parts. lose the parts that keep you there. Shorts are handled under short videos.</p>
+        <h1>YouTube</h1>
+        <p class="lede">Keep the useful parts; remove the parts designed to keep you there. Shorts are handled under Short videos.</p>
 
         <div class="setting-card">
           <div class="card-head">
             <div>
-              <h3 class="card-title">focus tools</h3>
-              <p class="card-sub">each switch trims one hook.</p>
+              <h3 class="card-title">Focus tools</h3>
+              <p class="card-sub">Each switch removes one hook.</p>
             </div>
-            <button class="btn ghost small" id="btn-yt-suggested">use suggested settings</button>
+            <button class="btn ghost small" id="btn-yt-suggested">Use suggested settings</button>
           </div>
           <div class="setting-row sub-row" style="border-top:none;margin-top:0;padding-top:6px">
-            <div><h3>hide the sidebar</h3><p>the whole left rail goes: home shortcuts, explore, the channel list. the search bar stays. your history, liked videos and playlists still open by URL or from your profile menu.</p></div>
+            <div><h3>Hide the sidebar</h3><p>The whole left rail goes: home shortcuts, Explore, the channel list. The search bar stays, and your history, liked videos and playlists still open by URL or from the profile menu.</p></div>
             <label class="switch"><input type="checkbox" id="opt-yt-sidebar"><span class="track"></span></label>
           </div>
           <div class="setting-row sub-row">
-            <div><h3>calm the home feed</h3><p>the gentle option: keeps just the first three recommendations, drops the All / Gaming / Music chip bar, and shrinks the thumbnails so the page stops shouting. ignored if you hide the feed entirely below.</p></div>
+            <div><h3>Calm the home feed</h3><p>The gentle option: keeps the first three recommendations, drops the All / Gaming / Music chip bar, and shrinks the thumbnails. Ignored if you hide the feed entirely below.</p></div>
             <label class="switch"><input type="checkbox" id="opt-yt-calm"><span class="track"></span></label>
           </div>
           <div class="setting-row sub-row">
-            <div><h3>hide the home feed</h3><p>the strict option: replaces recommendations entirely with a calm prompt to search with intention. overrides "calm the home feed" above.</p></div>
+            <div><h3>Hide the home feed</h3><p>The strict option: replaces recommendations entirely with a prompt to search deliberately. Overrides "Calm the home feed" above.</p></div>
             <label class="switch"><input type="checkbox" id="opt-yt-home"><span class="track"></span></label>
           </div>
           <div class="setting-row sub-row">
-            <div><h3>hide related videos</h3><p>no "up next" sidebar, and no wall of recommendations when a video ends. nothing pulling you into hour three.</p></div>
+            <div><h3>Hide related videos</h3><p>No "up next" sidebar, and no wall of recommendations when a video ends.</p></div>
             <label class="switch"><input type="checkbox" id="opt-yt-related"><span class="track"></span></label>
           </div>
           <div class="setting-row sub-row">
-            <div><h3>hide comments</h3><p>watch the video, skip the rabbit hole.</p></div>
+            <div><h3>Hide comments</h3><p>Watch the video, skip the thread underneath it.</p></div>
             <label class="switch"><input type="checkbox" id="opt-yt-comments"><span class="track"></span></label>
           </div>
           <div class="setting-row sub-row">
-            <div><h3>hide subscriptions</h3><p>removes the subscriptions feed. if a channel matters, you'll remember it.</p></div>
+            <div><h3>Hide subscriptions</h3><p>Removes the subscriptions feed. If a channel matters to you, you'll remember it.</p></div>
             <label class="switch"><input type="checkbox" id="opt-yt-subs"><span class="track"></span></label>
           </div>
 
           <div class="kw-block">
             <div class="setting-row" style="padding-top:0">
-              <div><h3>topic mode: only what i came for</h3><p>pick the topics you actually want from YouTube, like guitar, coding or workouts. feeds and search results only show videos that match. direct links still open, so a friend's link won't break.</p></div>
+              <div><h3>Topic mode</h3><p>Choose the topics you actually want from YouTube — guitar, coding, workouts. Feeds and search results only show videos that match. Direct links still open, so a link someone sends you won't break.</p></div>
               <label class="switch"><input type="checkbox" id="opt-yt-topic"><span class="track"></span></label>
             </div>
             <div class="kw-add">
-              <input type="text" id="yt-topic-input" placeholder="add a topic, like guitar, python, calculus, workout">
-              <button class="btn small primary" id="btn-yt-topic">add</button>
+              <input type="text" id="yt-topic-input" placeholder="Add a topic, e.g. guitar, python, calculus" aria-label="Add an allowed YouTube topic">
+              <button class="btn small primary" id="btn-yt-topic">Add</button>
             </div>
             <div class="kw-chips" id="yt-topic-chips"></div>
           </div>
 
           <div class="kw-block">
-            <h3>hide videos matching keywords</h3>
-            <p>videos whose title or channel matches get removed from every feed and search. useful for the stuff you can't unsee: vlogs, drama, reaction bait.</p>
+            <h3>Hide videos matching keywords</h3>
+            <p>Videos whose title or channel matches are removed from every feed and search result.</p>
             <div class="kw-add">
-              <input type="text" id="yt-kw-input" placeholder="like vlog, drama, reaction, prank">
-              <button class="btn small primary" id="btn-yt-kw">add</button>
+              <input type="text" id="yt-kw-input" placeholder="e.g. vlog, drama, reaction, prank" aria-label="Add a YouTube keyword to hide">
+              <button class="btn small primary" id="btn-yt-kw">Add</button>
             </div>
             <div class="kw-chips" id="yt-kw-chips"></div>
           </div>
@@ -245,26 +245,26 @@
 
       <!-- ================= Filters ================= -->
       <section class="section" id="sec-keywords">
-        <h1>filters</h1>
-        <p class="lede">stop pages by what they're about, not just where they live.</p>
+        <h1>Filters</h1>
+        <p class="lede">Block pages by what they're about, not just where they live.</p>
         <div class="setting-card">
-          <h3 class="card-title">blocked keywords</h3>
-          <p class="card-sub">any page whose address or title contains one of these gets stopped, on every site.</p>
+          <h3 class="card-title">Blocked keywords</h3>
+          <p class="card-sub">Any page whose address or title contains one of these is blocked, on every site.</p>
           <div class="kw-add">
-            <input type="text" id="kw-input" placeholder="add a keyword or phrase">
-            <button class="btn primary small" id="btn-add-kw">add</button>
+            <input type="text" id="kw-input" placeholder="Add a keyword or phrase" aria-label="Add a blocked keyword">
+            <button class="btn primary small" id="btn-add-kw">Add</button>
           </div>
           <div class="kw-chips" id="kw-chips"></div>
-          <p class="hint">keywords match anywhere in the URL or page title, case-insensitive. very short generic words will over-block.</p>
+          <p class="hint">Keywords match anywhere in the URL or page title, case-insensitively. Very short or generic words will over-block.</p>
         </div>
 
         <div class="setting-card">
           <div class="setting-row">
             <div>
-              <h3>18+ content <span class="lock-tag">always blocked</span></h3>
-              <p>known adult sites and explicit keywords are blocked outright, in feeds and by URL. this protection is built into North and can't be switched off, not even with the challenge.</p>
+              <h3>18+ content <span class="lock-tag">Always blocked</span></h3>
+              <p>Known adult sites and explicit keywords are blocked outright, in feeds and by URL. This protection is built into North and cannot be switched off, not even with the challenge.</p>
             </div>
-            <label class="switch locked" title="built in. this one doesn't come off.">
+            <label class="switch locked" title="Built in. This one cannot be switched off.">
               <input type="checkbox" checked disabled>
               <span class="track"></span>
             </label>
@@ -274,32 +274,32 @@
 
       <!-- ================= Strictness ================= -->
       <section class="section" id="sec-strict">
-        <h1>strictness</h1>
-        <p class="lede">the friction that makes North actually work. weakening any protection takes a wait and a typed challenge. you'll see a "hard to undo" tag wherever that applies.</p>
+        <h1>Strictness</h1>
+        <p class="lede">The friction that makes North work. Weakening any protection takes a wait and a typed challenge; you'll see a "hard to undo" tag wherever that applies.</p>
         <div class="setting-card">
           <div class="setting-row">
-            <div><h3>strict mode <span class="undo-tag">hard to undo</span></h3><p>disabling protection, removing sites, raising limits or turning this off all require the challenge.</p></div>
+            <div><h3>Strict mode <span class="undo-tag">Hard to undo</span></h3><p>Disabling protection, removing sites, raising limits and turning this off all require the challenge.</p></div>
             <label class="switch"><input type="checkbox" id="opt-strict"><span class="track"></span></label>
           </div>
           <div class="setting-row sub-row">
-            <div><h3>wait time</h3><p>how long you must stay with the breathing timer before the challenge appears. the timer only runs while you're on the page.</p></div>
-            <select id="opt-wait">
-              <option value="30">30 seconds</option>
-              <option value="60">60 seconds</option>
-              <option value="120">2 minutes</option>
-              <option value="300">5 minutes</option>
-            </select>
+            <div><h3>Wait time</h3><p>How long you stay with the breathing timer before the challenge appears. The timer only counts while this page is in front of you.</p></div>
+            <div class="range-field">
+              <span class="range-value" id="opt-wait-value">60 seconds</span>
+              <input type="range" class="range" id="opt-wait" min="10" max="120" step="5" value="60"
+                     aria-label="Wait time before the unlock challenge">
+              <div class="range-ends"><span>10 sec</span><span>2 min</span></div>
+            </div>
           </div>
           <div class="setting-row sub-row">
-            <div><h3>unlock challenge</h3><p>every unlock requires a 20-word journal entry to future you. you can stack a second step on top.</p></div>
+            <div><h3>Unlock challenge</h3><p>Every unlock requires a 20-word journal entry to your future self. You can add a second step on top.</p></div>
             <select id="opt-challenge">
-              <option value="journal">journal only</option>
-              <option value="phrase">journal + sentence</option>
-              <option value="math">journal + math</option>
+              <option value="journal">Journal only</option>
+              <option value="phrase">Journal and sentence</option>
+              <option value="math">Journal and arithmetic</option>
             </select>
           </div>
           <div class="setting-row sub-row">
-            <div><h3>max unlock length</h3><p>the longest temporary unlock a challenge can grant.</p></div>
+            <div><h3>Maximum unlock length</h3><p>The longest temporary unlock a challenge can grant.</p></div>
             <select id="opt-max-unlock">
               <option value="5">5 minutes</option>
               <option value="10">10 minutes</option>
@@ -312,21 +312,21 @@
 
       <!-- ================= Lockdown ================= -->
       <section class="section" id="sec-lockdown">
-        <h1>lockdown</h1>
-        <p class="lede">exam week mode. pick the handful of sites you actually need, set the clock, and everything else on the internet stops existing. there is no off switch. it ends when it ends.</p>
+        <h1>Lockdown</h1>
+        <p class="lede">For crunch time. Choose the handful of sites you need, set the clock, and everything else stops loading. There is no off switch — it ends when the timer ends.</p>
 
         <div class="setting-card" id="lockdown-setup">
-          <h3 class="card-title">your allowlist</h3>
-          <p class="card-sub">the only sites that will load during a lockdown. everything else is blocked, with no unlock challenge offered.</p>
+          <h3 class="card-title">Your allowlist</h3>
+          <p class="card-sub">The only sites that load during a lockdown. Everything else is blocked, with no unlock challenge offered.</p>
           <div class="kw-add">
-            <input type="text" id="ld-input" placeholder="add a site, like docs.google.com">
-            <button class="btn small primary" id="btn-ld-add">add</button>
+            <input type="text" id="ld-input" placeholder="Add a site, e.g. docs.google.com" aria-label="Add a site to the lockdown allowlist">
+            <button class="btn small primary" id="btn-ld-add">Add</button>
           </div>
           <div class="kw-chips" id="ld-chips"></div>
-          <p class="hint">think narrow: your school portal, docs, the library. a lockdown with a generous allowlist is just a regular tuesday.</p>
+          <p class="hint">Keep it narrow: your course portal, your documents, the library. A lockdown with a generous allowlist isn't a lockdown.</p>
 
           <div class="setting-row sub-row">
-            <div><h3>duration</h3><p>locked in the moment you start. closing the browser doesn't stop the clock.</p></div>
+            <div><h3>Duration</h3><p>Fixed the moment you start. Closing the browser doesn't stop the clock.</p></div>
             <select id="ld-duration">
               <option value="60">1 hour</option>
               <option value="120">2 hours</option>
@@ -337,80 +337,80 @@
             </select>
           </div>
           <div class="setting-row sub-row">
-            <div><h3>start lockdown</h3><p id="ld-warning">one click arms it. a second click commits, and then nothing unlocks it until time runs out.</p></div>
-            <button class="btn primary" id="btn-ld-start">start</button>
+            <div><h3>Start lockdown</h3><p id="ld-warning">One click arms it. A second click commits, and then nothing unlocks it until the time runs out.</p></div>
+            <button class="btn primary" id="btn-ld-start">Start</button>
           </div>
         </div>
 
         <div class="setting-card hidden" id="lockdown-live">
           <div class="lockdown-active">
-            <h3 class="card-title">lockdown is running</h3>
-            <div class="countdown" id="ld-countdown">0:00:00</div>
-            <p>only your allowlist loads. the allowlist can't be edited until it ends. go be brilliant.</p>
+            <h3 class="card-title">Lockdown is running</h3>
+            <div class="countdown" id="ld-countdown" role="timer">0:00:00</div>
+            <p>Only your allowlist loads, and the allowlist can't be edited until it ends.</p>
           </div>
         </div>
       </section>
 
       <!-- ================= Progress ================= -->
       <section class="section" id="sec-stats">
-        <h1>progress</h1>
-        <p class="lede">the last 14 days, honestly told.</p>
+        <h1>Progress</h1>
+        <p class="lede">The last 14 days, recorded honestly.</p>
         <div class="setting-card">
           <div class="stat-row" id="stats-summary"></div>
-          <h3 class="card-title">distractions dodged per day</h3>
+          <h3 class="card-title">Distractions blocked per day</h3>
           <div class="bar-chart" id="chart-blocks"></div>
-          <h3 class="card-title" style="margin-top:24px">most-blocked sites (14 days)</h3>
+          <h3 class="card-title" style="margin-top:24px">Most-blocked sites, 14 days</h3>
           <div id="top-blocked"></div>
         </div>
 
         <div class="setting-card">
-          <h3 class="card-title">unlock journal</h3>
-          <p class="card-sub">every unlock cost you 20 words to future you. here they are. read them back, that's the feature.</p>
+          <h3 class="card-title">Unlock journal</h3>
+          <p class="card-sub">Every unlock cost you 20 words to your future self. Reading them back is the point.</p>
           <div id="journal"></div>
         </div>
       </section>
 
       <!-- ================= More ================= -->
       <section class="section" id="sec-more">
-        <h1>more</h1>
-        <p class="lede">backups, requests, and the honest fine print.</p>
+        <h1>More</h1>
+        <p class="lede">Backups, requests, and the fine print.</p>
 
         <div class="setting-card">
-          <h3 class="card-title">"take me somewhere better"</h3>
-          <p class="card-sub">the block page's escape hatch sends you to one of these, picked at random each time. make them places you actually grow in.</p>
+          <h3 class="card-title">"Go somewhere better"</h3>
+          <p class="card-sub">The block page sends you to one of these, chosen at random. Make them places worth landing on.</p>
           <div class="kw-add">
-            <input type="text" id="bp-label" placeholder="label, like practice piano theory">
-            <input type="text" id="bp-url" placeholder="https://…">
-            <button class="btn primary small" id="btn-add-bp">add</button>
+            <input type="text" id="bp-label" placeholder="Label, e.g. Practice piano theory" aria-label="Label for the destination">
+            <input type="text" id="bp-url" placeholder="https://…" aria-label="Destination URL">
+            <button class="btn primary small" id="btn-add-bp">Add</button>
           </div>
           <div id="bp-list"></div>
         </div>
 
         <div class="setting-card">
-          <h3 class="card-title">backup &amp; restore</h3>
-          <p class="card-sub">export your settings as a file, or import one. importing settings that are weaker than your current ones requires the challenge first.</p>
+          <h3 class="card-title">Backup and restore</h3>
+          <p class="card-sub">Export your settings as a file, or import one. Importing settings weaker than your current ones requires the challenge first.</p>
           <div class="seg">
-            <button class="btn ghost small" id="btn-export">export settings</button>
-            <button class="btn ghost small" id="btn-import">import settings</button>
+            <button class="btn ghost small" id="btn-export">Export settings</button>
+            <button class="btn ghost small" id="btn-import">Import settings</button>
             <input type="file" id="import-file" accept="application/json" class="hidden">
           </div>
         </div>
 
         <div class="setting-card">
-          <h3 class="card-title">free for life. that's the deal.</h3>
-          <p class="card-sub">North will never charge you, show you an ad, or sell a "premium" version of self-control. blockers that paywall the features that actually work are part of the problem. if North bought you back some hours and you want to keep it alive, the tip jar is the entire business model.</p>
-          <a class="btn primary small" href="https://ko-fi.com/jaiten" target="_blank" rel="noopener">♥ leave a tip</a>
+          <h3 class="card-title">Free for life</h3>
+          <p class="card-sub">North will never charge you, show you an advert, or sell a premium version of self-control. Blockers that paywall the features that actually work are part of the problem. If North has bought you back some hours and you'd like to keep it going, tips are the entire business model.</p>
+          <a class="btn primary small" href="https://ko-fi.com/jaiten" target="_blank" rel="noopener">♥ Leave a tip</a>
         </div>
 
         <div class="setting-card">
-          <h3 class="card-title">suggest a feature</h3>
-          <p class="card-sub">tell North what would make it work better for you. this opens the suggestion box, a quick form, no account needed.</p>
-          <button class="btn primary small" id="btn-feature">open the suggestion box</button>
+          <h3 class="card-title">Suggest a feature</h3>
+          <p class="card-sub">Tell us what would make North work better for you. Opens a short form; no account needed.</p>
+          <button class="btn primary small" id="btn-feature">Open the suggestion box</button>
         </div>
 
         <div class="setting-card">
-          <h3 class="card-title">the honest fine print</h3>
-          <p class="card-sub">everything North knows stays on your device. no accounts, no tracking, no data leaves your browser. and yes, you can always uninstall the extension. North's job is to interrupt habit, not to imprison you. every second of friction is a chance for intention to catch up with your thumb.</p>
+          <h3 class="card-title">The fine print</h3>
+          <p class="card-sub">Everything North knows stays on your device: no accounts, no tracking, and no data leaving your browser. And yes, you can always uninstall the extension. North's job is to interrupt a habit, not to trap you — every second of friction is a chance for intention to catch up.</p>
         </div>
       </section>
 
@@ -421,7 +421,7 @@
   <div class="modal-backdrop hidden" id="gate-backdrop">
     <div class="modal">
       <div id="gate-wait">
-        <h2>this change weakens your protection.</h2>
+        <h2>This change weakens your protection.</h2>
         <p class="sub" id="gate-desc"></p>
         <div class="ring-wrap">
           <div class="breath-orb" id="gate-breath-orb"></div>
@@ -429,22 +429,22 @@
             <circle class="ring-bg" cx="60" cy="60" r="52"/>
             <circle class="ring-fg" id="gate-ring-fg" cx="60" cy="60" r="52"/>
           </svg>
-          <div class="ring-num" id="gate-ring-num">60</div>
+          <div class="ring-num" id="gate-ring-num" role="timer">60</div>
         </div>
-        <p class="breath-label" id="gate-breath-label">breathe in</p>
-        <p class="stay-hint" id="gate-stay-hint">stay on this page. the timer only runs while you're here.</p>
-        <p class="error hidden" id="gate-note">the timer restarted. it needs your full attention, on this page.</p>
-        <button class="btn ghost" id="gate-cancel-wait">keep my protection</button>
+        <p class="breath-label" id="gate-breath-label">Breathe in</p>
+        <p class="stay-hint" id="gate-stay-hint">The timer only counts while this page is in front of you.</p>
+        <p class="error hidden" id="gate-note">The timer restarted. It runs only while this page has your attention.</p>
+        <button class="btn ghost" id="gate-cancel-wait">Keep my protection</button>
       </div>
       <div id="gate-challenge" class="hidden">
-        <h2>one honest moment.</h2>
+        <h2>One honest moment.</h2>
         <p class="sub" id="gate-prompt"></p>
         <p class="phrase" id="gate-phrase"></p>
-        <input type="text" id="gate-input" autocomplete="off" spellcheck="false" placeholder="type it, then press enter">
-        <p class="error hidden" id="gate-error">that doesn't match yet. it has to be word for word.</p>
+        <input type="text" id="gate-input" autocomplete="off" spellcheck="false" placeholder="Type it, then press Enter" aria-label="Type the sentence above">
+        <p class="error hidden" id="gate-error">That doesn't match yet. It has to be word for word.</p>
         <div class="actions">
-          <button class="btn danger" id="gate-confirm">apply the change</button>
-          <button class="btn ghost" id="gate-cancel">never mind</button>
+          <button class="btn danger" id="gate-confirm">Apply the change</button>
+          <button class="btn ghost" id="gate-cancel">Cancel</button>
         </div>
       </div>
     </div>
@@ -453,31 +453,31 @@
   <!-- Site editor modal -->
   <div class="modal-backdrop hidden" id="edit-backdrop">
     <div class="modal wide">
-      <h2 id="edit-title">edit site</h2>
+      <h2 id="edit-title">Edit site</h2>
       <div class="setting-row sub-row">
-        <div><h3>blocking mode</h3></div>
+        <div><h3>Blocking mode</h3></div>
         <div class="seg" id="edit-modes">
-          <button class="chip" data-mode="always">always</button>
-          <button class="chip" data-mode="schedule">schedule</button>
-          <button class="chip" data-mode="limit">daily limit</button>
+          <button class="chip" data-mode="always">Always</button>
+          <button class="chip" data-mode="schedule">Schedule</button>
+          <button class="chip" data-mode="limit">Daily limit</button>
         </div>
       </div>
 
       <div id="edit-schedule" class="hidden">
         <div id="windows"></div>
-        <button class="btn ghost small" id="btn-add-window">+ add blocking window</button>
+        <button class="btn ghost small" id="btn-add-window">+ Add blocking window</button>
       </div>
 
       <div id="edit-limit" class="hidden">
         <div class="setting-row sub-row">
-          <div><h3>minutes per day</h3><p>after this, the site blocks until midnight.</p></div>
+          <div><h3>Minutes per day</h3><p>After this, the site blocks until midnight.</p></div>
           <input type="number" id="edit-limit-mins" min="1" max="600" style="width:90px">
         </div>
       </div>
 
       <div class="actions row">
-        <button class="btn primary" id="edit-save">save</button>
-        <button class="btn ghost" id="edit-cancel">cancel</button>
+        <button class="btn primary" id="edit-save">Save</button>
+        <button class="btn ghost" id="edit-cancel">Cancel</button>
       </div>
     </div>
   </div>
@@ -485,34 +485,34 @@
   <!-- Welcome / onboarding modal -->
   <div class="modal-backdrop hidden" id="welcome-backdrop">
     <div class="modal wide">
-      <h2>welcome to North.</h2>
-      <p class="sub" style="text-align:left">nothing is blocked until you choose it. pick your starting protections. you can change everything later, though weakening them takes a little work. that's the point.</p>
+      <h2>Welcome to North.</h2>
+      <p class="sub" style="text-align:left">Nothing is blocked until you choose it. Pick your starting protections — you can change them later, though weakening them takes a little work. That's deliberate.</p>
       <label class="welcome-opt">
         <input type="checkbox" id="wel-shorts" checked>
-        <div><strong>block all short videos <span class="undo-tag">hard to undo</span></strong><span>Shorts, Reels, TikTok, Spotlight. the big one.</span></div>
+        <div><strong>Block all short videos <span class="undo-tag">Hard to undo</span></strong><span>Shorts, Reels, TikTok and Spotlight, as one category.</span></div>
       </label>
       <label class="welcome-opt locked">
         <input type="checkbox" checked disabled>
-        <div><strong>block 18+ content <span class="lock-tag">always on</span></strong><span>adult sites and explicit keywords. built into North, never unlockable.</span></div>
+        <div><strong>Block 18+ content <span class="lock-tag">Always on</span></strong><span>Adult sites and explicit keywords. Built into North, never unlockable.</span></div>
       </label>
       <label class="welcome-opt">
         <input type="checkbox" id="wel-ig">
-        <div><strong>Instagram: messages only <span class="undo-tag">hard to undo</span></strong><span>keep DMs, lose the feed, Explore and Reels.</span></div>
+        <div><strong>Instagram: messages only <span class="undo-tag">Hard to undo</span></strong><span>Keep DMs; close the feed, Explore and Reels.</span></div>
       </label>
       <label class="welcome-opt">
         <input type="checkbox" id="wel-strict" checked>
-        <div><strong>strict mode <span class="undo-tag">hard to undo</span></strong><span>weakening any protection takes a 60-second breathing wait, then a typed challenge.</span></div>
+        <div><strong>Strict mode <span class="undo-tag">Hard to undo</span></strong><span>Weakening any protection takes a 60-second wait, then a typed challenge.</span></div>
       </label>
       <div class="welcome-theme">
-        <span>and how should North look?</span>
+        <span>How should North look?</span>
         <div class="seg">
-          <button class="chip selected" data-wtheme="light" id="wel-light">light</button>
-          <button class="chip" data-wtheme="dark" id="wel-dark">dark</button>
+          <button class="chip selected" data-wtheme="light" id="wel-light">Light</button>
+          <button class="chip" data-wtheme="dark" id="wel-dark">Dark</button>
         </div>
       </div>
-      <p class="hint" style="margin:4px 0 0">"hard to undo" means exactly that: switching it off later takes a 60-second wait plus the challenge. misclicked just now? unticking here is still free.</p>
+      <p class="hint" style="margin:4px 0 0">"Hard to undo" means exactly that: switching it off later takes the wait plus the challenge. Unticking a box here, right now, is still free.</p>
       <div class="actions row">
-        <button class="btn primary" id="wel-apply">start with these</button>
+        <button class="btn primary" id="wel-apply">Start with these</button>
       </div>
     </div>
   </div>

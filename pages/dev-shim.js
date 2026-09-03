@@ -8,7 +8,7 @@
   const fixtureSettings = {
     enabled: true,
     theme: "light",
-    strict: { enabled: true, waitSeconds: 8, challenge: "journal", maxUnlockMinutes: 15 },
+    strict: { enabled: true, waitSeconds: 10, challenge: "journal", maxUnlockMinutes: 15 },
     buddy: { enabled: true, tone: "kind" },
     shorts: { enabled: true, blockTikTokEntirely: true, allowSharedLinks: true },
     messagesOnly: { instagram: true, linkedin: false, facebook: false, x: true },

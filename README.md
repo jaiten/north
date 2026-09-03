@@ -10,9 +10,11 @@ no data leaving your browser.
 
 ### 🔒 Hard to deactivate, by design
 - Disabling protection, removing a blocked site, raising a limit or loosening a
-  schedule all require a **wait timer** (30s to 5min, your choice) followed by
-  a **challenge**. The timer only runs while you're focused on the page;
-  switching tabs, apps or windows restarts it from zero.
+  schedule all require a **wait timer** followed by a **challenge**. The wait
+  is set on a slider in Settings, anywhere from 10 seconds to 2 minutes, and
+  shortening it is itself a change that takes the challenge. The timer only
+  runs while you're focused on the page; switching tabs, apps or windows
+  restarts it from zero.
 - The challenge is the **unlock journal**: at least 20 honest words to your
   future self about why you need the site. No pasting, no keyboard mash. A
   typed reflection sentence or a multiplication can be stacked on top.

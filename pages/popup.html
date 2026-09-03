@@ -12,54 +12,54 @@
       <div class="logo-mark"><svg class="north-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 19 20.5 12 17 5 20.5Z"/></svg></div>
       <div>
         <div class="logo-name">North</div>
-        <div class="logo-tag" id="status-tag">protection on</div>
+        <div class="logo-tag" id="status-tag">Protection on</div>
       </div>
     </div>
-    <button class="icon-btn" id="btn-options" title="settings">⚙</button>
+    <button class="icon-btn" id="btn-options" title="Settings" aria-label="Open settings">⚙</button>
   </header>
 
   <!-- Focus session -->
   <section class="card" id="focus-card">
     <div id="focus-idle">
-      <h3>focus session</h3>
-      <p class="dim">blocks everything on your list. no unlocks until it ends.</p>
+      <h3>Focus session</h3>
+      <p class="dim">Blocks everything on your list. No unlocks until it ends.</p>
       <div class="focus-row">
         <button class="chip" data-mins="25">25 min</button>
         <button class="chip" data-mins="50">50 min</button>
         <button class="chip" data-mins="90">90 min</button>
-        <input type="number" id="focus-custom" min="1" max="480" placeholder="min">
+        <input type="number" id="focus-custom" min="1" max="480" placeholder="min" aria-label="Custom session length in minutes">
       </div>
-      <button class="btn primary full" id="btn-focus">start focusing</button>
+      <button class="btn primary full" id="btn-focus">Start focusing</button>
     </div>
     <div id="focus-active" class="hidden">
-      <h3>in session</h3>
-      <div class="focus-time" id="focus-remaining">0:00</div>
-      <p class="dim">everything distracting is sealed. you've got this.</p>
-      <button class="btn ghost full small" id="btn-end-focus">end early (takes the challenge)</button>
+      <h3>In session</h3>
+      <div class="focus-time" id="focus-remaining" role="timer">0:00</div>
+      <p class="dim">Everything on your list is sealed until the timer ends.</p>
+      <button class="btn ghost full small" id="btn-end-focus">End early (takes the challenge)</button>
     </div>
   </section>
 
   <!-- Today -->
   <section class="card">
-    <h3>today</h3>
+    <h3>Today</h3>
     <div class="stat-row">
-      <div class="stat"><div class="stat-num" id="stat-blocks">0</div><div class="stat-label">distractions<br>dodged</div></div>
-      <div class="stat"><div class="stat-num" id="stat-focus">0m</div><div class="stat-label">focused<br>time</div></div>
-      <div class="stat"><div class="stat-num" id="stat-unlocks">0</div><div class="stat-label">unlocks<br>used</div></div>
+      <div class="stat"><div class="stat-num" id="stat-blocks">0</div><div class="stat-label">Distractions<br>blocked</div></div>
+      <div class="stat"><div class="stat-num" id="stat-focus">0m</div><div class="stat-label">Focused<br>time</div></div>
+      <div class="stat"><div class="stat-num" id="stat-unlocks">0</div><div class="stat-label">Unlocks<br>used</div></div>
     </div>
     <div id="usage-bars"></div>
   </section>
 
   <footer>
-    <label class="switch" title="protection (turning off takes the challenge)">
+    <label class="switch" title="Protection. Turning it off takes the challenge.">
       <input type="checkbox" id="toggle-enabled" checked>
       <span class="track"></span>
     </label>
-    <span class="dim" id="enabled-label">protection on</span>
+    <span class="dim" id="enabled-label">Protection on</span>
   </footer>
 
   <div class="incog hidden" id="incog-banner">
-    not active in Incognito windows. <a id="incog-fix">fix that</a>
+    Not active in Incognito windows. <a id="incog-fix" role="button" tabindex="0">Turn it on</a>
   </div>
 
   <script src="dev-shim.js"></script>
