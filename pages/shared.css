@@ -18,15 +18,20 @@
    ======================================================================== */
 
 :root {
-  /* Daylight. Cream stock, pine ink. */
-  --bg: #f6f1e5;
-  --bg-elev: #fdfbf4;
-  --bg-elev-2: #ede7d7;
-  --line: rgba(52, 62, 48, 0.14);
-  --line-strong: rgba(52, 62, 48, 0.27);
+  /* Daylight. Three surfaces, and they have to be genuinely separated: the
+     page is the tinted stock, a card is a white sheet laid on it, and an input
+     is a well pressed into the sheet. Cream-on-cream with a hairline reads as
+     mush, which is exactly what the first pass got wrong. */
+  --bg: #f0ead9;        /* tinted stock — the desk */
+  --bg-elev: #fefdf8;   /* a sheet laid on it */
+  --bg-elev-2: #eae3d1; /* recessed: inputs, tracks, wells */
+  --sidebar-bg: #ebe4d2;  /* the board the sheets are clipped to */
+  --nav-hover: rgba(52, 62, 48, 0.05);
+  --line: rgba(52, 62, 48, 0.16);
+  --line-strong: rgba(52, 62, 48, 0.30);
   --text: #28302b;
   --text-dim: #5a6259;
-  --text-faint: #656d63;
+  --text-faint: #5f675d;
 
   /* The one green. Actions, protections holding, anything affirming. */
   --accent: #356b52;
@@ -48,8 +53,8 @@
 
   --radius: 16px;
   --radius-sm: 10px;
-  --shadow-sm: 0 1px 2px rgba(40, 48, 43, 0.07);
-  --shadow: 0 1px 2px rgba(40, 48, 43, 0.06), 0 10px 30px rgba(40, 48, 43, 0.09);
+  --shadow-sm: 0 1px 2px rgba(46, 54, 40, 0.07), 0 1px 1px rgba(46, 54, 40, 0.04);
+  --shadow: 0 1px 2px rgba(46, 54, 40, 0.06), 0 14px 30px -8px rgba(46, 54, 40, 0.16);
   --ring: 0 0 0 3px rgba(53, 107, 82, 0.2);
 
   /* Paper. The mottle is what sells it — uniform noise reads as a filter,
@@ -78,11 +83,13 @@
   --bg: #12150f;
   --bg-elev: #1a1e16;
   --bg-elev-2: #242a1f;
+  --sidebar-bg: transparent;
+  --nav-hover: rgba(219, 224, 205, 0.06);
   --line: rgba(219, 224, 205, 0.13);
   --line-strong: rgba(219, 224, 205, 0.26);
   --text: #ede8d8;
   --text-dim: #a8ae9c;
-  --text-faint: #7e8676;
+  --text-faint: #848c7c;
 
   /* Lifted just far enough to read on near-black while white text on it still
      clears 4.5:1. Hover goes deeper rather than lighter, for the same reason. */
@@ -173,7 +180,7 @@ h3 { font-weight: 640; letter-spacing: -0.01em; line-height: 1.3; margin: 0; }
   font: 600 12.5px/1 var(--font);
   padding: 8px 14px;
   border-radius: 999px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   background: var(--bg-elev);
   color: var(--text-dim);
   cursor: pointer;
@@ -194,7 +201,7 @@ h3 { font-weight: 640; letter-spacing: -0.01em; line-height: 1.3; margin: 0; }
 /* Inputs ----------------------------------------------------------------- */
 input[type="text"], input[type="number"], input[type="time"], select, textarea {
   font: 500 14px var(--font);
-  background: var(--bg-elev);
+  background: var(--bg-elev-2);
   color: var(--text);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
@@ -353,8 +360,8 @@ input.match, textarea.match { border-color: var(--ok) !important; }
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(115% 70% at 50% 0%, rgba(255, 252, 240, 0.7), transparent 62%),
-    radial-gradient(120% 60% at 50% 108%, rgba(88, 104, 78, 0.14), transparent 70%);
+    radial-gradient(140% 110% at 50% 30%, rgba(255, 253, 246, 0.72), transparent 78%),
+    radial-gradient(140% 70% at 50% 115%, rgba(96, 112, 84, 0.07), transparent 74%);
 }
 /* Cloudiness, scaled well past its tile so it never reads as a repeat. */
 .aurora::before {

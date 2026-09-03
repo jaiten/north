@@ -78,7 +78,16 @@ header {
   border-radius: var(--radius-sm);
   padding: 10px 4px;
 }
-.stat-num { font-family: var(--font-display); font-size: 21px; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* Green, matching Progress: colour is reserved for the numbers that mean
+   something went well. */
+.stat-num {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--accent-text);
+}
 .stat-label { font-size: 10px; color: var(--text-faint); line-height: 1.3; margin-top: 2px; }
 
 .usage-item { margin-bottom: 8px; }
