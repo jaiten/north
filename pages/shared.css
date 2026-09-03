@@ -10,9 +10,11 @@
   --text: #e8ecf5;
   --text-dim: #a2aec5;
   --text-faint: #6b7893;
-  --accent: #5b6ef5;
-  --accent-hover: #7183ff;
-  --accent-soft: rgba(91, 110, 245, 0.16);
+  /* Deep enough that white button text clears 4.5:1 on it, light enough that
+     the focus ring still separates from the dark ground. */
+  --accent: #5566ee;
+  --accent-hover: #6b7bf5;
+  --accent-soft: rgba(91, 110, 245, 0.18);
   --accent-2: #2dd4bf;
   --accent-text: #b9c2ff;
   /* Reserved for the brand mark. Buttons and bars use flat colour so the
