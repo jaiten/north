@@ -45,17 +45,17 @@
     card.id = "north-twitch-home";
     card.innerHTML = `
       <div class="north-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 19 20.5 12 17 5 20.5Z"/></svg></div>
-      <h2>watch on purpose</h2>
-      <p>North cleared the homepage so it can't pick for you.<br>
-      your followed channels are in the sidebar. if no one you follow is live, that might be your answer.</p>
+      <h2>Watch on purpose</h2>
+      <p>North cleared the homepage so it can't choose for you.<br>
+      Your followed channels are in the sidebar. If nobody you follow is live, that may be your answer.</p>
       <style>
         #north-twitch-home { position: fixed; inset: 0; z-index: 1;
           display: flex; flex-direction: column; align-items: center; justify-content: center;
           text-align: center; pointer-events: none; padding: 0 20px;
-          font-family: "Segoe UI", Roboto, sans-serif; color: #efeff1; }
+          font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #efeff1; }
         #north-twitch-home .north-mark { width: 56px; height: 56px; margin-bottom: 20px;
           display: grid; place-items: center; font-size: 24px; color: #fff;
-          border-radius: 16px; background: linear-gradient(135deg,#6366f1,#2dd4bf); }
+          border-radius: 16px; background: linear-gradient(150deg,#4e8c6a,#356b52 52%,#24503c); }
         #north-twitch-home .north-mark svg { width: 54%; height: 54%; fill: #fff; }
         #north-twitch-home h2 { font-size: 22px; font-weight: 600; margin: 0 0 10px; }
         #north-twitch-home p { font-size: 14px; line-height: 1.6; opacity: .75; margin: 0; }

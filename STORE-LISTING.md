@@ -1,50 +1,51 @@
 # North — Chrome Web Store listing copy
 
-Voice: lowercase, human, no em dashes. proper nouns keep their caps (North,
-YouTube, Shorts, Reels, TikTok, Instagram, etc.). "tip", never "donate".
+Voice: plain, composed, sentence case. Direct without being chummy; no snark
+at the reader, no em dashes in store copy. Proper nouns keep their caps
+(North, YouTube, Shorts, Reels, TikTok, Instagram). "Tip", never "donate".
 
 ---
 
 ## Name
-North: block Shorts, Reels & distracting sites
+North: block Shorts, Reels and distracting sites
 
 ## Category
 Productivity
 
 ## Summary (max 132 characters)
-block Shorts, Reels, TikTok and the sites that eat your day. free for life, no account, no tracking, no paywall.
+Block Shorts, Reels, TikTok and the sites that eat your day. Free for life, with no account, no tracking and no paywall.
 
 ## Detailed description
 
-North blocks the stuff that eats your day, and makes giving up cost more than staying focused. it's free for life, with no account and no tracking.
+North blocks the sites and feeds that take your day, and makes giving up cost more than staying focused. It is free for life, with no account and no tracking.
 
-most blockers paywall the features that actually work, then switch off in two clicks the moment you're tempted. North gives everything away free, and turning a protection off takes a breathing timer plus 20 honest words about why. most urges don't survive the wait.
+Most blockers paywall the features that actually work, then switch off in two clicks the moment you are tempted. North gives every feature away free, and turning a protection off takes a wait you have to sit through, plus 20 honest words about why. Most urges do not survive the wait.
 
-what North does:
+What North does:
 
-• short videos, gone. Shorts, Reels, TikTok and Snapchat Spotlight are blocked as a category: hidden in feeds, unreachable by URL, and never unlockable. the one a friend sends you still plays, just that one.
+• Short videos, closed. Shorts, Reels, TikTok and Snapchat Spotlight are blocked as a category: hidden in feeds, unreachable by URL, and never unlockable. A reel someone sends you still plays, just that one.
 
-• rules for the sites that pull you in. block a site always, on a schedule (work hours, study blocks, evenings), or after a daily time budget runs out. midnight resets the clock.
+• Rules for the sites that pull you in. Block a site always, on a schedule (work hours, study blocks, evenings), or once a daily time budget runs out. Midnight resets the clock.
 
-• messages-only modes. keep your DMs on Instagram, LinkedIn, Facebook and X while the feeds, Explore and trending simply stop existing. each site opens straight to your inbox.
+• Messages-only modes. Keep your DMs on Instagram, LinkedIn, Facebook and X while the feeds, Explore and trending stop loading. Each site opens straight to your inbox.
 
-• youtube on your terms. pick the topics you actually came for and the rest fades from feeds and search. the home page, related videos, comments and the sidebar can go too, including the wall of recommendations after a video ends.
+• YouTube on your terms. Choose the topics you actually came for, and the rest fades from feeds and search. The home page, related videos, comments and the sidebar can go too, including the wall of recommendations after a video ends.
 
-• lockdown mode. for exam week or crunch time: pick a short allowlist, set a duration up to 24 hours, and everything else stops loading. there is no off switch. it ends when the clock ends.
+• Lockdown mode. For exam week or crunch time: choose a short allowlist, set a duration of up to 24 hours, and everything else stops loading. There is no off switch. It ends when the clock ends.
 
-• keyword and 18+ blocking. stop pages by what they're about, on every site at once. adult content is filtered out and can never be unlocked.
+• Keyword and 18+ blocking. Block pages by what they are about, across every site at once. Adult content is filtered out and can never be unlocked.
 
-• an unlock you have to mean. there's no quick "disable." you sit with a breathing timer that only runs while you stay on the page, then write at least 20 honest words to future you about why you need it. pasting is blocked and keyboard mashing doesn't count.
+• An unlock you have to mean. There is no quick disable. You sit with a breathing timer that only counts while you stay on the page, then write at least 20 honest words to your future self about why you need the site. Pasting is blocked, and keyboard mashing does not count. You set the wait yourself on a slider when you first install North, anywhere from 10 seconds to 2 minutes, and shortening it later takes the same challenge.
 
-• progress, counted. every dodged distraction and focused minute, shown honestly.
+• Progress, counted. Every distraction blocked and every focused minute, recorded honestly.
 
-private by design: no account, no servers, no tracking. your settings and stats live in your browser and nowhere else, and you can always uninstall. North's job is to interrupt habit, not to imprison you.
+Private by design: no account, no servers, no tracking. Your settings and statistics live in your browser and nowhere else, and you can always uninstall. North's job is to interrupt a habit, not to trap you.
 
-free for life. every feature, for everyone, always. no trial, no premium tier, no feature caps. North runs on optional tips, and that's the whole model.
+Free for life. Every feature, for everyone, always. No trial, no premium tier, no feature caps. North runs on optional tips, and that is the whole model.
 
-works on Chrome, Edge, Brave, Arc and other Chromium browsers.
+Works on Chrome, Edge, Brave, Arc and other Chromium browsers.
 
-find your true north.
+Find your true north.
 
 ## Single-purpose description (for the privacy / permissions tab)
-North is a focus tool that blocks distracting websites and short-form video, and adds intentional friction before a blocked site can be unlocked. all blocking rules and stats are stored locally in the browser; North has no servers and collects no data.
+North is a focus tool that blocks distracting websites and short-form video, and adds deliberate friction before a blocked site can be unlocked. All blocking rules and statistics are stored locally in the browser; North has no servers and collects no data.

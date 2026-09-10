@@ -7,13 +7,42 @@ let dash = null;
 const SUGGEST_URL = "https://northfocus.app/suggest.html";
 
 const GATE_PHRASES = [
-  "i am deliberately weakening the protection i asked for",
-  "i choose convenience now over the goals i set",
-  "i am overriding a promise i made to myself"
+  "I am deliberately weakening the protection I asked for",
+  "I am choosing convenience now over the goals I set",
+  "I am overriding a commitment I made to myself"
 ];
 
 function esc(s) {
   return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+// ---------------------------------------------------------------------------
+// Wait-time slider
+// ---------------------------------------------------------------------------
+
+const WAIT_MIN = 10;
+const WAIT_MAX = 120;
+
+/** "45 seconds" / "1 minute" / "1 min 30 sec" / "2 minutes" */
+function formatWait(sec) {
+  if (sec < 60) return `${sec} seconds`;
+  const m = Math.floor(sec / 60), r = sec % 60;
+  if (!r) return m === 1 ? "1 minute" : `${m} minutes`;
+  return `${m} min ${r} sec`;
+}
+
+/**
+ * Paint the slider: the thumb sits at `sec` (clamped to the track) and the
+ * readout shows the setting as stored. Settings saved before the slider
+ * existed can sit above the track's maximum; those show their true value and
+ * park the thumb at the far end, so nothing is silently weakened on load.
+ */
+function paintWait(sec) {
+  const el = $("opt-wait");
+  const pos = Math.min(WAIT_MAX, Math.max(WAIT_MIN, sec));
+  el.value = String(pos);
+  el.style.setProperty("--fill", `${((pos - WAIT_MIN) / (WAIT_MAX - WAIT_MIN)) * 100}%`);
+  $("opt-wait-value").textContent = formatWait(sec);
 }
 
 async function save() {
@@ -103,19 +132,19 @@ let gateOnLeave = null, gateOnBlur = null, gateBreathStop = null;
 
 // Varied cues so the pacing reads like a person, not a metronome.
 const BREATH_CUES = {
-  in:   ["breathe in", "in, slowly", "fill your lungs", "in through your nose", "another breath in"],
-  hold: ["hold", "hold it there", "stay right here", "keep it", "hold. you're fine."],
-  out:  ["breathe out", "let it all go", "out, slowly", "long exhale", "and release"]
+  in:   ["Breathe in", "In, slowly", "Fill your lungs", "In through your nose", "Another breath in"],
+  hold: ["Hold", "Hold it there", "Stay with it", "Keep it", "Hold, you're fine"],
+  out:  ["Breathe out", "Let it go", "Out, slowly", "Long exhale", "And release"]
 };
 
 // Milestone notes under the ring, so the wait talks back a little.
 function gateMilestone(left, total) {
   const p = left / total;
-  if (left <= 5) return "almost. last few seconds.";
-  if (p <= 0.25) return "nearly there. finish strong.";
-  if (p <= 0.5) return "halfway. still here, still breathing.";
-  if (p <= 0.75) return "good. eyes on the circle.";
-  return "stay on this page. the timer only runs while you're here.";
+  if (left <= 5) return "Almost there. A few seconds left.";
+  if (p <= 0.25) return "Nearly done. Finish it out.";
+  if (p <= 0.5) return "Halfway. Still here, still breathing.";
+  if (p <= 0.75) return "Good. Keep your eyes on the circle.";
+  return "The timer only counts while this page is in front of you.";
 }
 
 function startGateBreath() {
@@ -132,10 +161,10 @@ function startGateBreath() {
   (async () => {
     while (!stopped) {
       await phase(BREATH_CUES.in[cycle % BREATH_CUES.in.length],
-        [{ transform: "scale(0.55)", opacity: 0.55 }, { transform: "scale(1.05)", opacity: 1 }], 4000);
+        [{ transform: "scale(0.55)", opacity: 0.8 }, { transform: "scale(1.05)", opacity: 1 }], 4000);
       await phase(BREATH_CUES.hold[cycle % BREATH_CUES.hold.length], null, 4000);
       await phase(BREATH_CUES.out[cycle % BREATH_CUES.out.length],
-        [{ transform: "scale(1.05)", opacity: 1 }, { transform: "scale(0.55)", opacity: 0.55 }], 6000);
+        [{ transform: "scale(1.05)", opacity: 1 }, { transform: "scale(0.55)", opacity: 0.8 }], 6000);
       cycle++;
     }
   })();
@@ -161,11 +190,11 @@ function showGateChallenge(apply) {
     const a = 12 + Math.floor(Math.random() * 78);
     const b = 12 + Math.floor(Math.random() * 78);
     gateExpected = String(a * b);
-    $("gate-prompt").textContent = "solve this to confirm you're acting on purpose:";
+    $("gate-prompt").textContent = "Solve this to confirm you're acting deliberately.";
     $("gate-phrase").textContent = `${a} × ${b} = ?`;
   } else {
     gateExpected = GATE_PHRASES[Math.floor(Math.random() * GATE_PHRASES.length)];
-    $("gate-prompt").textContent = "type this sentence exactly. if it doesn't feel true, cancel.";
+    $("gate-prompt").textContent = "Type this sentence exactly. If it doesn't feel true, cancel.";
     $("gate-phrase").textContent = gateExpected;
   }
   $("gate-input").classList.remove("match");
@@ -174,10 +203,10 @@ function showGateChallenge(apply) {
 }
 
 const GATE_WRONG_LINES = [
-  "that doesn't match yet. it has to be word for word.",
-  "still not it. the sentence can tell when you're skimming.",
-  "close, but the deal is the exact words.",
-  "if it won't type, maybe it isn't true."
+  "That doesn't match yet. It has to be word for word.",
+  "Still not it. The sentence can tell when you're skimming.",
+  "Close, but the deal is the exact words.",
+  "If it's hard to type, it may not be true."
 ];
 let gateWrongIdx = 0;
 
@@ -243,11 +272,11 @@ async function load() {
 function render() {
   // Theme
   northApplyTheme(S.theme || "light");
-  $("btn-theme").textContent = (S.theme || "light") === "light" ? "switch to dark" : "switch to light";
+  $("btn-theme").textContent = (S.theme || "light") === "light" ? "Switch to dark" : "Switch to light";
 
   // Master
   $("master-enabled").checked = S.enabled;
-  $("master-label").textContent = S.enabled ? "protection on" : "protection OFF";
+  $("master-label").textContent = S.enabled ? "Protection on" : "Protection off";
 
   // Shorts
   $("opt-shorts").checked = S.shorts.enabled;
@@ -268,9 +297,19 @@ function render() {
   $("opt-tw-clean").checked = S.twitch?.cleanHome !== false;
   $("opt-news").checked = !!S.news?.declutter;
 
+  // Protections carrying an unspent one-time reversal say so, so the pass is
+  // discoverable from the row rather than only from a toast.
+  for (const elId of Object.keys(FREE_FIRST_UNDO)) {
+    const tag = $("tag-" + elId.replace(/^opt-/, ""));
+    if (!tag) continue;
+    const free = freeUndoAvailable(elId);
+    tag.textContent = free ? "One free undo" : "Hard to undo";
+    tag.classList.toggle("free-tag", free);
+  }
+
   // Strict
   $("opt-strict").checked = S.strict.enabled;
-  $("opt-wait").value = String(S.strict.waitSeconds);
+  paintWait(S.strict.waitSeconds);
   $("opt-challenge").value = ["math", "phrase"].includes(S.strict.challenge) ? S.strict.challenge : "journal";
   $("opt-max-unlock").value = String(S.strict.maxUnlockMinutes);
 
@@ -282,13 +321,13 @@ function render() {
 
 const DAYS_SHORT = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
-// "weekdays" / "weekends" / "every day" when the set matches, else "Mo Tu We".
+// "Weekdays" / "Weekends" / "Every day" when the set matches, else "Mo Tu We".
 function friendlyDays(days) {
   const key = [...new Set(days)].sort((a, b) => a - b).join(",");
-  if (key === "1,2,3,4,5") return "weekdays";
-  if (key === "0,6") return "weekends";
-  if (key === "0,1,2,3,4,5,6") return "every day";
-  if (!key) return "no days";
+  if (key === "1,2,3,4,5") return "Weekdays";
+  if (key === "0,6") return "Weekends";
+  if (key === "0,1,2,3,4,5,6") return "Every day";
+  if (!key) return "No days";
   return key.split(",").map(d => DAYS_SHORT[d]).join(" ");
 }
 
@@ -306,10 +345,10 @@ function friendlyWindow(w) {
 
 function describeSite(site) {
   const dmNote = site.pattern === "instagram.com" ? ", DMs included" : "";
-  if (site.mode === "always") return "blocked 24/7" + dmNote;
-  if (site.mode === "limit") return `${site.limitMins} min/day budget`;
+  if (site.mode === "always") return "Blocked at all times" + dmNote;
+  if (site.mode === "limit") return `${site.limitMins} min per day`;
   if (site.mode === "schedule") {
-    if (!site.schedule?.length) return "schedule with no windows yet (never blocked!)";
+    if (!site.schedule?.length) return "Scheduled, but no windows set — currently never blocked";
     return site.schedule.map(friendlyWindow).join(" · ");
   }
   return "";
@@ -318,7 +357,7 @@ function describeSite(site) {
 function renderSites() {
   const list = $("site-list");
   if (!S.sites.length) {
-    list.innerHTML = `<p class="hint">nothing blocked yet. add the sites that pull you in. the chips above are one click.</p>`;
+    list.innerHTML = `<p class="hint">Nothing blocked yet. Add the sites that pull you in — the chips above are one click.</p>`;
     return;
   }
   list.innerHTML = S.sites.map(site => `
@@ -328,9 +367,9 @@ function renderSites() {
         <div class="site-name">${esc(site.pattern)}</div>
         <div class="site-desc">${esc(describeSite(site))}</div>
       </div>
-      <span class="site-badge ${site.mode}">${site.mode === "limit" ? "limit" : site.mode}</span>
-      <button class="btn ghost small act-edit">edit</button>
-      <button class="btn ghost small act-del" title="remove">✕</button>
+      <span class="site-badge ${site.mode}">${SITE_BADGE[site.mode] || site.mode}</span>
+      <button class="btn ghost small act-edit">Edit</button>
+      <button class="btn ghost small act-del" title="Remove this site" aria-label="Remove ${esc(site.pattern)}">✕</button>
     </div>`).join("");
 
   list.querySelectorAll(".act-edit").forEach(b =>
@@ -343,11 +382,11 @@ function renderSites() {
         S.sites = S.sites.filter(s => s.id !== id);
         await save();
         renderSites();
-        toast(`${site.pattern} removed`);
+        toast(`${site.pattern} removed.`);
       };
       // Just-added sites come off free — accidental clicks shouldn't cost a challenge.
       if (Date.now() < (graceUntil["site:" + id] || 0)) { remove(); return; }
-      gate(`removing ${site.pattern} from your blocklist makes it fully accessible again.`, remove);
+      gate(`Removing ${site.pattern} from your blocklist makes it fully accessible again.`, remove);
     }));
 }
 
@@ -362,8 +401,8 @@ function normalizeSite(input) {
 
 async function addSite(pattern) {
   const p = normalizeSite(pattern);
-  if (!p) { toast("that doesn't look like a domain"); return; }
-  if (S.sites.some(s => s.pattern === p)) { toast(`${p} is already on the list`); return; }
+  if (!p) { toast("That doesn't look like a domain."); return; }
+  if (S.sites.some(s => s.pattern === p)) { toast(`${p} is already on the list.`); return; }
   const id = "s_" + Date.now().toString(36);
   S.sites.unshift({ id, pattern: p, mode: "always", schedule: [], limitMins: 30 });
   graceUntil["site:" + id] = Date.now() + SITE_GRACE_MS;
@@ -374,14 +413,14 @@ async function addSite(pattern) {
   // surprised by that, so offer the messages-only mode right here.
   if (p === "instagram.com") {
     toast("Instagram is fully blocked, DMs included.", {
-      label: "keep my DMs, block the rest",
+      label: "Keep my DMs, block the rest",
       fn: async () => {
         S.sites = S.sites.filter(s => s.pattern !== "instagram.com");
         S.messagesOnly.instagram = true;
         await save();
         render();
         document.querySelector('.nav-item[data-section="social"]').click();
-        toast("messages-only mode is on. DMs work, the feed doesn't.");
+        toast("Messages-only mode is on. DMs work; the feed doesn't.");
       }
     });
     return;
@@ -390,7 +429,7 @@ async function addSite(pattern) {
   // now, while it's free. Switching to a softer mode within the grace window
   // skips the challenge — deciding how to block shouldn't cost a wait.
   openEditor(id);
-  toast(`${p} added. set how to block it. changing your mind is free for ${SITE_GRACE_MS / 1000}s.`);
+  toast(`${p} added. Choose how to block it — changing your mind is free for ${SITE_GRACE_MS / 1000} seconds.`);
 }
 
 $("btn-add-site").addEventListener("click", () => { addSite($("add-site-input").value); $("add-site-input").value = ""; });
@@ -409,7 +448,7 @@ let editing = null; // working copy
 function openEditor(id) {
   const site = S.sites.find(s => s.id === id);
   editing = structuredClone(site);
-  $("edit-title").textContent = `edit ${site.pattern}`;
+  $("edit-title").textContent = `Edit ${site.pattern}`;
   renderEditor();
   $("edit-backdrop").classList.remove("hidden");
 }
@@ -425,10 +464,13 @@ function renderEditor() {
 
 const DAY_LABELS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 const DAY_PRESETS = [
-  { label: "weekdays", days: [1, 2, 3, 4, 5] },
-  { label: "weekends", days: [0, 6] },
-  { label: "every day", days: [0, 1, 2, 3, 4, 5, 6] }
+  { label: "Weekdays", days: [1, 2, 3, 4, 5] },
+  { label: "Weekends", days: [0, 6] },
+  { label: "Every day", days: [0, 1, 2, 3, 4, 5, 6] }
 ];
+
+// Badge text for a site's blocking mode.
+const SITE_BADGE = { always: "Always", schedule: "Schedule", limit: "Limit" };
 
 function renderWindows() {
   const box = $("windows");
@@ -449,7 +491,8 @@ function renderWindows() {
       quick.appendChild(b);
     });
     const rm = document.createElement("button");
-    rm.className = "rm"; rm.textContent = "✕"; rm.title = "remove this window";
+    rm.className = "rm"; rm.textContent = "✕"; rm.title = "Remove this window";
+    rm.setAttribute("aria-label", "Remove this blocking window");
     rm.onclick = () => { editing.schedule.splice(i, 1); renderWindows(); };
     quick.appendChild(rm);
 
@@ -470,7 +513,7 @@ function renderWindows() {
     // Bottom line: the time range, read like a sentence.
     const time = document.createElement("div");
     time.className = "time-range";
-    const fromL = document.createElement("span"); fromL.textContent = "from";
+    const fromL = document.createElement("span"); fromL.textContent = "From";
     const start = document.createElement("input");
     start.type = "time"; start.value = w.start || "09:00";
     start.onchange = () => { w.start = start.value; };
@@ -513,7 +556,7 @@ $("edit-save").addEventListener("click", async () => {
     await save();
     $("edit-backdrop").classList.add("hidden");
     renderSites();
-    toast("saved");
+    toast("Saved.");
   };
 
   // Just-added sites are still in their grace window: picking a softer mode
@@ -521,7 +564,7 @@ $("edit-save").addEventListener("click", async () => {
   const inGrace = Date.now() < (graceUntil["site:" + editing.id] || 0);
   if (weakening && !inGrace) {
     $("edit-backdrop").classList.add("hidden");
-    gate(`loosening the rules for ${old.pattern} gives the old habit a way back in.`, commit);
+    gate(`Loosening the rules for ${old.pattern} gives the old habit a way back in.`, commit);
   } else {
     await commit();
   }
@@ -534,7 +577,7 @@ $("edit-save").addEventListener("click", async () => {
 function renderKeywords() {
   renderChipList("kw-chips", S.keywords, async i => {
     const kw = S.keywords[i];
-    gate(`removing the keyword "${kw}" lets that content through everywhere.`, async () => {
+    gate(`Removing the keyword "${kw}" lets that content through everywhere.`, async () => {
       S.keywords.splice(i, 1);
       await save();
       renderKeywords();
@@ -556,7 +599,7 @@ function renderChipList(elId, arr, onRemove) {
   const box = $(elId);
   box.innerHTML = "";
   if (!arr.length) {
-    box.innerHTML = `<span class="hint" style="margin:0">nothing here yet.</span>`;
+    box.innerHTML = `<span class="hint" style="margin:0">Nothing here yet.</span>`;
     return;
   }
   arr.forEach((kw, i) => {
@@ -574,8 +617,8 @@ function renderChipList(elId, arr, onRemove) {
 async function addKeyword(inputId, arr) {
   const v = $(inputId).value.trim().toLowerCase();
   if (!v) return;
-  if (v.length < 3) { toast("keywords under 3 characters would block half the internet"); return; }
-  if (arr.includes(v)) { toast("already on the list"); return; }
+  if (v.length < 3) { toast("Keywords under three characters would block half the internet."); return; }
+  if (arr.includes(v)) { toast("Already on the list."); return; }
   arr.push(v);
   $(inputId).value = "";
   await save();
@@ -600,23 +643,65 @@ const TOGGLE_GRACE_MS = 10000;
 const SITE_GRACE_MS = 30000;
 const graceUntil = {}; // toggle elId / "site:<id>" -> timestamp
 
+// A second, longer-lived allowance: some protections get exactly one free
+// reversal, ever, no timer. These are the ones you can switch on — or accept
+// from the welcome screen — before you know what they do, and where undoing a
+// mistake shouldn't cost a wait you only agreed to in principle.
+//
+// Deliberately NOT on this list:
+//   • master protection and strict mode, which govern the friction itself;
+//   • wait time, which prices every other change;
+//   • sites and keywords, where "the first one" would mean "each of them",
+//     because they're per-item — those keep their misclick grace window;
+//   • short videos and TikTok, which North promises are the hard ones.
+const FREE_FIRST_UNDO = {
+  "opt-mo-instagram": "Instagram messages-only",
+  "opt-mo-linkedin": "LinkedIn messages-only",
+  "opt-mo-facebook": "Facebook messages-only",
+  "opt-mo-x": "X messages-only"
+};
+
+function freeUndoAvailable(elId) {
+  return elId in FREE_FIRST_UNDO && !(S.freeUndoUsed || {})[elId];
+}
+
+/** Spend the one-time pass. Persisted, so it doesn't come back next session. */
+async function spendFreeUndo(elId) {
+  S.freeUndoUsed = S.freeUndoUsed || {};
+  S.freeUndoUsed[elId] = true;
+  await save();
+}
+
 function undoCostNote() {
   return S.strict?.enabled
-    ? `undoing it later takes the ${S.strict.waitSeconds || 60}s challenge`
-    : "strict mode is off, so you can undo it anytime";
+    ? `undoing it later takes the ${formatWait(S.strict.waitSeconds || 60)} wait and the challenge`
+    : "strict mode is off, so you can undo it at any time";
 }
 
 function bindToggle(elId, get, set, weakenDesc) {
   $(elId).addEventListener("change", async e => {
     const turningOff = !e.target.checked && get();
     const inGrace = Date.now() < (graceUntil[elId] || 0);
+    // Order matters: the misclick window is free and silent, the one-time pass
+    // is free but spent and announced, and everything after that is gated.
+    if (turningOff && weakenDesc && !inGrace && freeUndoAvailable(elId)) {
+      set(false);
+      await spendFreeUndo(elId);
+      render();
+      toast(`${FREE_FIRST_UNDO[elId]} is off. That was your one free reversal for it — turning it off again later takes the wait and the challenge.`);
+      return;
+    }
     if (turningOff && weakenDesc && !inGrace) {
       e.target.checked = true; // revert until the gate passes
       gate(weakenDesc, async () => { set(false); await save(); render(); });
     } else {
       if (e.target.checked) {
         graceUntil[elId] = Date.now() + TOGGLE_GRACE_MS;
-        if (weakenDesc) toast(`on. misclick? you've got ${TOGGLE_GRACE_MS / 1000}s to flip it back free. after that, ${undoCostNote()}.`);
+        if (weakenDesc) {
+          toast(freeUndoAvailable(elId)
+            ? `On. You can switch this one back off once for free, whenever you like — after that, ${undoCostNote()}.`
+            : `On. If that was a misclick, you have ${TOGGLE_GRACE_MS / 1000} seconds to switch it back for free — after that, ${undoCostNote()}.`);
+        }
       } else {
         graceUntil[elId] = 0;
       }
@@ -628,21 +713,21 @@ function bindToggle(elId, get, set, weakenDesc) {
 }
 
 bindToggle("master-enabled", () => S.enabled, v => { S.enabled = v; },
-  "turning North off removes every block, limit and schedule at once.");
+  "Turning North off removes every block, limit and schedule at once.");
 bindToggle("opt-shorts", () => S.shorts.enabled, v => { S.shorts.enabled = v; },
-  "re-opening short videos invites the most addictive feeds back in.");
+  "Re-opening short videos invites the most engineered feeds back in.");
 bindToggle("opt-tiktok", () => S.shorts.blockTikTokEntirely, v => { S.shorts.blockTikTokEntirely = v; },
-  "unblocking TikTok opens an infinite short-video feed.");
+  "Unblocking TikTok opens an infinite short-video feed.");
 bindToggle("opt-mo-instagram", () => S.messagesOnly.instagram, v => { S.messagesOnly.instagram = v; },
-  "turning this off opens the full Instagram feed, Reels and Explore.");
+  "Turning this off opens the full Instagram feed, Reels and Explore.");
 bindToggle("opt-mo-linkedin", () => S.messagesOnly.linkedin, v => { S.messagesOnly.linkedin = v; },
-  "turning this off brings the LinkedIn feed back.");
+  "Turning this off brings the LinkedIn feed back.");
 bindToggle("opt-mo-facebook", () => S.messagesOnly.facebook, v => { S.messagesOnly.facebook = v; },
-  "turning this off opens the full Facebook feed, Watch and Marketplace.");
+  "Turning this off opens the full Facebook feed, Watch and Marketplace.");
 bindToggle("opt-mo-x", () => S.messagesOnly.x, v => { S.messagesOnly.x = v; },
-  "turning this off brings the X timeline and trends back.");
+  "Turning this off brings the X timeline and trends back.");
 bindToggle("opt-strict", () => S.strict.enabled, v => { S.strict.enabled = v; },
-  "without strict mode, every protection can be switched off instantly.");
+  "Without strict mode, every protection can be switched off instantly.");
 
 // Narrow allowance, no gate either way.
 $("opt-shorts-shared").addEventListener("change", async e => {
@@ -661,7 +746,7 @@ $("opt-yt-topic").addEventListener("change", async e => {
   S.youtube.topicMode = e.target.checked;
   await save();
   if (e.target.checked && !(S.youtube.allowedKeywords || []).length) {
-    toast("add a few topics below or every video will be hidden");
+    toast("Add a few topics below, or every video will be hidden.");
   }
 });
 $("opt-li-tidy").addEventListener("change", async e => {
@@ -690,7 +775,7 @@ $("btn-yt-suggested").addEventListener("click", async () => {
   S.youtube.hideComments = true;
   await save();
   render();
-  toast("applied North's suggested YouTube setup. tweak any switch you like.");
+  toast("Applied North's suggested YouTube setup. Adjust any switch you like.");
 });
 
 // Theme toggle — cosmetic, no gate.
@@ -701,15 +786,22 @@ $("btn-theme").addEventListener("click", async () => {
 });
 
 // Strict tuning. Lowering the wait or extending unlocks is a weakening.
+// Dragging only previews; the value commits on release.
+$("opt-wait").addEventListener("input", e => {
+  const v = Number(e.target.value);
+  e.target.style.setProperty("--fill", `${((v - WAIT_MIN) / (WAIT_MAX - WAIT_MIN)) * 100}%`);
+  $("opt-wait-value").textContent = formatWait(v);
+});
 $("opt-wait").addEventListener("change", async e => {
   const v = Number(e.target.value);
+  if (v === S.strict.waitSeconds) return;
   if (v < S.strict.waitSeconds) {
-    e.target.value = String(S.strict.waitSeconds);
-    gate("a shorter wait makes impulsive unlocks easier.", async () => {
+    paintWait(S.strict.waitSeconds); // snap back until the gate passes
+    gate("A shorter wait makes an impulsive unlock easier to reach.", async () => {
       S.strict.waitSeconds = v; await save(); render();
     });
   } else {
-    S.strict.waitSeconds = v; await save();
+    S.strict.waitSeconds = v; await save(); paintWait(v);
   }
 });
 $("opt-challenge").addEventListener("change", async e => { S.strict.challenge = e.target.value; await save(); });
@@ -717,7 +809,7 @@ $("opt-max-unlock").addEventListener("change", async e => {
   const v = Number(e.target.value);
   if (v > S.strict.maxUnlockMinutes) {
     e.target.value = String(S.strict.maxUnlockMinutes);
-    gate("longer unlocks mean longer detours.", async () => {
+    gate("Longer unlocks mean longer detours.", async () => {
       S.strict.maxUnlockMinutes = v; await save(); render();
     });
   } else {
@@ -760,9 +852,9 @@ function renderLockdown() {
 
 $("btn-ld-add").addEventListener("click", async () => {
   const p = normalizeSite($("ld-input").value);
-  if (!p) { toast("that doesn't look like a domain"); return; }
+  if (!p) { toast("That doesn't look like a domain."); return; }
   S.lockdownAllow = S.lockdownAllow || [];
-  if (S.lockdownAllow.includes(p)) { toast(`${p} is already on the allowlist`); return; }
+  if (S.lockdownAllow.includes(p)) { toast(`${p} is already on the allowlist.`); return; }
   S.lockdownAllow.push(p);
   $("ld-input").value = "";
   await save();
@@ -774,26 +866,26 @@ $("ld-input").addEventListener("keydown", e => { if (e.key === "Enter") $("btn-l
 $("btn-ld-start").addEventListener("click", async () => {
   const mins = Number($("ld-duration").value);
   if (!(S.lockdownAllow || []).length) {
-    toast("add at least one site to the allowlist first, or you'll lock out the entire internet.");
+    toast("Add at least one site to the allowlist first, or you'll lock out the entire internet.");
     return;
   }
   if (!ldArmed) {
     ldArmed = true;
-    $("btn-ld-start").textContent = "click again to commit";
+    $("btn-ld-start").textContent = "Click again to commit";
     $("btn-ld-start").classList.add("arm");
     setTimeout(() => {
       ldArmed = false;
-      $("btn-ld-start").textContent = "start";
+      $("btn-ld-start").textContent = "Start";
       $("btn-ld-start").classList.remove("arm");
     }, 6000);
     return;
   }
   await chrome.runtime.sendMessage({ type: "startLockdown", minutes: mins });
   ldArmed = false;
-  $("btn-ld-start").textContent = "start";
+  $("btn-ld-start").textContent = "Start";
   $("btn-ld-start").classList.remove("arm");
   await load();
-  toast("lockdown started. see you on the other side.");
+  toast("Lockdown started.");
 });
 
 // ---------------------------------------------------------------------------
@@ -805,7 +897,7 @@ function renderBetterPlaces() {
   const places = S.betterPlaces || [];
   box.innerHTML = "";
   if (!places.length) {
-    box.innerHTML = `<p class="hint" style="margin:0">nowhere better yet. the block page will just send you back.</p>`;
+    box.innerHTML = `<p class="hint" style="margin:0">No destinations yet. Until you add one, the block page just sends you back.</p>`;
     return;
   }
   places.forEach((p, i) => {
@@ -833,9 +925,9 @@ function renderBetterPlaces() {
 $("btn-add-bp").addEventListener("click", async () => {
   const label = $("bp-label").value.trim();
   let url = $("bp-url").value.trim();
-  if (!label || !url) { toast("needs both a label and a URL"); return; }
+  if (!label || !url) { toast("Needs both a label and a URL."); return; }
   if (!/^https?:\/\//i.test(url)) url = "https://" + url;
-  try { new URL(url); } catch { toast("that URL doesn't parse"); return; }
+  try { new URL(url); } catch { toast("That URL isn't valid."); return; }
   S.betterPlaces = S.betterPlaces || [];
   S.betterPlaces.push({ label, url });
   $("bp-label").value = "";
@@ -869,7 +961,7 @@ $("btn-export").addEventListener("click", () => {
   a.download = "north-settings.json";
   a.click();
   URL.revokeObjectURL(a.href);
-  toast("settings exported");
+  toast("Settings exported.");
 });
 
 $("btn-import").addEventListener("click", () => $("import-file").click());
@@ -879,20 +971,24 @@ $("import-file").addEventListener("change", async e => {
   e.target.value = "";
   if (!file) return;
   let data;
-  try { data = JSON.parse(await file.text()); } catch { toast("that file isn't valid JSON"); return; }
+  try { data = JSON.parse(await file.text()); } catch { toast("That file isn't valid JSON."); return; }
   const incoming = data?.settings;
   if (data?.north !== 1 || !incoming || typeof incoming !== "object" || !Array.isArray(incoming.sites)) {
-    toast("that doesn't look like a North settings file");
+    toast("That doesn't look like a North settings file.");
     return;
   }
   const applyImport = async () => {
+    // A spent free reversal stays spent: take the union, so importing an older
+    // export can't hand the passes back.
+    const spent = { ...(S.freeUndoUsed || {}), ...(incoming.freeUndoUsed || {}) };
     S = incoming;
+    S.freeUndoUsed = spent;
     await save();
     render();
-    toast("settings imported");
+    toast("Settings imported.");
   };
   if (protectionScore(incoming) < protectionScore(S)) {
-    gate("the file you're importing is weaker than your current protection.", applyImport);
+    gate("The file you're importing is weaker than your current protection.", applyImport);
   } else {
     await applyImport();
   }
@@ -948,10 +1044,10 @@ function renderStats() {
   }
 
   $("stats-summary").innerHTML = `
-    <div class="stat"><div class="stat-num">${totalBlocks}</div><div class="stat-label">distractions dodged</div></div>
-    <div class="stat"><div class="stat-num">${totalFocus >= 60 ? Math.round(totalFocus / 60) + "h" : totalFocus + "m"}</div><div class="stat-label">focused time</div></div>
-    <div class="stat"><div class="stat-num">${totalUnlocks}</div><div class="stat-label">unlocks used</div></div>
-    <div class="stat"><div class="stat-num">~${Math.round(totalBlocks * 7 / 60)}h</div><div class="stat-label">est. time reclaimed</div></div>`;
+    <div class="stat"><div class="stat-num">${totalBlocks}</div><div class="stat-label">Distractions blocked</div></div>
+    <div class="stat"><div class="stat-num">${totalFocus >= 60 ? Math.round(totalFocus / 60) + "h" : totalFocus + "m"}</div><div class="stat-label">Focused time</div></div>
+    <div class="stat"><div class="stat-num">${totalUnlocks}</div><div class="stat-label">Unlocks used</div></div>
+    <div class="stat"><div class="stat-num">~${Math.round(totalBlocks * 7 / 60)}h</div><div class="stat-label">Est. time reclaimed</div></div>`;
 
   const maxBlocks = Math.max(1, ...days.map(d =>
     Object.values(d.data?.blocks || {}).reduce((a, b) => a + b, 0)));
@@ -965,7 +1061,7 @@ function renderStats() {
   const top = Object.entries(siteCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
   $("top-blocked").innerHTML = top.length
     ? top.map(([site, n]) => `<div class="top-blocked-row"><span>${esc(site)}</span><span class="n">${n}×</span></div>`).join("")
-    : `<p class="hint">no blocks recorded yet. either very good or very new.</p>`;
+    : `<p class="hint">No blocks recorded yet.</p>`;
 
   // Unlock journal: your own reasons, read back to you.
   const journal = dash.journal || [];
@@ -979,7 +1075,7 @@ function renderStats() {
           <span class="journal-note">"${esc(j.note)}"</span>
         </div>`;
       }).join("")
-    : `<p class="hint" style="margin:0">empty, and that's the best version of this page. every unlock you talk yourself through ends up here, in your own words.</p>`;
+    : `<p class="hint" style="margin:0">Empty — which is the best version of this page. Every unlock you talk yourself into ends up here, in your own words.</p>`;
 }
 
 // ---------------------------------------------------------------------------
@@ -990,6 +1086,8 @@ function handleHash() {
   if (location.hash === "#welcome") {
     history.replaceState(null, "", location.pathname);
     setWelcomeTheme(S.theme || "light");
+    $("wel-wait").value = String(S.strict.waitSeconds || 60);
+    paintWelcomeWait(Number($("wel-wait").value));
     $("welcome-backdrop").classList.remove("hidden");
     return;
   }
@@ -997,17 +1095,17 @@ function handleHash() {
   if (!m) return;
   history.replaceState(null, "", location.pathname);
   if (m[1] === "disable") {
-    gate("turning North off removes every block, limit and schedule at once.", async () => {
+    gate("Turning North off removes every block, limit and schedule at once.", async () => {
       S.enabled = false;
       await save();
       render();
-      toast("protection off. come back when you're ready.");
+      toast("Protection off. Come back when you're ready.");
     });
   }
   if (m[1] === "endFocus") {
-    gate("ending the focus session early breaks the commitment you just made.", async () => {
+    gate("Ending the focus session early breaks the commitment you just made.", async () => {
       await chrome.runtime.sendMessage({ type: "endFocus" });
-      toast("focus session ended.");
+      toast("Focus session ended.");
     });
   }
 }
@@ -1022,15 +1120,32 @@ function setWelcomeTheme(theme) {
 $("wel-light").addEventListener("click", () => setWelcomeTheme("light"));
 $("wel-dark").addEventListener("click", () => setWelcomeTheme("dark"));
 
+// Welcome-screen wait slider. Nothing is committed yet, so this one is free in
+// both directions — it's the only place the wait can be shortened without the
+// challenge, because there is no protection to weaken until "Start with these".
+function paintWelcomeWait(sec) {
+  const el = $("wel-wait");
+  el.style.setProperty("--fill", `${((sec - WAIT_MIN) / (WAIT_MAX - WAIT_MIN)) * 100}%`);
+  $("wel-wait-value").textContent = formatWait(sec);
+  // The strict-mode blurb above quotes this number, so keep the two in step.
+  $("wel-strict-wait").textContent = formatWait(sec);
+}
+$("wel-wait").addEventListener("input", e => paintWelcomeWait(Number(e.target.value)));
+
+// The wait only applies while strict mode is on; dim it when it isn't.
+$("wel-strict").addEventListener("change", e =>
+  $("wel-wait-row").classList.toggle("dim", !e.target.checked));
+
 $("wel-apply").addEventListener("click", async () => {
   S.shorts.enabled = $("wel-shorts").checked;
   S.messagesOnly.instagram = $("wel-ig").checked;
   S.strict.enabled = $("wel-strict").checked;
+  S.strict.waitSeconds = Number($("wel-wait").value);
   S.theme = $("wel-dark").classList.contains("selected") ? "dark" : "light";
   await save();
   render();
   $("welcome-backdrop").classList.add("hidden");
-  toast("good start. now add the sites that pull you in.");
+  toast("Good start. Now add the sites that pull you in.");
   $("add-site-input").focus();
 });
 

@@ -25,6 +25,11 @@ const DEFAULT_SETTINGS = {
   },
   // Messages-only modes: DMs stay open, the feed disappears (user opts in)
   messagesOnly: { instagram: false, linkedin: false, facebook: false, x: false },
+  // One-time free reversals, keyed by control id. A protection you switched on
+  // before you knew what it did can be switched off once without the wait; the
+  // key is set the moment that pass is spent, and never cleared. Only the
+  // controls in FREE_FIRST_UNDO (options.js) are eligible.
+  freeUndoUsed: {},
   // Lighter cleanups: trim the bait without blocking the site
   linkedin: { tidyNav: true },     // hide Home + My Network in the navbar
   twitch: { cleanHome: true },     // calm front page, no recommended channels
@@ -47,14 +52,14 @@ const DEFAULT_SETTINGS = {
   },
   betterPlaces: [
     { label: "Khan Academy", url: "https://www.khanacademy.org" },
-    { label: "a random Wikipedia article", url: "https://en.wikipedia.org/wiki/Special:Random" },
+    { label: "A random Wikipedia article", url: "https://en.wikipedia.org/wiki/Special:Random" },
     { label: "freeCodeCamp", url: "https://www.freecodecamp.org/learn" },
-    { label: "a free classic book", url: "https://www.gutenberg.org/ebooks/search/?sort_order=downloads" },
+    { label: "A free classic book", url: "https://www.gutenberg.org/ebooks/search/?sort_order=downloads" },
     { label: "Duolingo", url: "https://www.duolingo.com" },
     { label: "MIT OpenCourseWare", url: "https://ocw.mit.edu" },
-    { label: "a TED talk", url: "https://www.ted.com/talks" },
-    { label: "typing practice", url: "https://www.keybr.com" },
-    { label: "a math problem to chew on", url: "https://projecteuler.net/archives" }
+    { label: "A TED talk", url: "https://www.ted.com/talks" },
+    { label: "Typing practice", url: "https://www.keybr.com" },
+    { label: "A maths problem to chew on", url: "https://projecteuler.net/archives" }
   ],
   // Empty on purpose: nothing is blocked until the user chooses it.
   sites: []
@@ -617,7 +622,7 @@ async function enforceLimitsOnActiveTab() {
     const used = await getUsageSecondsToday(site.pattern);
     const leftMin = Math.ceil((site.limitMins * 60 - used) / 60);
     if (leftMin > 0 && leftMin <= 5 && settings.buddy.enabled) {
-      sendNudge(tab.id, `${leftMin} minute${leftMin === 1 ? "" : "s"} left on ${site.pattern} today. make it count, then head back.`);
+      sendNudge(tab.id, `${leftMin} minute${leftMin === 1 ? "" : "s"} left on ${site.pattern} today. Make it count, then head back.`);
     }
   }
 }
@@ -711,7 +716,7 @@ async function completeFocus() {
         type: "basic",
         iconUrl: chrome.runtime.getURL("icons/icon128.png"),
         title: "North: session complete",
-        message: "you stayed the whole way through. that's how momentum gets built, one honest session at a time."
+        message: "You stayed with it the whole way through. That's how momentum gets built — one session at a time."
       });
     }
   }
@@ -758,7 +763,7 @@ async function completeLockdown() {
         type: "basic",
         iconUrl: chrome.runtime.getURL("icons/icon128.png"),
         title: "North: lockdown complete",
-        message: "you held the line for the whole stretch. the internet is yours again. spend it like you mean it."
+        message: "You held the line for the full stretch. The internet is yours again — spend it deliberately."
       });
     }
   }

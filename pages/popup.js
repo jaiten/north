@@ -11,9 +11,9 @@ async function load() {
 
   // Status
   $("toggle-enabled").checked = s.enabled;
-  $("status-tag").textContent = s.enabled ? "protection on" : "protection OFF";
+  $("status-tag").textContent = s.enabled ? "Protection on" : "Protection off";
   $("status-tag").classList.toggle("off", !s.enabled);
-  $("enabled-label").textContent = s.enabled ? "protection on" : "protection off";
+  $("enabled-label").textContent = s.enabled ? "Protection on" : "Protection off";
 
   // Stats
   const totalBlocks = Object.values(dash.todayStats.blocks || {}).reduce((a, b) => a + b, 0);
@@ -34,7 +34,7 @@ async function load() {
         <span class="usage-time">${formatMins(Math.round(secs / 60))}</span>
       </div>
       <div class="usage-bar"><div class="usage-fill" style="width:${Math.max(4, (secs / max) * 100)}%"></div></div>
-    </div>`).join("") || `<p class="dim" style="margin:0">no browsing tracked yet today.</p>`;
+    </div>`).join("") || `<p class="dim" style="margin:0">No browsing tracked yet today.</p>`;
 
   // Focus state
   renderFocus();

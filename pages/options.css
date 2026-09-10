@@ -16,6 +16,7 @@ body { min-height: 100vh; }
 .sidebar {
   width: 250px;
   flex: none;
+  background: var(--sidebar-bg);
   padding: 32px 20px 24px;
   display: flex;
   flex-direction: column;
@@ -31,14 +32,14 @@ body { min-height: 100vh; }
 
 .logo { display: flex; align-items: center; gap: 11px; padding: 0 8px; }
 .logo-mark {
-  width: 40px; height: 40px;
+  width: 38px; height: 38px;
   display: grid; place-items: center;
-  font-size: 17px; color: #fff;
+  color: #fff;
   background: var(--grad);
-  border-radius: 12px;
-  box-shadow: 0 4px 18px rgba(99, 102, 241, 0.45);
+  border-radius: 11px;
+  box-shadow: var(--shadow-sm);
 }
-.logo-name { font-weight: 700; font-size: 18px; }
+.logo-name { font-family: var(--font-display); font-weight: 600; font-size: 19px; }
 .logo-tag { font-size: 11px; color: var(--text-faint); font-weight: 600; letter-spacing: 0.05em; }
 
 nav { display: flex; flex-direction: column; gap: 3px; }
@@ -65,10 +66,23 @@ nav .nav-label:first-child { margin-top: 0; padding-top: 0; border-top: none; }
   cursor: pointer;
   transition: all 0.13s;
 }
-.nav-item:hover { background: var(--bg-elev); color: var(--text); }
+.nav-item {
+  position: relative;
+}
+.nav-item:hover { background: var(--nav-hover); color: var(--text); }
 .nav-item.active {
-  background: rgba(99, 102, 241, 0.14);
+  background: var(--bg-elev);
+  box-shadow: var(--shadow-sm);
   color: var(--accent-text);
+}
+/* A rule on the active item so the current section is legible at a glance. */
+.nav-item.active::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 8px; bottom: 8px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent);
 }
 
 .sidebar-foot { margin-top: auto; display: flex; flex-direction: column; gap: 12px; padding: 0 8px; }
@@ -77,7 +91,7 @@ nav .nav-label:first-child { margin-top: 0; padding-top: 0; border-top: none; }
   display: block;
   text-decoration: none;
   color: var(--accent-text);
-  border-color: rgba(99, 102, 241, 0.35);
+  border-color: var(--line-strong);
 }
 .donate:hover { border-color: var(--accent); color: var(--accent-text); }
 
@@ -87,17 +101,15 @@ nav .nav-label:first-child { margin-top: 0; padding-top: 0; border-top: none; }
   padding: 10px 0 4px;
 }
 .lockdown-active .countdown {
-  font-size: 38px;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
-  background: var(--grad);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  margin: 2px 0 4px;
+  color: var(--accent);
+  margin: 4px 0 6px;
 }
 .lockdown-active p { font-size: 12.5px; color: var(--text-faint); margin: 0; }
-.btn.arm { background: rgba(248, 113, 113, 0.14); color: var(--danger); border-color: rgba(248, 113, 113, 0.4); }
+.btn.arm { background: var(--danger-soft); color: var(--danger); border-color: var(--danger); }
 
 /* Unlock journal */
 .journal-row {
@@ -128,15 +140,15 @@ nav .nav-label:first-child { margin-top: 0; padding-top: 0; border-top: none; }
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  background: rgba(251, 191, 36, 0.08);
-  border: 1px solid rgba(251, 191, 36, 0.3);
+  background: var(--warn-soft);
+  border: 1px solid var(--warn-line);
   border-radius: var(--radius);
   padding: 14px 18px;
   margin-bottom: 26px;
   font-size: 13px;
   color: var(--text-dim);
 }
-.banner strong { color: #fcd34d; display: block; margin-bottom: 2px; }
+.banner strong { color: var(--warn); display: block; margin-bottom: 2px; }
 .banner .btn { flex: none; }
 
 .error { color: var(--danger); font-size: 12.5px; margin: 0 0 14px; }
@@ -160,15 +172,17 @@ nav .nav-label:first-child { margin-top: 0; padding-top: 0; border-top: none; }
 .section.active { display: block; }
 @keyframes sec-in { from { opacity: 0; transform: translateY(8px); } }
 
-h1 { font-size: 26px; margin-bottom: 6px; }
-.lede { color: var(--text-dim); font-size: 14.5px; margin: 0 0 28px; max-width: 560px; }
+h1 { font-size: 30px; margin-bottom: 8px; }
+.lede { color: var(--text-dim); font-size: 14.5px; margin: 0 0 30px; max-width: 560px; text-wrap: pretty; }
 
 /* Cards & rows */
 .setting-card {
-  background: var(--bg-elev);
+  background-color: var(--bg-elev);
+  background-image: var(--paper-grain-card);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 22px 24px;
+  box-shadow: var(--shadow);
+  padding: 24px 26px;
   margin-bottom: 18px;
 }
 .card-title { font-size: 15px; margin-bottom: 4px; }
@@ -215,14 +229,14 @@ h1 { font-size: 26px; margin-bottom: 6px; }
   margin-bottom: 10px;
   transition: border-color 0.15s;
 }
-.site-row:hover { border-color: rgba(148, 163, 196, 0.3); }
+.site-row:hover { border-color: var(--line-strong); }
 .site-fav {
   width: 34px; height: 34px; flex: none;
   display: grid; place-items: center;
-  background: var(--bg-elev-2);
+  background: var(--accent-soft);
   border-radius: 9px;
   font-weight: 700;
-  color: var(--accent-2);
+  color: var(--accent-text);
   text-transform: uppercase;
 }
 .site-name { font-weight: 600; font-size: 14px; }
@@ -236,9 +250,11 @@ h1 { font-size: 26px; margin-bottom: 6px; }
   border-radius: 999px;
   flex: none;
 }
-.site-badge.always   { background: rgba(248, 113, 113, 0.13); color: #fca5a5; }
-.site-badge.schedule { background: rgba(251, 191, 36, 0.13);  color: #fcd34d; }
-.site-badge.limit    { background: rgba(45, 212, 191, 0.13);  color: #5eead4; }
+/* Three modes, three earths: brick for always, ochre for scheduled, moss for
+   a daily budget. Token-driven, so both themes follow automatically. */
+.site-badge.always   { background: var(--danger-soft); color: var(--danger); }
+.site-badge.schedule { background: var(--warn-soft);   color: var(--warn); }
+.site-badge.limit    { background: var(--ok-soft);     color: var(--ok); }
 
 /* Keywords */
 .kw-add { display: flex; gap: 10px; margin-bottom: 14px; }
@@ -276,7 +292,13 @@ h1 { font-size: 26px; margin-bottom: 6px; }
   border-radius: var(--radius-sm);
   padding: 16px 8px;
 }
-.stat-num { font-size: 26px; font-weight: 700; }
+.stat-num {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-text);
+}
 .stat-label { font-size: 11px; color: var(--text-faint); margin-top: 3px; }
 
 .bar-chart {
@@ -287,10 +309,10 @@ h1 { font-size: 26px; margin-bottom: 6px; }
 .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
 .bar {
   width: 100%; max-width: 34px;
-  background: var(--grad);
-  border-radius: 6px 6px 2px 2px;
+  background: var(--accent);
+  border-radius: 5px 5px 2px 2px;
   min-height: 2px;
-  opacity: 0.85;
+  opacity: 0.8;
   transition: opacity 0.15s;
 }
 .bar:hover { opacity: 1; }
@@ -310,7 +332,7 @@ h1 { font-size: 26px; margin-bottom: 6px; }
 .modal-backdrop {
   position: fixed; inset: 0;
   z-index: 50;
-  background: rgba(5, 8, 18, 0.75);
+  background: rgba(22, 28, 22, 0.62);
   backdrop-filter: blur(6px);
   display: flex; align-items: center; justify-content: center;
   animation: fade-in 0.2s ease;
@@ -348,17 +370,21 @@ h1 { font-size: 26px; margin-bottom: 6px; }
   font-size: 32px; font-weight: 700;
   font-variant-numeric: tabular-nums;
   /* Sits on the bright breathing orb in both themes */
-  color: #fff;
-  text-shadow: 0 1px 12px rgba(20, 23, 60, 0.55);
+  /* The disc below stays translucent, so this is ordinary text in both
+     themes rather than white with a halo. */
+  color: var(--text);
 }
 
 .breath-orb {
   position: absolute;
   inset: 14px;
   border-radius: 50%;
-  background: radial-gradient(circle at 32% 28%, #a5b4fc, #6366f1 48%, #2dd4bf 96%);
-  box-shadow: 0 0 36px rgba(99, 102, 241, 0.55), 0 0 80px rgba(45, 212, 191, 0.3);
-  opacity: 0.55;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(53, 107, 82, 0.26) 0%,
+    rgba(53, 107, 82, 0.15) 52%,
+    rgba(53, 107, 82, 0.04) 74%,
+    transparent 80%);
+  opacity: 0.8;
   transform: scale(0.55);
   pointer-events: none;
   animation: breath-hue 9s linear infinite;
@@ -367,13 +393,21 @@ h1 { font-size: 26px; margin-bottom: 6px; }
   0%, 100% { filter: hue-rotate(0deg); }
   50% { filter: hue-rotate(40deg); }
 }
+:root[data-theme="dark"] .breath-orb {
+  background: radial-gradient(circle at 50% 50%,
+    rgba(143, 191, 159, 0.30) 0%,
+    rgba(110, 160, 128, 0.18) 52%,
+    rgba(71, 128, 95, 0.05) 74%,
+    transparent 80%);
+}
+
 .breath-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--accent-2);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent-text);
+  margin: 0 0 8px;
 }
 .stay-hint {
   font-size: 12px;
@@ -416,10 +450,40 @@ h1 { font-size: 26px; margin-bottom: 6px; }
 }
 .welcome-theme > span { font-size: 13.5px; font-weight: 600; }
 
+/* The wait slider on the welcome screen. Same shape as .welcome-theme, but the
+   slider needs the full column width the range-field expects. */
+.welcome-wait {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  text-align: left;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 13px 16px;
+  margin-bottom: 10px;
+  transition: opacity 0.2s var(--ease);
+}
+.welcome-wait strong { display: block; font-size: 13.5px; }
+.welcome-wait .range-field { width: 190px; }
+.welcome-wait > div:first-child span { font-size: 12px; color: var(--text-faint); }
+/* Strict mode off means the wait never runs; show that rather than hiding it. */
+.welcome-wait.dim { opacity: 0.45; }
+.welcome-wait.dim .range { pointer-events: none; }
+
+/* A protection holding an unspent one-time reversal. Reads as an allowance
+   rather than a warning, so it needs the opposite colour to .undo-tag. */
+.undo-tag.free-tag {
+  color: var(--ok);
+  background: var(--ok-soft);
+  border-color: var(--ok);
+}
+
 .phrase {
   font-size: 14.5px; font-weight: 600;
   background: var(--bg-elev-2);
-  border: 1px dashed rgba(148, 163, 196, 0.3);
+  border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   padding: 13px 16px;
   margin: 0 0 12px;
@@ -454,7 +518,7 @@ h1 { font-size: 26px; margin-bottom: 6px; }
   font: 700 11px var(--font);
   cursor: pointer;
 }
-.day-btn.on { background: rgba(99, 102, 241, 0.25); border-color: var(--accent); color: var(--accent-text); }
+.day-btn.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-text); }
 .time-range { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-dim); }
 .window-row input[type="time"] { padding: 7px 9px; font-size: 12.5px; }
 .window-row .rm {
@@ -508,9 +572,4 @@ h1 { font-size: 26px; margin-bottom: 6px; }
 
 /* ---------- Daylight theme fixes for hardcoded dark-friendly colors ---------- */
 
-:root[data-theme="light"] .banner { background: rgba(251, 191, 36, 0.16); border-color: rgba(180, 83, 9, 0.3); }
-:root[data-theme="light"] .banner strong { color: #b45309; }
-:root[data-theme="light"] .site-badge.always   { background: rgba(220, 38, 38, 0.1);  color: #dc2626; }
-:root[data-theme="light"] .site-badge.schedule { background: rgba(180, 83, 9, 0.1);   color: #b45309; }
-:root[data-theme="light"] .site-badge.limit    { background: rgba(15, 118, 110, 0.1); color: #0f766e; }
-:root[data-theme="light"] .modal-backdrop { background: rgba(64, 68, 110, 0.35); }
+:root[data-theme="light"] .modal-backdrop { background: rgba(46, 56, 44, 0.32); }
