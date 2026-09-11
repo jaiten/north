@@ -1,5 +1,11 @@
 /* Compact companion to the North website. */
-body { width: 380px; max-width: 100vw; padding: 0 24px; }
+/* No viewport units in here. Chrome sizes the action popup to fit its
+   document, so the viewport width depends on the content width — and a
+   `max-width: 100vw` would make the content width depend on the viewport in
+   return. That circular measurement makes the panel visibly jitter as it
+   opens. A plain fixed width is what a popup wants; Chrome caps it at 800px
+   long before 380 is a problem. */
+body { width: 380px; padding: 0 24px; }
 header { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--line); }
 .logo { display: flex; align-items: center; gap: 8px; }
 .logo-mark { width: 25px; height: 34px; color: var(--accent-text); }

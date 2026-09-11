@@ -675,7 +675,7 @@ async function spendFreeUndo(elId) {
 
 function undoCostNote() {
   return S.strict?.enabled
-    ? `undoing it later takes the ${formatWait(S.strict.waitSeconds || 60)} wait and the challenge`
+    ? `undoing it later takes a wait of ${formatWait(S.strict.waitSeconds || 60)} and the challenge`
     : "strict mode is off, so you can undo it at any time";
 }
 
