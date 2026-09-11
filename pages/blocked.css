@@ -1,233 +1,51 @@
-/* North — the block page.
-   The one screen that has to land. It arrives mid-impulse, so it stays quiet:
-   paper, one warm accent, and a breathing circle that glows softly rather than
-   burning. Everything is centred and slow. */
-
-body {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  padding: 40px 16px;
-}
-
-.card {
-  position: relative;
-  z-index: 1;
-  width: min(520px, 94vw);
-  background-color: var(--bg-elev);
-  background-image: var(--paper-grain-card);
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  box-shadow: var(--shadow);
-  padding: 40px 42px 34px;
-  text-align: center;
-  animation: card-in 0.6s var(--ease);
-}
-@keyframes card-in {
-  from { opacity: 0; transform: translateY(12px); }
-}
-
-/* Visible to screen readers only. */
-.sr-only {
-  position: absolute;
-  width: 1px; height: 1px;
-  padding: 0; margin: -1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* "Step 1 of 2" — orients you inside the two-step unlock. */
-.step-label {
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin: 0 0 10px;
-}
-
-.brand-mark {
-  width: 44px; height: 44px;
-  margin: 0 auto 20px;
-  display: grid;
-  place-items: center;
-  color: #fff;
-  background: var(--grad);
-  border-radius: 13px;
-  box-shadow: var(--shadow-sm);
-}
-
-h1 { font-size: 27px; margin-bottom: 12px; }
-h2 { font-size: 22px; margin-bottom: 10px; }
-
-/* North speaking, so it takes the serif and a little more room to breathe. */
-.sub {
-  font-family: var(--font-display);
-  font-size: 16px;
-  line-height: 1.55;
-  color: var(--text-dim);
-  margin: 0 auto 24px;
-  max-width: 400px;
-  text-wrap: pretty;
-}
-
-/* The subline swaps for another on click; hint that it's interactive. */
-#subline { cursor: pointer; transition: color 0.2s var(--ease); }
+/* The pause page is a quiet, open sheet with one clear way forward. */
+body { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; padding: 140px 24px 80px; }
+.blocked-header { position: absolute; top: 0; left: 48px; right: 48px; display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 90px; border-bottom: 1px solid var(--line); }
+.blocked-header > span:last-child { font-size: 11px; color: var(--text-faint); }
+.card { position: relative; z-index: 1; width: min(620px, 100%); padding: 36px 44px; text-align: center; animation: north-reveal .65s var(--ease); }
+.brand-mark { width: 48px; height: 58px; margin: 0 auto 26px; color: var(--accent-text); display: grid; place-items: center; }
+.brand-mark .north-arrow { width: 100%; height: 100%; }
+.card .eyebrow { font-size: 9px; margin-bottom: 18px; }
+h1 { font-size: clamp(44px, 5vw, 68px); line-height: 1.04; margin: 0 0 23px; text-wrap: balance; }
+h2 { font-size: clamp(36px, 4vw, 48px); margin-bottom: 18px; }
+.sub { font: 400 14px/1.8 var(--font); color: var(--text-dim); margin: 0 auto 24px; max-width: 390px; text-wrap: pretty; }
+#subline { cursor: pointer; transition: color .2s var(--ease); }
 #subline:hover { color: var(--text); }
-
-.meta {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 28px;
-}
-.meta .pill {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-dim);
-  background: var(--bg-elev-2);
-  border: 1px solid var(--line);
-  padding: 5px 12px;
-  border-radius: 999px;
-}
-.meta .pill strong { color: var(--text); font-weight: 700; }
-
-.actions { display: flex; flex-direction: column; gap: 9px; align-items: center; }
-.actions .btn { width: 270px; }
-
-.footnote {
-  margin: 24px auto 0;
-  font-size: 12px;
-  line-height: 1.55;
-  color: var(--text-faint);
-  max-width: 380px;
-  text-wrap: pretty;
-}
-
-/* --- The wait ------------------------------------------------------------
-   A soft warm disc that swells and settles with the breath, and a clay ring
-   that closes as the seconds go. The disc stays translucent so the numeral on
-   top can be ordinary text in both themes rather than white with a halo. */
-.unlock { padding-top: 36px; }
-
-.ring-wrap { position: relative; width: 156px; height: 156px; margin: 10px auto 18px; }
-.breath-orb {
-  position: absolute;
-  inset: 12px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%,
-    rgba(53, 107, 82, 0.26) 0%,
-    rgba(53, 107, 82, 0.15) 52%,
-    rgba(53, 107, 82, 0.04) 74%,
-    transparent 80%);
-  opacity: 0.8;
-  transform: scale(0.55);
-  pointer-events: none;
-}
-:root[data-theme="dark"] .breath-orb {
-  background: radial-gradient(circle at 50% 50%,
-    rgba(143, 191, 159, 0.30) 0%,
-    rgba(110, 160, 128, 0.18) 52%,
-    rgba(71, 128, 95, 0.05) 74%,
-    transparent 80%);
-}
-
-.breath-label {
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-style: italic;
-  font-weight: 400;
-  color: var(--accent-text);
-  margin: 0 0 10px;
-}
-.stay-hint {
-  font-size: 12px;
-  color: var(--text-faint);
-  margin: 0 0 18px;
-  max-width: 340px;
-  margin-inline: auto;
-}
-
-.ring { width: 156px; height: 156px; transform: rotate(-90deg); }
-.ring-bg { fill: none; stroke: var(--bg-elev-2); stroke-width: 6; }
-.ring-fg {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 6;
-  stroke-linecap: round;
-  stroke-dasharray: 326.7;
-  stroke-dashoffset: 0;
-  transition: stroke-dashoffset 1s linear;
-}
-.ring-num {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display);
-  font-size: 40px;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  color: var(--text);
-}
-
-/* --- The challenge ------------------------------------------------------- */
-.phrase {
-  font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1.5;
-  background: var(--bg-elev-2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 15px 18px;
-  margin: 0 0 14px;
-  user-select: none;
-  -webkit-user-select: none;
-  color: var(--text);
-}
-
+.meta { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 30px; }
+.meta .pill { font-size: 10px; color: var(--text-dim); background: var(--bg-elev-2); border: 1px solid var(--line); padding: 5px 10px; border-radius: 4px; overflow-wrap: anywhere; max-width: 100%; }
+.meta .pill strong { color: var(--text); font-weight: 500; }
+.actions { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.actions .btn { width: min(280px, 100%); min-height: 44px; }
+#btn-unlock { border-color: transparent; text-decoration: underline; text-underline-offset: 4px; font-size: 11px; }
+.footnote { margin: 28px auto 0; font-size: 11px; line-height: 1.8; color: var(--text-faint); max-width: 390px; text-wrap: pretty; }
+.brand { position: relative; margin: 0; padding-top: 22px; font: italic 18px var(--font-display); color: var(--text-faint); }
+.brand::before { content: ''; width: 32px; height: 1px; background: var(--line); display: block; margin: 0 auto 20px; }
+.step-label { font-size: 10px; letter-spacing: .13em; text-transform: uppercase; color: var(--text-faint); margin: 0 0 18px; }
+.unlock { background: var(--bg-elev); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); }
+.ring-wrap { position: relative; width: 178px; height: 178px; margin: 30px auto 20px; }
+.ring { width: 178px; height: 178px; transform: rotate(-90deg); }
+.ring-bg { fill: none; stroke: var(--line); stroke-width: 1; }
+.ring-fg { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 326.7; stroke-dashoffset: 0; transition: stroke-dashoffset 1s linear; }
+.ring-num { position: absolute; inset: 0; display: grid; place-items: center; font: 400 58px var(--font-display); font-variant-numeric: tabular-nums; color: var(--text); }
+.breath-orb { position: absolute; inset: 22px; border: 1px solid var(--line); border-radius: 50%; background: var(--accent-soft); opacity: .8; transform: scale(.55); pointer-events: none; }
+.breath-label { font: italic 24px var(--font-display); color: var(--accent-text); margin: 0 0 14px; }
+.stay-hint { font-size: 11px; color: var(--text-faint); margin: 0 auto 24px; max-width: 310px; }
+.phrase { font-size: 14px; line-height: 1.7; background: var(--bg-elev-2); border: 1px solid var(--line); border-radius: 6px; padding: 15px; margin: 0 0 14px; user-select: none; color: var(--text); }
 #challenge-input { width: 100%; text-align: center; margin-bottom: 14px; }
-#challenge-why { width: 100%; text-align: left; display: block; }
-.why-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 12px;
-  margin-top: 8px;
-}
-#word-count {
-  flex: none;
-  font-size: 12px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: var(--text-faint);
-}
+#challenge-why { width: 100%; text-align: left; display: block; min-height: 130px; resize: vertical; background: var(--bg); font-size: 13px; }
+.why-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 10px; }
+#word-count { flex: none; font-size: 10px; font-variant-numeric: tabular-nums; color: var(--text-faint); }
 #word-count.done { color: var(--ok); }
-.why-hint { font-size: 11.5px; color: var(--text-faint); margin: 0; text-align: right; }
-
-.error { color: var(--danger); font-size: 12.5px; margin: 6px 0 0; }
-
-.durations {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin: 20px 0 22px;
-  flex-wrap: wrap;
+.why-hint { font-size: 10px; color: var(--text-faint); text-align: right; }
+.error { color: var(--danger); font-size: 12px; margin: 12px 0; }
+.durations { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 24px 0; flex-wrap: wrap; }
+.dur-label { font-size: 11px; color: var(--text-faint); }
+@media (max-width: 600px) {
+  body { padding: 110px 18px 36px; gap: 14px; }
+  .blocked-header { left: 24px; right: 24px; min-height: 75px; }
+  .blocked-header > span:last-child { font-size: 9px; max-width: 120px; text-align: right; }
+  .card { padding: 28px 12px; }
+  .unlock { padding: 28px 20px; }
+  .sub { font-size: 13px; }
+  .brand { font-size: 16px; text-align: center; }
 }
-.dur-label { font-size: 12.5px; color: var(--text-faint); margin-right: 2px; }
-
-.brand {
-  position: relative;
-  z-index: 1;
-  font-size: 12.5px;
-  color: var(--text-faint);
-  letter-spacing: 0.02em;
-}
-.brand strong { color: var(--text-dim); font-weight: 650; }

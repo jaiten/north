@@ -116,9 +116,9 @@ const LINES = {
   },
   blocklist: {
     kind: [
-      "You added this site to your blocklist for a reason. The reason hasn't changed; only the urge has.",
-      "Habit brought you here, not intention. That energy has somewhere better to go.",
-      "This is where the new habit gets built. One closed tab at a time."
+      "You made a little space for yourself by closing this site. Take a breath. Your time is still yours.",
+      "A familiar detour. A moment to choose where you want your attention to go next.",
+      "The feed will still be here. For now, there’s room for something that matters to you."
     ],
     tough: [
       "You blocked this yourself. Past you didn't trust this moment, and past you had a point.",
@@ -147,6 +147,7 @@ const WRONG_LINES = {
 let wrongIdx = 0;
 
 function shake(el) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   el.animate(
     [{ transform: "translateX(0)" }, { transform: "translateX(-5px)" }, { transform: "translateX(5px)" },
      { transform: "translateX(-4px)" }, { transform: "translateX(3px)" }, { transform: "translateX(0)" }],
@@ -311,7 +312,7 @@ function startBreath() {
   const phase = (text, anim, ms) => new Promise(res => {
     if (stopped) return res();
     label.textContent = text;
-    if (anim) orb.animate(anim, { duration: ms, fill: "forwards", easing: "ease-in-out" });
+    if (anim && !matchMedia('(prefers-reduced-motion: reduce)').matches) orb.animate(anim, { duration: ms, fill: "forwards", easing: "ease-in-out" });
     setTimeout(res, ms);
   });
   (async () => {
@@ -446,7 +447,7 @@ function showChallenge() {
     expected = null;
     $("extra-challenge").classList.add("hidden");
     $("challenge-prompt").textContent =
-      `Write your future self a note about why you need this, in at least ${MIN_WORDS} words. If you can't fill ${MIN_WORDS} words, you probably don't need it.`;
+      `Leave your future self a note in at least ${MIN_WORDS} words: what you came to do, and when you plan to leave.`;
   }
   (expected ? $("challenge-input") : $("challenge-why")).focus();
   updateReady();

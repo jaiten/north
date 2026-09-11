@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>North — Settings</title>
+  <script src="theme.js"></script>
   <link rel="stylesheet" href="shared.css">
   <link rel="stylesheet" href="options.css">
 </head>
@@ -15,12 +16,12 @@
       <div class="logo">
         <div class="logo-mark"><svg class="north-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 19 20.5 12 17 5 20.5Z"/></svg></div>
         <div>
-          <div class="logo-name">North</div>
-          <div class="logo-tag">Free for life</div>
+          <div class="logo-name">north<span>.</span></div>
+          <div class="logo-tag">A little more life.</div>
         </div>
       </div>
 
-      <nav>
+      <nav aria-label="Settings sections">
         <p class="nav-label">Block</p>
         <button class="nav-item active" data-section="blocklist">Sites</button>
         <button class="nav-item" data-section="shorts">Short videos</button>
@@ -30,11 +31,11 @@
         <button class="nav-item" data-section="social">Social media</button>
         <button class="nav-item" data-section="news">News</button>
         <p class="nav-label">Commit</p>
-        <button class="nav-item" data-section="strict">Strictness</button>
+        <button class="nav-item" data-section="strict">Unlock &amp; friction</button>
         <button class="nav-item" data-section="lockdown">Lockdown</button>
         <p class="nav-label">Review</p>
         <button class="nav-item" data-section="stats">Progress</button>
-        <button class="nav-item" data-section="more">More</button>
+        <button class="nav-item" data-section="more">Preferences</button>
       </nav>
 
       <div class="sidebar-foot">
@@ -42,33 +43,37 @@
         <button class="btn ghost small" id="btn-theme">Switch to dark</button>
         <div class="master-toggle">
           <label class="switch">
-            <input type="checkbox" id="master-enabled" checked>
+            <input type="checkbox" id="master-enabled" aria-label="Enable North protection" checked>
             <span class="track"></span>
           </label>
           <span id="master-label">Protection on</span>
         </div>
-        <p class="version">North v1.3</p>
+        <p class="version">Free for life. Yours to keep.<br><span>North v1.3</span></p>
       </div>
     </aside>
 
     <main class="content">
+      <header class="workspace-header"><span>Your attention, on your terms.</span><span class="privacy-note"><i aria-hidden="true"></i> Stored on this device</span></header>
 
       <div class="banner hidden" id="incognito-banner">
         <div>
           <strong>North isn't covering Incognito windows.</strong>
-          A blocker with a side door isn't a blocker. Allow North in Incognito so the blocks hold everywhere.
+          Allow North in Incognito to keep your protections on in private windows, too.
         </div>
         <button class="btn small primary" id="btn-incognito">Open extension settings</button>
       </div>
 
       <!-- ================= Blocked sites ================= -->
       <section class="section active" id="sec-blocklist">
-        <h1>Blocked sites</h1>
-        <p class="lede">Each site can be blocked always, on a schedule, or once a daily time budget runs out.</p>
+        <p class="eyebrow">01 / Your blocklist</p>
+        <h1>Your time. <em>Your rules.</em></h1>
+        <p class="lede">A little less distraction, a little more room for you. Choose which sites to close, and when.</p>
 
+        <div class="add-site-panel">
+        <label class="field-label" for="add-site-input">Make space for something better</label>
         <div class="add-row">
           <input type="text" id="add-site-input" placeholder="Add a site, e.g. reddit.com" aria-label="Add a site to the blocklist">
-          <button class="btn primary" id="btn-add-site">Add</button>
+          <button class="btn primary" id="btn-add-site">Block site <span aria-hidden="true">+</span></button>
         </div>
         <div class="presets" id="presets">
           <span class="dur-label">Popular</span>
@@ -77,6 +82,7 @@
           <button class="chip" data-site="twitch.tv" title="Live streams that never end. To just calm the homepage, see Social media.">Twitch</button>
           <button class="chip" data-site="netflix.com" title="One more episode is rarely one more episode">Netflix</button>
         </div>
+        <details class="more-presets"><summary>More suggestions <span aria-hidden="true">+</span></summary>
         <div class="presets" id="presets-social">
           <span class="dur-label">Social</span>
           <button class="chip" data-site="instagram.com" title="Blocks all of Instagram, DMs included. To keep DMs, see Social media.">Instagram</button>
@@ -96,9 +102,13 @@
           <button class="chip" data-site="roblox.com" title="Roblox games and discovery">Roblox</button>
           <button class="chip" data-site="store.steampowered.com" title="The Steam store and its daily deals">Steam Store</button>
         </div>
-        <p class="hint" style="margin-bottom:22px">Hover a chip to see what it blocks. Removing a site you just added is free for 30 seconds; after that it takes the challenge, so add with intent.</p>
+        </details>
+        <p class="hint">Added by mistake? You have 30 seconds to remove it freely. After that, removing a site takes the unlock challenge.</p>
+        </div>
 
+        <div class="list-heading"><h2>Sites you’re making space from</h2><span id="site-count"></span></div>
         <div id="site-list"></div>
+        <p class="list-note">Always closed, scheduled hours, or a daily limit. Select Edit to make each rule your own.</p>
       </section>
 
       <!-- ================= Short videos ================= -->
@@ -177,7 +187,7 @@
             </div>
             <label class="switch"><input type="checkbox" id="opt-news"><span class="track"></span></label>
           </div>
-          <p class="hint">Covers the major outlets: the New York Times, the Guardian, the BBC, CNN, the Washington Post, Reuters, the Verge and dozens more. If a site you read isn't covered, name it in the suggestion box under More.</p>
+          <p class="hint">Covers the major outlets: the New York Times, the Guardian, the BBC, CNN, the Washington Post, Reuters, the Verge and dozens more. If a site you read isn't covered, name it in the suggestion box under Preferences.</p>
         </div>
       </section>
 
@@ -274,7 +284,7 @@
 
       <!-- ================= Strictness ================= -->
       <section class="section" id="sec-strict">
-        <h1>Strictness</h1>
+        <h1>Pause with <em>intention.</em></h1>
         <p class="lede">The friction that makes North work. Weakening any protection takes a wait and a typed challenge; you'll see a "hard to undo" tag wherever that applies.</p>
         <div class="setting-card">
           <div class="setting-row">
@@ -372,7 +382,7 @@
 
       <!-- ================= More ================= -->
       <section class="section" id="sec-more">
-        <h1>More</h1>
+        <h1>Make North <em>yours.</em></h1>
         <p class="lede">Backups, requests, and the fine print.</p>
 
         <div class="setting-card">
@@ -485,7 +495,8 @@
   <!-- Welcome / onboarding modal -->
   <div class="modal-backdrop hidden" id="welcome-backdrop">
     <div class="modal wide">
-      <h2>Welcome to North.</h2>
+      <p class="eyebrow">A little less feed. A little more life.</p>
+      <h2>Welcome to <em>your own time.</em></h2>
       <p class="sub" style="text-align:left">Nothing is blocked until you choose it. Pick your starting protections — you can change them later, though weakening them takes a little work. That's deliberate.</p>
       <label class="welcome-opt">
         <input type="checkbox" id="wel-shorts" checked>
@@ -529,10 +540,10 @@
     </div>
   </div>
 
-  <div class="toast hidden" id="toast"></div>
+  <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
 
   <script src="dev-shim.js"></script>
-  <script src="theme.js"></script>
   <script src="options.js"></script>
+  <script src="ui.js"></script>
 </body>
 </html>

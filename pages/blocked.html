@@ -4,14 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blocked by North</title>
+  <script src="theme.js"></script>
   <link rel="stylesheet" href="shared.css">
   <link rel="stylesheet" href="blocked.css">
 </head>
 <body>
   <div class="aurora"></div>
+  <header class="blocked-header"><span class="wordmark">north<span>.</span></span><span>A little less feed. A little more life.</span></header>
 
   <main class="card" id="main-card">
     <p class="brand-mark"><svg class="north-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 19 20.5 12 17 5 20.5Z"/></svg></p>
+    <p class="eyebrow">A moment to choose</p>
     <h1 id="headline">This site is blocked.</h1>
     <p class="sub" id="subline"></p>
 
@@ -33,7 +36,7 @@
       <p class="step-label">Step 1 of 2</p>
       <h2>Take a moment first.</h2>
       <p class="sub">Stay with the timer for <span id="wait-total">60</span> seconds.
-        Most urges don't survive a genuine pause.</p>
+        Give yourself a little room to decide.</p>
       <div class="ring-wrap">
         <div class="breath-orb" id="breath-orb"></div>
         <svg viewBox="0 0 120 120" class="ring" aria-hidden="true">
@@ -51,7 +54,7 @@
     <!-- Step 2: the journal entry is the challenge -->
     <div id="step-challenge" class="hidden">
       <p class="step-label">Step 2 of 2</p>
-      <h2>Make your case.</h2>
+      <h2>What brings you here?</h2>
       <p class="sub" id="challenge-prompt"></p>
 
       <div id="extra-challenge" class="hidden">
@@ -82,10 +85,10 @@
     </div>
   </section>
 
-  <p class="brand"><svg class="north-arrow inline" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 19 20.5 12 17 5 20.5Z"/></svg> <strong>North</strong> · Find your true north</p>
+  <p class="brand">Your attention has somewhere better to be.</p>
 
   <script src="dev-shim.js"></script>
-  <script src="theme.js"></script>
   <script src="blocked.js"></script>
+  <script src="ui.js"></script>
 </body>
 </html>

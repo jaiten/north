@@ -155,7 +155,7 @@ function startGateBreath() {
   const phase = (text, anim, ms) => new Promise(res => {
     if (stopped) return res();
     label.textContent = text;
-    if (anim) orb.animate(anim, { duration: ms, fill: "forwards", easing: "ease-in-out" });
+    if (anim && !matchMedia('(prefers-reduced-motion: reduce)').matches) orb.animate(anim, { duration: ms, fill: "forwards", easing: "ease-in-out" });
     setTimeout(res, ms);
   });
   (async () => {
@@ -214,7 +214,7 @@ function submitGate() {
   if ($("gate-input").value.trim() !== gateExpected) {
     $("gate-error").textContent = GATE_WRONG_LINES[gateWrongIdx++ % GATE_WRONG_LINES.length];
     $("gate-error").classList.remove("hidden");
-    $("gate-phrase").animate(
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) $("gate-phrase").animate(
       [{ transform: "translateX(0)" }, { transform: "translateX(-5px)" }, { transform: "translateX(5px)" },
        { transform: "translateX(-4px)" }, { transform: "translateX(3px)" }, { transform: "translateX(0)" }],
       { duration: 380, easing: "ease-out" }
@@ -356,8 +356,9 @@ function describeSite(site) {
 
 function renderSites() {
   const list = $("site-list");
+  $("site-count").textContent = `${S.sites.length} ${S.sites.length === 1 ? "site" : "sites"}`;
   if (!S.sites.length) {
-    list.innerHTML = `<p class="hint">Nothing blocked yet. Add the sites that pull you in — the chips above are one click.</p>`;
+    list.innerHTML = `<div class="empty-state"><h3>A little space starts here.</h3><p>Add your first site above. Choose a daily limit, a schedule, or keep it closed.</p></div>`;
     return;
   }
   list.innerHTML = S.sites.map(site => `
@@ -368,7 +369,7 @@ function renderSites() {
         <div class="site-desc">${esc(describeSite(site))}</div>
       </div>
       <span class="site-badge ${site.mode}">${SITE_BADGE[site.mode] || site.mode}</span>
-      <button class="btn ghost small act-edit">Edit</button>
+      <button class="btn ghost small act-edit" aria-label="Edit ${esc(site.pattern)}">Edit</button>
       <button class="btn ghost small act-del" title="Remove this site" aria-label="Remove ${esc(site.pattern)}">✕</button>
     </div>`).join("");
 

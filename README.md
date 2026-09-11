@@ -86,6 +86,25 @@ permissions as optional, so grant them once in about:addons.
 
 ## Project layout
 
+### Interface preview
+
+Run `python -m http.server 8001 --bind 127.0.0.1` from the project root, then open:
+
+- Settings: `http://127.0.0.1:8001/pages/options.html`
+- Popup: `http://127.0.0.1:8001/pages/popup.html`
+- Onboarding: `http://127.0.0.1:8001/pages/options.html#welcome`
+- Block page: `http://127.0.0.1:8001/pages/blocked.html?reason=blocklist&site=x.com`
+
+Browser previews use sample data through `pages/dev-shim.js`. The shim does
+nothing inside the installed extension. Reload the unpacked extension to test
+real blocking and saved settings.
+
+The interface shares the website's paper and pine palette, locally bundled
+DM Sans and Instrument Serif fonts, and compass identity. `pages/ui.js` supplies
+navigation semantics, dialog focus management, and optional reveal animations.
+Both themes support narrow screens and reduced motion. Font licenses are in
+`pages/fonts/`.
+
 ```
 manifest.json          MV3 manifest (Chrome + Firefox from one build)
 src/background.js      Rules engine: navigation guard, schedules, limits,

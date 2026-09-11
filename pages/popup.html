@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>North</title>
+  <script src="theme.js"></script>
   <link rel="stylesheet" href="shared.css">
   <link rel="stylesheet" href="popup.css">
 </head>
@@ -11,28 +13,30 @@
     <div class="logo">
       <div class="logo-mark"><svg class="north-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 19 20.5 12 17 5 20.5Z"/></svg></div>
       <div>
-        <div class="logo-name">North</div>
+        <div class="logo-name">north<span>.</span></div>
         <div class="logo-tag" id="status-tag">Protection on</div>
       </div>
     </div>
-    <button class="icon-btn" id="btn-options" title="Settings" aria-label="Open settings">⚙</button>
+    <button class="icon-btn" id="btn-options" title="Settings" aria-label="Open settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/></svg></button>
   </header>
 
   <!-- Focus session -->
   <section class="card" id="focus-card">
     <div id="focus-idle">
-      <h3>Focus session</h3>
-      <p class="dim">Blocks everything on your list. No unlocks until it ends.</p>
+      <p class="eyebrow">A little room to focus</p>
+      <h1>Make time for<br><em>what matters.</em></h1>
+      <p class="dim">Choose a session. Your blocked sites stay closed until the timer ends.</p>
       <div class="focus-row">
         <button class="chip" data-mins="25">25 min</button>
         <button class="chip" data-mins="50">50 min</button>
         <button class="chip" data-mins="90">90 min</button>
         <input type="number" id="focus-custom" min="1" max="480" placeholder="min" aria-label="Custom session length in minutes">
       </div>
-      <button class="btn primary full" id="btn-focus">Start focusing</button>
+      <button class="btn primary full" id="btn-focus">Start focusing <span aria-hidden="true">↗</span></button>
     </div>
     <div id="focus-active" class="hidden">
-      <h3>In session</h3>
+      <p class="eyebrow">Focus session</p>
+      <h2>This time is yours.</h2>
       <div class="focus-time" id="focus-remaining" role="timer">0:00</div>
       <p class="dim">Everything on your list is sealed until the timer ends.</p>
       <button class="btn ghost full small" id="btn-end-focus">End early (takes the challenge)</button>
@@ -40,30 +44,34 @@
   </section>
 
   <!-- Today -->
-  <section class="card">
-    <h3>Today</h3>
+  <section class="card today-card" aria-label="Today's activity">
+    <div class="section-label"><h3>Your day, so far</h3><span>Today</span></div>
     <div class="stat-row">
       <div class="stat"><div class="stat-num" id="stat-blocks">0</div><div class="stat-label">Distractions<br>blocked</div></div>
       <div class="stat"><div class="stat-num" id="stat-focus">0m</div><div class="stat-label">Focused<br>time</div></div>
       <div class="stat"><div class="stat-num" id="stat-unlocks">0</div><div class="stat-label">Unlocks<br>used</div></div>
     </div>
+    <details class="popup-usage">
+    <summary>Browsing activity <span aria-hidden="true">+</span></summary>
+    <p class="usage-heading">Time on your most-visited sites</p>
     <div id="usage-bars"></div>
+    </details>
   </section>
 
   <footer>
     <label class="switch" title="Protection. Turning it off takes the challenge.">
-      <input type="checkbox" id="toggle-enabled" checked>
+      <input type="checkbox" id="toggle-enabled" aria-label="Enable North protection" checked>
       <span class="track"></span>
     </label>
     <span class="dim" id="enabled-label">Protection on</span>
   </footer>
 
   <div class="incog hidden" id="incog-banner">
-    Not active in Incognito windows. <a id="incog-fix" role="button" tabindex="0">Turn it on</a>
+    Incognito protection is off. <button id="incog-fix">Set up</button>
   </div>
 
   <script src="dev-shim.js"></script>
-  <script src="theme.js"></script>
   <script src="popup.js"></script>
+  <script src="ui.js"></script>
 </body>
 </html>

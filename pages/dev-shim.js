@@ -64,6 +64,18 @@
       sendMessage: async msg => {
         console.log("[dev-shim] sendMessage", msg);
         if (msg.type === "getDashboard") return structuredClone(dashboard);
+        if (msg.type === "saveSettings") {
+          Object.assign(fixtureSettings, structuredClone(msg.settings));
+          return { ok: true };
+        }
+        if (msg.type === "startFocus") {
+          dashboard.focus = { active: true, until: Date.now() + msg.minutes * 60e3 };
+          return { ok: true };
+        }
+        if (msg.type === "endFocus") {
+          dashboard.focus = { active: false };
+          return { ok: true };
+        }
         if (msg.type === "getUsageFor") return { seconds: 14 * 60 };
         if (msg.type === "requestUnlock") return { ok: true, until: Date.now() + 6e5 };
         if (msg.type === "startLockdown") {

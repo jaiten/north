@@ -1,45 +1,27 @@
-/* ===========================================================================
-   North — design system: "Paper"
-   ---------------------------------------------------------------------------
-   North interrupts a compulsive loop, so the interface has to feel like
-   stepping outside rather than hitting an error. Three rules hold it together:
+/* North — the website's paper, pine and editorial type, sized for the app. */
 
-   1. One green, on cream. A single soothing pine green carries every action
-      and every protection that is holding; cream carries everything else.
-      Ochre and brick appear only to warn. A single-accent palette is calmer
-      than a coordinated one, and it makes the green mean something.
-   2. A serif for the voice, a sans for the machinery. Headlines and the lines
-      North speaks are set in a humanist serif; labels, numbers and controls
-      stay sans. You can tell what is talking and what is a button.
-   3. The page is a sheet of paper. Not a screen with a noise filter over it:
-      a tonal mottle for the cloudiness real stock has, a fine fibre grain on
-      top, and a soft vignette as though it were lit from above. Nothing
-      glows, nothing drifts.
-   ======================================================================== */
+@import url('fonts/dm-sans.css');
+@import url('fonts/instrument-serif.css');
 
 :root {
-  /* Daylight. Three surfaces, and they have to be genuinely separated: the
-     page is the tinted stock, a card is a white sheet laid on it, and an input
-     is a well pressed into the sheet. Cream-on-cream with a hairline reads as
-     mush, which is exactly what the first pass got wrong. */
-  --bg: #f0ead9;        /* tinted stock — the desk */
-  --bg-elev: #fefdf8;   /* a sheet laid on it */
-  --bg-elev-2: #eae3d1; /* recessed: inputs, tracks, wells */
-  --sidebar-bg: #ebe4d2;  /* the board the sheets are clipped to */
+  --bg: #f5f3eb;
+  --bg-elev: #fcfbf7;
+  --bg-elev-2: #eeece3;
+  --sidebar-bg: #eeece3;
   --nav-hover: rgba(52, 62, 48, 0.05);
-  --line: rgba(52, 62, 48, 0.16);
+  --line: #d8dbcf;
   --line-strong: rgba(52, 62, 48, 0.30);
-  --text: #28302b;
-  --text-dim: #5a6259;
-  --text-faint: #5f675d;
+  --text: #282e27;
+  --text-dim: #606659;
+  --text-faint: #646c5e;
 
   /* The one green. Actions, protections holding, anything affirming. */
-  --accent: #356b52;
-  --accent-hover: #2a5642;
+  --accent: #315744;
+  --accent-hover: #254635;
   --accent-soft: rgba(53, 107, 82, 0.10);
-  --accent-text: #2a5642;
-  --accent-2: #356b52;
-  --ok: #356b52;
+  --accent-text: #315744;
+  --accent-2: #315744;
+  --ok: #315744;
   --ok-soft: rgba(53, 107, 82, 0.12);
   /* Ochre marks what costs something to undo; brick is only ever danger. */
   --warn: #7a5a1e;
@@ -48,65 +30,48 @@
   --danger: #a2402e;
   --danger-soft: rgba(162, 64, 46, 0.09);
 
-  /* Reserved for the brand mark alone. */
-  --grad: linear-gradient(150deg, #4e8c6a, #356b52 52%, #24503c);
-
-  --radius: 16px;
-  --radius-sm: 10px;
+  --radius: 10px;
+  --radius-sm: 6px;
   --shadow-sm: 0 1px 2px rgba(46, 54, 40, 0.07), 0 1px 1px rgba(46, 54, 40, 0.04);
-  --shadow: 0 1px 2px rgba(46, 54, 40, 0.06), 0 14px 30px -8px rgba(46, 54, 40, 0.16);
+  --shadow: 0 24px 64px -25px #28362538;
   --ring: 0 0 0 3px rgba(53, 107, 82, 0.2);
 
-  /* Paper. The mottle is what sells it — uniform noise reads as a filter,
-     while low-frequency cloudiness reads as stock; the grain is the fibre on
-     top. Alpha is baked into each filter (feFuncA slope), so both layer
-     straight over any colour with no blend mode and no stacking surprises. */
-  --paper-mottle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='700'%3E%3Cfilter id='m' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.005' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.13'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='700' height='700' filter='url(%23m)'/%3E%3C/svg%3E");
-  --paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.62' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.11'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
-  /* Card stock is the same fibre, dialled back — a sheet laid on the sheet. */
-  --paper-grain-card: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.62' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.07'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
-
-  /* Charter and Iowan Old Style are warm, humanist and already on most
-     machines; Georgia carries Windows. No webfont, so nothing to wait for. */
-  --font-display: Charter, "Bitstream Charter", "Iowan Old Style", ui-serif,
-                  Georgia, "Times New Roman", serif;
-  --font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          Roboto, "Helvetica Neue", Arial, sans-serif;
+  --paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23000' filter='url(%23g)' opacity='.12' d='M0 0h180v180H0z'/%3E%3C/svg%3E");
+  /* Local fonts keep extension pages completely self-contained. */
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font: 'DM Sans', system-ui, sans-serif;
   /* Breath-paced: everything eases out slowly, nothing springs back. */
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 /* Lights out. The same green, the lamp off — near-black with a green cast,
    and cream stays the ink. */
-:root:not([data-theme="light"]) { color-scheme: dark; }
+:root { color-scheme: light; }
 :root[data-theme="dark"] {
-  --bg: #12150f;
-  --bg-elev: #1a1e16;
-  --bg-elev-2: #242a1f;
-  --sidebar-bg: transparent;
+  color-scheme: dark;
+  --bg: #1b1e19;
+  --bg-elev: #252922;
+  --bg-elev-2: #22261f;
+  --sidebar-bg: #20241d;
   --nav-hover: rgba(219, 224, 205, 0.06);
   --line: rgba(219, 224, 205, 0.13);
   --line-strong: rgba(219, 224, 205, 0.26);
-  --text: #ede8d8;
-  --text-dim: #a8ae9c;
-  --text-faint: #848c7c;
+  --text: #eeece2;
+  --text-dim: #b5bbad;
+  --text-faint: #a6af9e;
 
-  /* Lifted just far enough to read on near-black while white text on it still
-     clears 4.5:1. Hover goes deeper rather than lighter, for the same reason. */
-  --accent: #47805f;
-  --accent-hover: #3e7353;
+  --accent: #b0c7a9;
+  --accent-hover: #c3d5bd;
   --accent-soft: rgba(71, 128, 95, 0.22);
-  --accent-text: #8fbf9f;
-  --accent-2: #8fbf9f;
-  --ok: #47805f;
+  --accent-text: #b0c7a9;
+  --accent-2: #b0c7a9;
+  --ok: #b0c7a9;
   --ok-soft: rgba(71, 128, 95, 0.18);
   --warn: #d9b36a;
   --warn-soft: rgba(217, 179, 106, 0.12);
   --warn-line: rgba(217, 179, 106, 0.32);
   --danger: #de8272;
   --danger-soft: rgba(222, 130, 114, 0.12);
-
-  --grad: linear-gradient(150deg, #5b9b76, #47805f 52%, #2f5c45);
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 34px rgba(0, 0, 0, 0.55);
@@ -127,16 +92,21 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* North's own voice. Slightly loose, because a serif set tight reads urgent. */
+/* Expressive serif headings, with compact sans-serif controls below. */
 h1, h2 {
   font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.005em;
-  line-height: 1.22;
+  font-weight: 400;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
   margin: 0;
 }
 /* Row and card titles are labels, not speech — they stay sans. */
-h3 { font-weight: 640; letter-spacing: -0.01em; line-height: 1.3; margin: 0; }
+h3 { font-weight: 500; letter-spacing: -0.02em; line-height: 1.3; margin: 0; }
+em { color: var(--accent-text); font-weight: 400; }
+.eyebrow { font: 500 10px/1.5 var(--font); letter-spacing: .15em; text-transform: uppercase; color: var(--text-faint); margin: 0 0 18px; }
+.logo-name, .wordmark { font: 600 32px/1 var(--font); letter-spacing: -.065em; }
+.logo-name span, .wordmark span { color: var(--accent-text); }
+.logo-mark .north-arrow { width: 100%; height: 100%; }
 
 .hidden { display: none !important; }
 
@@ -149,7 +119,7 @@ h3 { font-weight: 640; letter-spacing: -0.01em; line-height: 1.3; margin: 0; }
 
 /* Buttons ---------------------------------------------------------------- */
 .btn {
-  font: 600 14px/1 var(--font);
+  font: 500 13px/1.3 var(--font);
   padding: 11px 20px;
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
@@ -164,6 +134,8 @@ h3 { font-weight: 640; letter-spacing: -0.01em; line-height: 1.3; margin: 0; }
   box-shadow: var(--shadow-sm);
 }
 .btn.primary:hover { background: var(--accent-hover); }
+.btn.primary span { margin-left: 16px; }
+:root[data-theme="dark"] .btn.primary { color: var(--bg); }
 .btn.primary:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
 .btn.ghost {
   background: transparent;
@@ -193,8 +165,7 @@ h3 { font-weight: 640; letter-spacing: -0.01em; line-height: 1.3; margin: 0; }
   color: var(--accent-text);
 }
 
-/* Brand mark: the North arrow, white inside its clay tile. Scales to whatever
-   tile it sits in (logo-mark, brand-mark, north-mark) via %. */
+/* The compass needle inherits the active theme's ink. */
 .north-arrow { width: 54%; height: 54%; fill: currentColor; }
 .north-arrow.inline { width: 1em; height: 1em; vertical-align: -0.14em; }
 
@@ -309,7 +280,8 @@ input.match, textarea.match { border-color: var(--ok) !important; }
 
 /* Toggle switch ---------------------------------------------------------- */
 .switch { position: relative; width: 42px; height: 24px; flex: none; cursor: pointer; }
-.switch input { opacity: 0; width: 0; height: 0; }
+.switch input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; margin: 0; z-index: 1; cursor: pointer; }
+.switch input:disabled { cursor: not-allowed; }
 .switch .track {
   position: absolute; inset: 0;
   background: var(--bg-elev-2);
@@ -325,8 +297,7 @@ input.match, textarea.match { border-color: var(--ok) !important; }
   border-radius: 50%;
   transition: transform 0.22s var(--ease), background 0.22s var(--ease);
 }
-/* On reads as moss, not clay: a protection holding is an affirmation, and clay
-   is reserved for things you click. */
+/* Protection status uses the same pine accent as primary actions. */
 .switch input:checked + .track { background: var(--ok); border-color: var(--ok); }
 .switch input:checked + .track::after { transform: translateX(18px); background: #fff; }
 .switch input:focus-visible + .track { box-shadow: var(--ring); }
@@ -351,53 +322,16 @@ input.match, textarea.match { border-color: var(--ok) !important; }
 .undo-tag { color: var(--warn); background: var(--warn-soft); border: 1px solid var(--warn-line); }
 .lock-tag { color: var(--text-dim); background: var(--bg-elev-2); border: 1px solid var(--line); }
 
-/* The sheet ---------------------------------------------------------------
-   Three layers on the .aurora element every page already carries: a tonal
-   wash, the cloudiness of real stock, and the fibre grain. It sits behind the
-   content (z-index 0), so none of it touches text rendering. */
-.aurora {
-  position: fixed; inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background:
-    radial-gradient(140% 110% at 50% 30%, rgba(255, 253, 246, 0.72), transparent 78%),
-    radial-gradient(140% 70% at 50% 115%, rgba(96, 112, 84, 0.07), transparent 74%);
-}
-/* Cloudiness, scaled well past its tile so it never reads as a repeat. */
-.aurora::before {
-  content: "";
-  position: absolute; inset: 0;
-  background-image: var(--paper-mottle);
-  background-size: 1100px 1100px;
-}
-/* Fibre, plus the faint laid lines a felt-finish stock is pressed with. The
-   lines are near-invisible alone; together with the grain they are what stops
-   the page reading as flat colour. */
-.aurora::after {
-  content: "";
-  position: absolute; inset: 0;
-  background-image:
-    var(--paper-grain),
-    repeating-linear-gradient(0deg,
-      rgba(52, 62, 48, 0.016) 0px, rgba(52, 62, 48, 0.016) 1px,
-      transparent 1px, transparent 4px);
-}
-:root[data-theme="dark"] .aurora::after {
-  background-image:
-    var(--paper-grain),
-    repeating-linear-gradient(0deg,
-      rgba(219, 224, 205, 0.014) 0px, rgba(219, 224, 205, 0.014) 1px,
-      transparent 1px, transparent 4px);
-}
-:root[data-theme="dark"] .aurora {
-  background:
-    radial-gradient(115% 70% at 50% 0%, rgba(126, 148, 112, 0.11), transparent 62%),
-    radial-gradient(120% 60% at 50% 108%, rgba(53, 107, 82, 0.15), transparent 70%);
-}
-
-/* Any surface that should feel like stock rather than a flat panel. Applied
-   alongside the surface's own background-color, never instead of it. */
-.paper-surface { background-image: var(--paper-grain-card); }
+/* Faint grain sits behind the content and never intercepts input. */
+.aurora { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.aurora::after { content: ''; position: absolute; inset: 0; background-image: var(--paper-grain); opacity: .2; }
+.field-label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 12px; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.undo-tag, .lock-tag { font-size: 9px; font-weight: 500; letter-spacing: .02em; text-transform: none; border-radius: 4px; margin-left: 5px; }
+.chip { border-radius: 6px; font-weight: 500; }
+.btn.primary { box-shadow: none; }
+.reveal-enter { animation: north-reveal .45s var(--ease) both; }
+@keyframes north-reveal { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
 /* Scrollbars */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
