@@ -64,15 +64,15 @@ const panels = [
   // 2 — short video
   panel({
     theme: 'cream', eyebrow: 'Blocked as a category',
-    title: 'Shorts, Reels and TikTok.<br><em>Closed for good.</em>',
-    sub: 'Hidden from every feed and unreachable by address. A reel a friend sends still plays — that one, for five minutes.',
+    title: 'Short video.<br><em>Closed for good.</em>',
+    sub: 'Endless vertical feeds are hidden wherever they appear and unreachable by address. A clip a friend sends still plays — that one, for five minutes.',
     imgs: `<img class="shot" src="${IMG}/shorts.png" style="position:absolute;left:0;top:50%;transform:translateY(-50%);width:830px">`
   }),
   // 3 — messages only
   panel({
     theme: 'cream', eyebrow: 'Messages-only modes',
     title: 'Lose the feed.<br><em>Keep your people.</em>',
-    sub: 'Instagram, LinkedIn, Facebook and X open straight to your inbox. DMs work exactly as before; the feed stops loading.',
+    sub: 'A social network can open straight to your inbox instead of its feed. Your conversations work exactly as before; the feed stops loading.',
     imgs: `<img class="shot" src="${IMG}/social.png" style="position:absolute;left:0;top:50%;transform:translateY(-50%);width:830px">`
   }),
   // 4 — the unlock
@@ -97,7 +97,7 @@ const small = shell(440, 280, 'green', `
 <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 38px;z-index:2">
   <div class="brand" style="font-size:30px;margin-bottom:20px">${MARK}<b>north<i>.</i></b></div>
   <h1 style="font-size:30px;margin-bottom:14px">Block the feed.<br><em>Keep the good parts.</em></h1>
-  <p class="sub" style="font-size:13.5px">Shorts, Reels, TikTok and the sites that take your day.</p>
+  <p class="sub" style="font-size:13.5px">The endless feeds and the sites that take your day.</p>
   <p style="margin-top:16px;font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)">Free forever</p>
 </div>`);
 
@@ -107,7 +107,7 @@ const marquee = shell(1400, 560, 'green', `
   <div style="padding-left:78px">
     <div class="brand" style="font-size:26px;margin-bottom:34px">${MARK}<b>north<i>.</i></b></div>
     <h1 style="font-size:56px;margin-bottom:22px">A little less feed.<br><em>A little more life.</em></h1>
-    <p class="sub" style="font-size:19px;max-width:470px;margin-bottom:30px">Blocks Shorts, Reels, TikTok and the sites that take your day — and makes switching it off cost more than leaving it on.</p>
+    <p class="sub" style="font-size:19px;max-width:470px;margin-bottom:30px">Blocks the feeds and the sites that take your day — and makes switching it off cost more than leaving it on.</p>
     <div class="chips">
       <span class="chip fill">Free forever</span>
       <span class="chip">No account</span>

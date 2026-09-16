@@ -141,7 +141,7 @@ const SMALL = doc(440, 280, `
       <div class="brand" style="font-size:22px"><img src="${iconUrl}" width="40" height="40" alt="">North</div>
       <div class="tag" style="margin-top:18px; font-size:12.5px">free for life</div>
       <h1 style="margin-top:16px; font-size:33px">find your true north.</h1>
-      <p style="margin-top:12px; font-size:15px; max-width:330px">block Shorts, Reels and the sites that eat your day.</p>
+      <p style="margin-top:12px; font-size:15px; max-width:330px">block the endless feeds and the sites that eat your day.</p>
     </div>
   </div>`);
 
@@ -152,7 +152,7 @@ const MARQUEE = doc(1400, 560, `
       <div class="brand" style="font-size:34px"><img src="${iconUrl}" width="60" height="60" alt="">North</div>
       <div class="tag" style="margin-top:26px; font-size:18px">free for life. actually.</div>
       <h1 style="margin-top:22px; font-size:74px; max-width:760px">block the stuff that eats your day.</h1>
-      <p style="margin-top:22px; font-size:26px; max-width:640px">Shorts, Reels, TikTok and distracting sites, gone. your DMs stay. no account, no tracking.</p>
+      <p style="margin-top:22px; font-size:26px; max-width:640px">the endless feeds and the sites that take your day, gone. your messages stay. no account, no tracking.</p>
       <div class="button" style="margin-top:34px; min-width:280px; height:60px; font-size:20px">find your true north</div>
     </div>
   </div>`);

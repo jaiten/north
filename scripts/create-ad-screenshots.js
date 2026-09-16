@@ -198,7 +198,7 @@ const slides = [
         <div class="copy">
           <div class="brand"><img src="${iconUrl}" alt="">North</div>
           <h1>short videos stay closed.</h1>
-          <p>block the formats built for endless swiping: Shorts, Reels, TikTok, Spotlight and more.</p>
+          <p>block the formats built for endless swiping, as one category rather than one site at a time.</p>
           <div class="chips">
             <span class="chip">no infinite feed</span>
             <span class="chip">shared links still play</span>
