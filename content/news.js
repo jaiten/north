@@ -67,7 +67,7 @@
 
   function applyStyles() {
     document.getElementById("north-news-style")?.remove();
-    if (!settings?.enabled || !settings?.news?.declutter) return;
+    if (!settings?.enabled || window.northPaused?.() || !settings?.news?.declutter) return;
     const css = NOISE_CSS + siteCssFor(rootHost());
     const style = document.createElement("style");
     style.id = "north-news-style";
@@ -85,4 +85,6 @@
       applyStyles();
     }
   });
+  // A pause takes the decluttering with it, and the minute puts it back.
+  window.northOnPauseChange?.(applyStyles);
 })();

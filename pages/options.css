@@ -359,11 +359,12 @@ h1 { font-size: clamp(42px, 4.1vw, 62px); margin-bottom: 18px; }
 .ring-wrap { position: relative; width: 130px; height: 130px; margin: 6px auto 22px; }
 .ring { width: 130px; height: 130px; transform: rotate(-90deg); }
 .ring-bg { fill: none; stroke: var(--bg-elev-2); stroke-width: 2; }
+/* No transition: script redraws the offset every frame, so a tween on top of
+   that would only lag the ring a second behind the count. */
 .ring-fg {
   fill: none; stroke: var(--accent);
   stroke-width: 2; stroke-linecap: round;
   stroke-dasharray: 326.7; stroke-dashoffset: 0;
-  transition: stroke-dashoffset 1s linear;
 }
 .ring-num {
   position: absolute; inset: 0;

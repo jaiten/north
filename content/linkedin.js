@@ -17,7 +17,7 @@
 
   function apply() {
     document.getElementById("north-li-style")?.remove();
-    if (!settings?.enabled) return;
+    if (!settings?.enabled || window.northPaused?.()) return;
     if (settings.linkedin?.tidyNav === false) return;
     const style = document.createElement("style");
     style.id = "north-li-style";
@@ -35,4 +35,6 @@
       apply();
     }
   });
+  // A pause takes the decluttering with it, and the minute puts it back.
+  window.northOnPauseChange?.(apply);
 })();

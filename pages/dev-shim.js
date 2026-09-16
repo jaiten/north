@@ -48,6 +48,7 @@
     settings: fixtureSettings,
     focus: { active: false },
     lockdown: { active: false },
+    pause: { minutes: 1, active: false, until: 0, freeLeft: 1, trialDaysLeft: 3 },
     unlocks: {},
     journal: [
       { t: Date.now() - 2 * 3600e3, site: "reddit.com", mins: 10, note: "need to check a thread for my assignment, actually" },
@@ -74,6 +75,17 @@
         }
         if (msg.type === "endFocus") {
           dashboard.focus = { active: false };
+          return { ok: true };
+        }
+        if (msg.type === "getPause") return structuredClone(dashboard.pause);
+        if (msg.type === "startPause") {
+          if (msg.free && !dashboard.pause.freeLeft) return { ok: false, error: "nofree" };
+          if (msg.free) dashboard.pause.freeLeft -= 1;
+          dashboard.pause = { ...dashboard.pause, active: true, until: Date.now() + 60e3 };
+          return { ok: true, until: dashboard.pause.until, freeLeft: dashboard.pause.freeLeft };
+        }
+        if (msg.type === "endPause") {
+          dashboard.pause = { ...dashboard.pause, active: false, until: 0 };
           return { ok: true };
         }
         if (msg.type === "getUsageFor") return { seconds: 14 * 60 };

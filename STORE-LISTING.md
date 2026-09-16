@@ -7,23 +7,29 @@ at the reader, no em dashes in store copy. Proper nouns keep their caps
 ---
 
 ## Name
-North: block Shorts, Reels and distracting sites
+North. Focus & Distraction Blocker
 
 ## Category
 Productivity
 
 ## Summary (max 132 characters)
-Block Shorts, Reels, TikTok and the sites that eat your day. Free for life, with no account, no tracking and no paywall.
+Blocks everything you don't need to see: short videos, sites, keywords, schedules, daily limits, and an unlock you have to mean.
+
+The summary the store and the manifest can carry is capped at 132 characters,
+so the full line lives in the first paragraph of the description below:
+"Blocks everything you don't need to see, short-form videos, distracting sites
+and keywords, with schedules, daily limits, and an unlock you have to mean.
+Free forever."
 
 ## Detailed description
 
-North blocks the sites and feeds that take your day, and makes giving up cost more than staying focused. It is free for life, with no account and no tracking.
+North blocks everything you don't need to see, short-form videos, distracting sites and keywords, with schedules, daily limits, and an unlock you have to mean. Free forever, with no account and no tracking.
 
 Most blockers paywall the features that actually work, then switch off in two clicks the moment you are tempted. North gives every feature away free, and turning a protection off takes a wait you have to sit through, plus 20 honest words about why. Most urges do not survive the wait.
 
 What North does:
 
-• Short videos, closed. Shorts, Reels, TikTok and Snapchat Spotlight are blocked as a category: hidden in feeds, unreachable by URL, and never unlockable. A reel someone sends you still plays, just that one.
+• Short videos, closed. Shorts, Reels, TikTok and Snapchat Spotlight are blocked as a category: hidden in feeds, unreachable by URL, and never unlockable. A reel someone sends you still plays, just that one. If three people send you something while you were away, all three open; a conversation full of reels does not.
 
 • Rules for the sites that pull you in. Block a site always, on a schedule (work hours, study blocks, evenings), or once a daily time budget runs out. Midnight resets the clock.
 
@@ -36,6 +42,8 @@ What North does:
 • Keyword and 18+ blocking. Block pages by what they are about, across every site at once. Adult content is filtered out and can never be unlocked.
 
 • An unlock you have to mean. There is no quick disable. You sit with a breathing timer that only counts while you stay on the page, then write at least 20 honest words to your future self about why you need the site. Pasting is blocked, and keyboard mashing does not count. You set the wait yourself on a slider when you first install North, anywhere from 10 seconds to 2 minutes, and shortening it later takes the same challenge.
+
+• One free minute a day, for your first three days. While North is still new to you, a button in the popup turns everything off for exactly one minute, then switches it all back on by itself. No wait, no challenge, and nothing to remember to undo. After the third day the button stays, and it costs the same wait and challenge as any other way off. Lockdown and focus sessions are never pausable.
 
 • Progress, counted. Every distraction blocked and every focused minute, recorded honestly.
 

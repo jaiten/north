@@ -93,7 +93,7 @@
 
   function applyStyles() {
     document.getElementById("north-yt-style")?.remove();
-    if (!settings?.enabled) return;
+    if (!settings?.enabled || window.northPaused?.()) return;
     let css = "";
     if (settings.shorts?.enabled || settings.youtube?.blockShorts) css += SHORTS_CSS;
     if (settings.youtube?.hideHomeFeed) css += HOME_FEED_CSS;
@@ -117,7 +117,7 @@
       settings?.youtube?.hideHomeFeed;
     const isSubs = location.pathname.startsWith("/feed/subscriptions") &&
       settings?.youtube?.hideSubscriptions;
-    if (!settings?.enabled || (!isHome && !isSubs)) {
+    if (!settings?.enabled || window.northPaused?.() || (!isHome && !isSubs)) {
       document.getElementById("north-yt-placeholder")?.remove();
       return;
     }
@@ -161,7 +161,7 @@
   ].join(",");
 
   function filterVideos() {
-    if (!settings?.enabled) return;
+    if (!settings?.enabled || window.northPaused?.()) return;
     const blockKws = keywordList();
     const topicMode = settings.youtube?.topicMode &&
       (settings.youtube?.allowedKeywords || []).length > 0;
@@ -229,15 +229,22 @@
     settings = s || {};
     boot();
   });
+  // Re-style and re-judge every video card that was already on the page.
+  function refresh() {
+    applyStyles();
+    document.querySelectorAll("[data-north-checked]").forEach(el => {
+      el.removeAttribute("data-north-checked");
+      el.style.removeProperty("display");
+    });
+    onMutate();
+  }
+
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === "local" && changes.settings) {
       settings = changes.settings.newValue || {};
-      applyStyles();
-      document.querySelectorAll("[data-north-checked]").forEach(el => {
-        el.removeAttribute("data-north-checked");
-        el.style.removeProperty("display");
-      });
-      onMutate();
+      refresh();
     }
   });
+  // A pause takes the hiding with it, and the minute puts it back.
+  window.northOnPauseChange?.(refresh);
 })();

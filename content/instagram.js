@@ -33,7 +33,7 @@
 
   function apply() {
     document.getElementById("north-ig-style")?.remove();
-    if (!settings?.enabled) return;
+    if (!settings?.enabled || window.northPaused?.()) return;
     let css = "";
     if (settings.messagesOnly?.instagram) css += DM_ONLY_CSS;
     else if (settings.shorts?.enabled) css += REELS_ONLY_CSS;
@@ -60,4 +60,6 @@
       apply();
     }
   });
+  // A pause takes the nav stripping with it, and the minute puts it back.
+  window.northOnPauseChange?.(apply);
 })();

@@ -283,7 +283,7 @@ $("btn-back").addEventListener("click", () => {
 // Unlock flow
 // ---------------------------------------------------------------------------
 
-let waitTimer = null;
+let waitFrame = null;
 const CIRC = 2 * Math.PI * 52; // ring circumference
 
 $("btn-unlock").addEventListener("click", () => {
@@ -338,13 +338,15 @@ function waitMilestone(left, total) {
   return "The timer only counts while this page is in front of you.";
 }
 
+// The ring is drawn from a deadline on every animation frame, so it drains at a
+// constant rate instead of stepping once a second. The digit still reads in
+// whole seconds — it just isn't what drives the motion.
 function startWait() {
   const total = Math.max(5, strict.waitSeconds || 60);
-  let left = total;
+  let deadline = Date.now() + total * 1000;
+  let shownSec = null;
   $("wait-total").textContent = total;
-  $("ring-num").textContent = left;
   $("wait-note").classList.add("hidden");
-  $("stay-hint").textContent = waitMilestone(left, total);
   const fg = $("ring-fg");
   fg.style.strokeDasharray = CIRC;
   fg.style.strokeDashoffset = 0;
@@ -354,9 +356,7 @@ function startWait() {
   // The wait demands presence: leaving the tab, the window or the app
   // restarts it from zero.
   const restart = () => {
-    left = total;
-    $("ring-num").textContent = left;
-    fg.style.strokeDashoffset = 0;
+    deadline = Date.now() + total * 1000;
     $("wait-note").classList.remove("hidden");
   };
   waitOnLeave = () => { if (document.hidden) restart(); };
@@ -364,25 +364,33 @@ function startWait() {
   document.addEventListener("visibilitychange", waitOnLeave);
   window.addEventListener("blur", waitOnBlur);
 
-  waitTimer = setInterval(() => {
+  const frame = () => {
     // Belt and braces: blur can fail to fire (embedded views, devtools), but
     // hasFocus() can't lie. No focus, no countdown.
-    if (document.hidden || !document.hasFocus()) { restart(); return; }
-    left -= 1;
-    $("ring-num").textContent = left;
-    $("stay-hint").textContent = waitMilestone(left, total);
+    if (document.hidden || !document.hasFocus()) restart();
+    const left = Math.max(0, (deadline - Date.now()) / 1000);
     fg.style.strokeDashoffset = CIRC * (1 - left / total);
+    const sec = Math.ceil(left);
+    if (sec !== shownSec) {
+      shownSec = sec;
+      $("ring-num").textContent = sec;
+      $("stay-hint").textContent = waitMilestone(sec, total);
+    }
     if (left <= 0) {
       stopWaitWatch();
       showChallenge();
+      return;
     }
-  }, 1000);
+    waitFrame = requestAnimationFrame(frame);
+  };
+  frame();
 }
 
 let waitOnLeave = null, waitOnBlur = null;
 
 function stopWaitWatch() {
-  clearInterval(waitTimer);
+  if (waitFrame) cancelAnimationFrame(waitFrame);
+  waitFrame = null;
   if (breathStop) breathStop();
   if (waitOnLeave) document.removeEventListener("visibilitychange", waitOnLeave);
   if (waitOnBlur) window.removeEventListener("blur", waitOnBlur);
@@ -535,5 +543,18 @@ async function submitChallenge() {
 }
 
 $("btn-confirm-unlock").addEventListener("click", submitChallenge);
+
+// If protection gets paused while you're sitting on this page, the page has no
+// reason to exist any more — go on to what you were opening. Adult content,
+// lockdowns and focus sessions are never paused, so they stay put rather than
+// bouncing straight back here.
+try {
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area !== "local" || !changes.pause) return;
+    if (["adult", "lockdown", "focus"].includes(reason)) return;
+    const until = changes.pause.newValue?.until || 0;
+    if (until > Date.now() && /^https?:\/\//.test(fromUrl)) location.href = fromUrl;
+  });
+} catch { /* preview environment */ }
 
 init();

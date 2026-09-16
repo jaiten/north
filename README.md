@@ -1,8 +1,9 @@
-# ▲ North: Focus & Distraction Blocker
+# ▲ North. Focus & Distraction Blocker
 
-North is a browser extension that blocks the sites, feeds and short-form
-content that eat your day. Free for life: no account, no ads, no premium tier,
-no data leaving your browser.
+North blocks everything you don't need to see, short-form videos, distracting
+sites and keywords, with schedules, daily limits, and an unlock you have to
+mean. Free forever: no account, no ads, no premium tier, no data leaving your
+browser.
 
 ![brand](icons/icon128.png)
 
@@ -30,6 +31,13 @@ no data leaving your browser.
   removing sites or keywords never get one.
 - Temporary unlocks are capped (5/10/15/30 min max, configurable) and counted.
   During a focus session, no unlocks at all.
+- **The one-minute pause**: the popup carries a button that turns every block
+  off for exactly one minute, then switches it all back on by itself. It is
+  free once a day for the first three calendar days after install — new users
+  need a door, not a trap — and after that it costs the same wait and challenge
+  as any other way off. Lockdown and focus sessions are never pausable, and
+  adult blocking isn't lifted by it either. The allowance is stamped from
+  `meta.installedAt` and spent in `pauseUse`, both in local storage.
 
 ### 🎬 Short-form video: gone
 - YouTube Shorts, Instagram Reels, Facebook Reels, Snapchat Spotlight are
@@ -37,7 +45,16 @@ no data leaving your browser.
 - Short-form blocks are **never unlockable**. That's the point.
 - **One exception**: a reel or short a friend sends you. Opened from a DM,
   another app or a pasted link, that single item plays for 5 minutes. Swiping
-  to the next one stays blocked, one new pass per 10 minutes.
+  to the next one stays blocked.
+- The rate limit follows the conversation, not the clock alone: each DM thread
+  gets one new item per 10 minutes, so three people messaging you at once open
+  as three items, while a thread full of reels still can't be scrolled. Links
+  from anywhere else share one 10-minute lane, as before. An item only ever
+  gets one pass in its life — re-opening something you already watched is an
+  old message, and old messages are how a feed gets rebuilt link by link.
+  Whether a message is unread isn't knowable from the URL, and the DM page's
+  own DOM isn't trustworthy for a permission check, so "one per conversation,
+  never the same item twice" is the honest approximation.
 
 ### 🔞 Adult content: blocked for everyone
 - A built-in category of known adult sites and explicit keywords, blocked
@@ -115,8 +132,10 @@ content/instagram.js   Messages-only UI stripping
 content/linkedin.js    Home + My Network nav hiding
 content/twitch.js      Calm homepage and recommendation stripping
 content/global.js      Page-title keyword reporting + nudge toasts
+content/pause-state.js Shared pause state for the site scripts, so a paused
+                       North stops decluttering too (runs before each of them)
 pages/blocked.html     Block page with wait ring + journal unlock flow
-pages/popup.html       Status, focus sessions, today's stats
+pages/popup.html       Status, focus sessions, the one-minute pause, today's stats
 pages/options.html     Full settings dashboard (gated by the challenge)
 icons/                 Brand icons
 ```

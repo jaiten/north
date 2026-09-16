@@ -3,6 +3,7 @@
 const $ = id => document.getElementById(id);
 let dash = null;
 let focusTicker = null;
+let pauseTicker = null;
 
 async function load() {
   dash = await chrome.runtime.sendMessage({ type: "getDashboard" });
@@ -38,6 +39,7 @@ async function load() {
 
   // Focus state
   renderFocus();
+  renderPause();
 }
 
 function renderFocus() {
@@ -57,6 +59,86 @@ function renderFocus() {
     focusTicker = setInterval(tick, 1000);
   }
 }
+
+// ---------------------------------------------------------------------------
+// The one-minute pause. Free once a day for the first three days; after that
+// the button is still here, it just costs the wait and the challenge.
+// ---------------------------------------------------------------------------
+
+function renderPause() {
+  const p = dash.pause || { active: false, freeLeft: 0, trialDaysLeft: 0, minutes: 1 };
+  const live = p.active && p.until > Date.now();
+  $("pause-idle").classList.toggle("hidden", live);
+  $("pause-live").classList.toggle("hidden", !live);
+
+  clearInterval(pauseTicker);
+  // While it runs, the header and footer say so too — "Protection on" over a
+  // running pause would be a lie in the one place people check.
+  $("status-tag").classList.toggle("paused", !!live);
+  if (live) {
+    $("status-tag").textContent = "Paused for a minute";
+    $("enabled-label").textContent = "Paused, back on in a moment";
+    const tick = () => {
+      const left = Math.max(0, p.until - Date.now());
+      const m = Math.floor(left / 60e3), sec = Math.floor((left % 60e3) / 1000);
+      $("pause-remaining").textContent = `${m}:${String(sec).padStart(2, "0")}`;
+      if (left <= 0) { clearInterval(pauseTicker); load(); }
+    };
+    tick();
+    pauseTicker = setInterval(tick, 1000);
+    return;
+  }
+
+  // A lockdown or a focus session is exactly what someone asked North to hold.
+  // The pause doesn't reach either of them.
+  const lockdown = dash.lockdown?.active && dash.lockdown.until > Date.now();
+  const focusing = dash.focus?.active && dash.focus.until > Date.now();
+  const tag = $("pause-tag");
+  const btn = $("btn-pause");
+  btn.disabled = !!(lockdown || focusing);
+
+  if (lockdown || focusing) {
+    tag.textContent = lockdown ? "Not during lockdown" : "Not during focus";
+    tag.className = "pause-tag spent";
+    $("pause-note").textContent = lockdown
+      ? "Lockdown has no off switch — not even for a minute. It ends when the clock ends."
+      : "You're mid session. The pause comes back when the timer does.";
+    return;
+  }
+
+  if (p.freeLeft > 0) {
+    tag.textContent = "Free today";
+    tag.className = "pause-tag";
+    $("pause-note").textContent =
+      `Free while North is new to you: one minute a day for your first three days, ${p.trialDaysLeft} ${p.trialDaysLeft === 1 ? "day" : "days"} left. After that, pausing takes the wait and the challenge.`;
+  } else if (p.trialDaysLeft > 0) {
+    tag.textContent = "Used today";
+    tag.className = "pause-tag spent";
+    $("pause-note").textContent =
+      `Today's free minute is spent. There's another tomorrow, for ${p.trialDaysLeft - 1} more ${p.trialDaysLeft - 1 === 1 ? "day" : "days"}. Until then, pausing takes the wait and the challenge.`;
+  } else {
+    tag.textContent = "Takes the challenge";
+    tag.className = "pause-tag spent";
+    $("pause-note").textContent =
+      "Your free minutes were for the first three days. Pausing now takes the wait and the challenge, same as any other way off.";
+  }
+}
+
+$("btn-pause").addEventListener("click", async () => {
+  const p = dash.pause || {};
+  if (p.freeLeft > 0) {
+    const res = await chrome.runtime.sendMessage({ type: "startPause", free: true });
+    if (res?.ok) { await load(); return; }
+  }
+  // No free pass left: the pause goes through the same gate as everything else.
+  chrome.tabs.create({ url: chrome.runtime.getURL("pages/options.html") + "#gate=pause" });
+  window.close();
+});
+
+$("btn-end-pause").addEventListener("click", async () => {
+  await chrome.runtime.sendMessage({ type: "endPause" });
+  await load();
+});
 
 function formatMins(m) {
   if (m >= 60) return `${Math.floor(m / 60)}h ${m % 60}m`;

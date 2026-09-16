@@ -65,7 +65,7 @@ const DEFAULT_SETTINGS = {
   sites: []
 };
 
-let cache = { settings: null, unlocks: {}, focus: null, lockdown: null };
+let cache = { settings: null, unlocks: {}, focus: null, lockdown: null, pause: null };
 
 async function getSettings() {
   if (cache.settings) return cache.settings;
@@ -103,6 +103,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
   if (changes.unlocks) cache.unlocks = changes.unlocks.newValue || {};
   if (changes.focus) cache.focus = changes.focus.newValue || null;
   if (changes.lockdown) cache.lockdown = changes.lockdown.newValue || null;
+  if (changes.pause) cache.pause = changes.pause.newValue || null;
 });
 
 // ---------------------------------------------------------------------------
@@ -190,28 +191,89 @@ function isAdult(url, title = "") {
 // ---------------------------------------------------------------------------
 // Shared-link pass: a friend sends you one reel/short/post. That one item
 // plays for a few minutes. Granted when the item is opened from OUTSIDE the
-// platform (another app, a pasted link) or from Instagram DMs. Swiping to the
-// next item is blocked because the pass is locked to the exact item id.
+// platform (another app, a pasted link) or from a DM conversation. Swiping to
+// the next item is blocked because the pass is locked to the exact item id.
 //
-// Anti-abuse: a pass lasts PASS_MINUTES, and only one NEW pass can be granted
-// every GRANT_COOLDOWN_MINUTES, persisted in storage so restarting the
-// browser doesn't reset it. You can watch the thing your friend sent. You
-// cannot chain passes into a feed. And a pass dies the moment you navigate
-// away from the item, so pressing Back doesn't replay it.
+// Anti-abuse. A pass lasts PASS_MINUTES and dies the moment you navigate away
+// from the item, so Back doesn't replay it. An item only ever gets one pass in
+// its life: re-opening something you've already watched is an old message, not
+// a new one, and old messages are how a feed gets rebuilt one link at a time.
+// Beyond that the limits depend on where the link came from:
+//
+//   • From a DM: the cooldown is per conversation, not global. Three people
+//     sending you something while you were away should open as three items,
+//     not one — but each of them gets one item per GRANT_COOLDOWN_MINUTES, so
+//     a thread full of reels still can't be scrolled through.
+//   • From anywhere else (a pasted link, another app): one new pass every
+//     GRANT_COOLDOWN_MINUTES, globally, as before.
+//
+// Whether a message is unread is not something the URL can tell us, and the
+// DM page's own DOM is not a thing to trust for a permission check. "One per
+// conversation, and never the same item twice" is the honest approximation.
 // ---------------------------------------------------------------------------
 
 const PASS_MINUTES = 5;
 const GRANT_COOLDOWN_MINUTES = 10;
+const SPENT_TTL_DAYS = 7;     // how long an item stays "already watched"
+const SPENT_MAX = 300;        // and how many we keep at most
 
 const tabNav = new Map(); // tabId -> { lastUrl, ytTime }
 
 let passCache = null;
 async function getPassState() {
   if (!passCache) {
-    const { sharePass = { lastGrant: 0, items: {} } } = await chrome.storage.local.get("sharePass");
-    passCache = sharePass;
+    const { sharePass = {} } = await chrome.storage.local.get("sharePass");
+    passCache = {
+      lastGrant: sharePass.lastGrant || 0,
+      items: sharePass.items || {},      // itemId -> pass expiry
+      spent: sharePass.spent || {},      // itemId -> when its pass was granted
+      threads: sharePass.threads || {}   // conversation key -> last grant
+    };
   }
   return passCache;
+}
+
+/**
+ * The conversation a navigation came from, as a stable key — "ig:t/17842…",
+ * or "ig:inbox" when the thread id isn't in the URL yet. null when the page
+ * isn't a DM page at all.
+ */
+function dmThreadOf(url) {
+  let u;
+  try { u = new URL(url); } catch { return null; }
+  const host = u.hostname.replace(/^www\.|^m\./, "");
+  const path = u.pathname;
+  let m;
+  if (host.endsWith("instagram.com") && path.startsWith("/direct")) {
+    return (m = path.match(/^\/direct\/t\/([\w.-]+)/)) ? `ig:${m[1]}` : "ig:inbox";
+  }
+  if (host.endsWith("facebook.com") && path.startsWith("/messages")) {
+    return (m = path.match(/^\/messages\/(?:t|e2ee\/t)\/([\w.-]+)/)) ? `fb:${m[1]}` : "fb:inbox";
+  }
+  if (host.endsWith("messenger.com")) {
+    return (m = path.match(/^\/t\/([\w.-]+)/)) ? `fb:${m[1]}` : "fb:inbox";
+  }
+  if (host.endsWith("x.com") && path.startsWith("/messages")) {
+    return (m = path.match(/^\/messages\/([\w.-]+)/)) ? `x:${m[1]}` : "x:inbox";
+  }
+  if (host.endsWith("linkedin.com") && path.startsWith("/messaging")) {
+    return (m = path.match(/^\/messaging\/thread\/([\w.-]+)/)) ? `li:${m[1]}` : "li:inbox";
+  }
+  return null;
+}
+
+/** Keep the "already watched" list from growing without bound. */
+function pruneSpent(spent) {
+  const cutoff = Date.now() - SPENT_TTL_DAYS * 86400e3;
+  for (const [id, ts] of Object.entries(spent)) {
+    if (ts < cutoff) delete spent[id];
+  }
+  const ids = Object.keys(spent);
+  if (ids.length > SPENT_MAX) {
+    ids.sort((a, b) => spent[a] - spent[b])
+      .slice(0, ids.length - SPENT_MAX)
+      .forEach(id => delete spent[id]);
+  }
 }
 
 function shortFormItem(url) {
@@ -247,31 +309,47 @@ async function sharePassAllows(tabId, url, settings) {
   // An active pass for this exact item keeps working (any tab, survives restarts).
   if (pass.items[item.id] && pass.items[item.id] > Date.now()) return true;
 
+  // One pass per item, ever. A second look at the same reel is a re-watch, and
+  // re-watching is how the five-minute pass would become an evening.
+  if (pass.spent[item.id]) return false;
+
   // Where did this navigation come from?
   const prev = tabNav.get(tabId)?.lastUrl;
-  let external = false, fromDirect = false;
+  let external = false;
+  let thread = null;
   if (!prev) {
     external = true; // fresh tab: opened from another app or a link click
   } else {
     try {
-      const prevU = new URL(prev);
-      const prevHost = prevU.hostname.replace(/^www\./, "");
+      const prevHost = new URL(prev).hostname.replace(/^www\./, "");
       const curHost = new URL(url).hostname.replace(/^www\./, "");
       external = rootDomain(prevHost) !== rootDomain(curHost);
-      fromDirect = prevHost.endsWith("instagram.com") && prevU.pathname.startsWith("/direct");
+      thread = dmThreadOf(prev);
     } catch { /* ignore */ }
   }
-  const legit = item.dmOnlySource ? fromDirect : (external || fromDirect);
+  const legit = item.dmOnlySource ? !!thread : (external || !!thread);
   if (!legit) return false;
 
-  // Rate limit: one new pass per cooldown window.
-  if (Date.now() - (pass.lastGrant || 0) < GRANT_COOLDOWN_MINUTES * 60e3) return false;
+  // Rate limit. A DM carries its own lane, so several people sending you
+  // something at once open as several items; everything else shares one lane.
+  const cooldown = GRANT_COOLDOWN_MINUTES * 60e3;
+  const lastForSource = thread ? (pass.threads[thread] || 0) : (pass.lastGrant || 0);
+  if (Date.now() - lastForSource < cooldown) return false;
 
   for (const k of Object.keys(pass.items)) {
     if (pass.items[k] < Date.now()) delete pass.items[k];
   }
   pass.items[item.id] = Date.now() + PASS_MINUTES * 60e3;
-  pass.lastGrant = Date.now();
+  pass.spent[item.id] = Date.now();
+  // The two lanes are independent: a message from a friend shouldn't close the
+  // door on a link someone emails you a minute later, or the other way round.
+  if (thread) pass.threads[thread] = Date.now();
+  else pass.lastGrant = Date.now();
+  pruneSpent(pass.spent);
+  // Conversations you haven't opened a link from in a while can go too.
+  for (const [k, ts] of Object.entries(pass.threads)) {
+    if (ts < Date.now() - cooldown) delete pass.threads[k];
+  }
   await chrome.storage.local.set({ sharePass: pass });
   return true;
 }
@@ -323,6 +401,94 @@ function messagesOnlyVerdict(url, settings) {
     return { block: true, site: site.host, home: site.home };
   }
   return null;
+}
+
+// ---------------------------------------------------------------------------
+// The one-minute pause: a door, not a light switch.
+//
+// A brand new user hasn't earned trust in the friction yet, so the first three
+// days carry one free pause a day: everything off for exactly one minute, then
+// it all comes back on its own. After the third day — or after today's pass is
+// spent — the same button still works, but it costs the usual wait and
+// challenge. Lockdowns and focus sessions are never pausable; they're the two
+// things people ask North to hold for them.
+// ---------------------------------------------------------------------------
+
+const PAUSE_MINUTES = 1;
+const FREE_PAUSE_DAYS = 3;        // calendar days from install, inclusive
+const FREE_PAUSES_PER_DAY = 1;
+
+async function getMeta() {
+  const { meta = {} } = await chrome.storage.local.get("meta");
+  if (!meta.installedAt) {
+    meta.installedAt = Date.now();
+    await chrome.storage.local.set({ meta });
+  }
+  return meta;
+}
+
+/** 0 on the day North was installed, 1 the next calendar day, and so on. */
+function calendarDaysSince(ts) {
+  const a = new Date(ts); a.setHours(0, 0, 0, 0);
+  const b = new Date(); b.setHours(0, 0, 0, 0);
+  return Math.round((b - a) / 86400e3);
+}
+
+async function getPause() {
+  if (cache.pause === null) {
+    const { pause = { until: 0 } } = await chrome.storage.local.get("pause");
+    cache.pause = pause;
+  }
+  return cache.pause || { until: 0 };
+}
+
+async function pauseState() {
+  const meta = await getMeta();
+  const { pauseUse = {} } = await chrome.storage.local.get("pauseUse");
+  const pause = await getPause();
+  const dayIndex = calendarDaysSince(meta.installedAt);
+  const inTrial = dayIndex >= 0 && dayIndex < FREE_PAUSE_DAYS;
+  const usedToday = pauseUse[dateKey()] || 0;
+  return {
+    minutes: PAUSE_MINUTES,
+    active: (pause.until || 0) > Date.now(),
+    until: pause.until || 0,
+    freeLeft: inTrial ? Math.max(0, FREE_PAUSES_PER_DAY - usedToday) : 0,
+    // Days of the free allowance still to come, today included.
+    trialDaysLeft: inTrial ? FREE_PAUSE_DAYS - dayIndex : 0
+  };
+}
+
+/**
+ * Start a pause. `free` spends one of the trial passes and is refused when
+ * none is left — the caller never gets to decide that for itself.
+ */
+async function startPause({ free = false } = {}) {
+  if ((await getLockdown()).active) return { ok: false, error: "lockdown" };
+  if ((await getFocus()).active) return { ok: false, error: "focus" };
+
+  const state = await pauseState();
+  if (free) {
+    if (!state.freeLeft) return { ok: false, error: "nofree" };
+    const { pauseUse = {} } = await chrome.storage.local.get("pauseUse");
+    pauseUse[dateKey()] = (pauseUse[dateKey()] || 0) + 1;
+    await chrome.storage.local.set({ pauseUse });
+  }
+
+  const pause = { until: Date.now() + PAUSE_MINUTES * 60e3, startedAt: Date.now() };
+  cache.pause = pause;
+  await chrome.storage.local.set({ pause });
+  chrome.alarms.create("pause-end", { when: pause.until });
+  return { ok: true, until: pause.until, freeLeft: (await pauseState()).freeLeft };
+}
+
+/** The minute is up: protection is back, and the open tabs hear about it. */
+async function endPause() {
+  cache.pause = { until: 0 };
+  await chrome.storage.local.set({ pause: { until: 0 } });
+  chrome.alarms.clear("pause-end");
+  const tabs = await chrome.tabs.query({ url: ["http://*/*", "https://*/*"] });
+  for (const t of tabs) enforceOnTab(t.id, t.url);
 }
 
 // ---------------------------------------------------------------------------
@@ -385,6 +551,11 @@ async function evaluate(url, { title = "", tabId = null } = {}) {
   }
 
   const focus = await getFocus();
+
+  // A running pause lifts everything below (adult content and lockdown, above,
+  // are never part of the deal). A focus session outranks it.
+  if (!focus.active && (await getPause()).until > Date.now()) return null;
+
   const unlocks = await getUnlocks();
   const unlockedUntil = Object.entries(unlocks)
     .find(([d, until]) => domainMatches(host, d) && until > Date.now());
@@ -515,6 +686,16 @@ chrome.tabs.onRemoved.addListener(tabId => {
   tabNav.delete(tabId);
 });
 
+// Links in a DM often open in a new tab, which would otherwise arrive with no
+// history at all and be treated as "pasted from another app". Carrying the
+// conversation over keeps the per-conversation lane honest — and only DM pages
+// are inherited, so nothing else gains a pass it wouldn't have had.
+chrome.tabs.onCreated.addListener(tab => {
+  if (tab.openerTabId == null || tab.id == null) return;
+  const prev = tabNav.get(tab.openerTabId)?.lastUrl;
+  if (prev && dmThreadOf(prev)) tabNav.set(tab.id, { lastUrl: prev });
+});
+
 // ---------------------------------------------------------------------------
 // Navigation hooks (covers SPAs like YouTube/Instagram via history updates)
 // ---------------------------------------------------------------------------
@@ -588,6 +769,7 @@ chrome.idle.onStateChanged.addListener(state => {
 chrome.runtime.onInstalled.addListener(async details => {
   chrome.alarms.create("tick", { periodInMinutes: 1 });
   await getSettings().then(saveSettings); // persist merged defaults
+  await getMeta();                        // stamps installedAt, once, for the free pauses
   if (details.reason === "install") {
     chrome.tabs.create({ url: chrome.runtime.getURL("pages/options.html") + "#welcome" });
   }
@@ -599,11 +781,16 @@ chrome.runtime.onStartup.addListener(() => chrome.alarms.create("tick", { period
 chrome.alarms.onAlarm.addListener(async alarm => {
   if (alarm.name === "tick") {
     await flushTracking();
+    // A pause that expired while the worker was asleep still has to be closed
+    // out, so the tabs get swept even if the alarm never fired.
+    const pause = await getPause();
+    if (pause.until && pause.until <= Date.now()) await endPause();
     await enforceLimitsOnActiveTab();
     await pruneOldData();
   }
   if (alarm.name === "focus-end") await completeFocus();
   if (alarm.name === "lockdown-end") await completeLockdown();
+  if (alarm.name === "pause-end") await endPause();
 });
 
 async function enforceLimitsOnActiveTab() {
@@ -784,6 +971,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           settings,
           focus: await getFocus(),
           lockdown: await getLockdown(),
+          pause: await pauseState(),
           unlocks: await getUnlocks(),
           journal,
           todayUsage: usage[key] || {},
@@ -812,6 +1000,19 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       }
       case "endFocus": {
         await completeFocus();
+        sendResponse({ ok: true });
+        break;
+      }
+      case "getPause": {
+        sendResponse(await pauseState());
+        break;
+      }
+      case "startPause": {
+        sendResponse(await startPause({ free: !!msg.free }));
+        break;
+      }
+      case "endPause": {
+        await endPause();
         sendResponse({ ok: true });
         break;
       }

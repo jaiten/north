@@ -67,7 +67,7 @@
   function apply() {
     document.getElementById("north-tw-style")?.remove();
     document.getElementById("north-tw-home-style")?.remove();
-    const active = settings?.enabled && settings.twitch?.cleanHome !== false;
+    const active = settings?.enabled && !window.northPaused?.() && settings.twitch?.cleanHome !== false;
     if (!active) {
       document.getElementById("north-twitch-home")?.remove();
       return;
@@ -112,4 +112,6 @@
       apply();
     }
   });
+  // A pause takes the decluttering with it, and the minute puts it back.
+  window.northOnPauseChange?.(apply);
 })();

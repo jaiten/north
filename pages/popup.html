@@ -58,6 +58,28 @@
     </details>
   </section>
 
+  <!-- The one-minute pause: everything off, briefly, then back on its own -->
+  <section class="card pause-card" id="pause-card">
+    <div id="pause-idle">
+      <div class="pause-head">
+        <h3>Need a minute?</h3>
+        <span class="pause-tag" id="pause-tag">Free today</span>
+      </div>
+      <p class="dim" id="pause-sub">Turns every block off for one minute, then switches itself back on. Temporary, always.</p>
+      <button class="btn full pause-btn" id="btn-pause">Turn off for 1 minute</button>
+      <p class="pause-note" id="pause-note"></p>
+    </div>
+    <div id="pause-live" class="hidden">
+      <div class="pause-head">
+        <h3>Paused</h3>
+        <span class="pause-tag live">Back on by itself</span>
+      </div>
+      <div class="pause-time" id="pause-remaining">1:00</div>
+      <p class="dim">Nothing is blocked until this hits zero.</p>
+      <button class="btn ghost full small" id="btn-end-pause">Give the minute back</button>
+    </div>
+  </section>
+
   <footer>
     <label class="switch" title="Protection. Turning it off takes the challenge.">
       <input type="checkbox" id="toggle-enabled" aria-label="Enable North protection" checked>

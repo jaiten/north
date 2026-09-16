@@ -72,7 +72,7 @@ function toast(msg, action) {
 // Challenge gate: friction for protective changes
 // ---------------------------------------------------------------------------
 
-let gateTimer = null;
+let gateFrame = null;
 let gateApply = null;
 const CIRC = 2 * Math.PI * 52;
 
@@ -90,11 +90,12 @@ function gate(desc, apply) {
   $("gate-error").classList.add("hidden");
   $("gate-note").classList.add("hidden");
 
+  // Drawn from a deadline every animation frame: the ring drains smoothly and
+  // the digit is only a readout of it, not the thing being animated.
   const total = Math.max(5, S.strict.waitSeconds || 60);
-  let left = total;
+  let deadline = Date.now() + total * 1000;
+  let shownSec = null;
   const fg = $("gate-ring-fg");
-  $("gate-ring-num").textContent = left;
-  $("gate-stay-hint").textContent = gateMilestone(left, total);
   fg.style.strokeDasharray = CIRC;
   fg.style.strokeDashoffset = 0;
 
@@ -102,9 +103,7 @@ function gate(desc, apply) {
 
   // The wait demands presence: leaving the tab, window or app restarts it.
   const restart = () => {
-    left = total;
-    $("gate-ring-num").textContent = left;
-    fg.style.strokeDashoffset = 0;
+    deadline = Date.now() + total * 1000;
     $("gate-note").classList.remove("hidden");
   };
   gateOnLeave = () => { if (document.hidden) restart(); };
@@ -112,20 +111,27 @@ function gate(desc, apply) {
   document.addEventListener("visibilitychange", gateOnLeave);
   window.addEventListener("blur", gateOnBlur);
 
-  clearInterval(gateTimer);
-  gateTimer = setInterval(() => {
+  if (gateFrame) cancelAnimationFrame(gateFrame);
+  const frame = () => {
     // Belt and braces: blur can fail to fire (embedded views, devtools), but
     // hasFocus() can't lie. No focus, no countdown.
-    if (document.hidden || !document.hasFocus()) { restart(); return; }
-    left -= 1;
-    $("gate-ring-num").textContent = left;
-    $("gate-stay-hint").textContent = gateMilestone(left, total);
+    if (document.hidden || !document.hasFocus()) restart();
+    const left = Math.max(0, (deadline - Date.now()) / 1000);
     fg.style.strokeDashoffset = CIRC * (1 - left / total);
+    const sec = Math.ceil(left);
+    if (sec !== shownSec) {
+      shownSec = sec;
+      $("gate-ring-num").textContent = sec;
+      $("gate-stay-hint").textContent = gateMilestone(sec, total);
+    }
     if (left <= 0) {
       stopGateWatch();
       showGateChallenge(apply);
+      return;
     }
-  }, 1000);
+    gateFrame = requestAnimationFrame(frame);
+  };
+  frame();
 }
 
 let gateOnLeave = null, gateOnBlur = null, gateBreathStop = null;
@@ -172,7 +178,8 @@ function startGateBreath() {
 }
 
 function stopGateWatch() {
-  clearInterval(gateTimer);
+  if (gateFrame) cancelAnimationFrame(gateFrame);
+  gateFrame = null;
   if (gateBreathStop) gateBreathStop();
   if (gateOnLeave) document.removeEventListener("visibilitychange", gateOnLeave);
   if (gateOnBlur) window.removeEventListener("blur", gateOnBlur);
@@ -1101,6 +1108,18 @@ function handleHash() {
       await save();
       render();
       toast("Protection off. Come back when you're ready.");
+    });
+  }
+  if (m[1] === "pause") {
+    gate("A pause takes every block, limit and schedule off for one minute.", async () => {
+      const res = await chrome.runtime.sendMessage({ type: "startPause" });
+      if (res?.ok) {
+        toast("Paused for one minute. Everything comes back on its own.");
+      } else if (res?.error === "lockdown") {
+        toast("Lockdown is running. It has no off switch, not even for a minute.");
+      } else if (res?.error === "focus") {
+        toast("A focus session is running. The pause waits until it ends.");
+      }
     });
   }
   if (m[1] === "endFocus") {
