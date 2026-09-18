@@ -75,9 +75,25 @@
     (document.head || document.documentElement).appendChild(style);
   }
 
+  // The honest moment for this one is the moment you scroll past the end of
+  // the article into what the page lines up next. If an outlet has no such
+  // rail, there's nothing to offer and no card.
+  const CHUM_SELECTOR = [
+    '[id*="taboola" i]', '[class*="taboola" i]', '[class*="outbrain" i]',
+    '[class*="recirc" i]', '[class*="most-read" i]', '[class*="most-popular" i]',
+    '[data-component="most-popular"]'
+  ].join(",");
+
+  function armHints() {
+    // Section fronts and homepages aren't articles; a story URL has a path.
+    if (!window.northHint || location.pathname.split("/").filter(Boolean).length < 2) return;
+    window.northHint.whenSeen("news-quiet", CHUM_SELECTOR, 2);
+  }
+
   chrome.storage.local.get("settings", ({ settings: s }) => {
     settings = s || {};
     applyStyles();
+    armHints();
   });
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === "local" && changes.settings) {

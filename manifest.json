@@ -43,17 +43,17 @@
   "content_scripts": [
     {
       "matches": ["*://www.youtube.com/*", "*://m.youtube.com/*"],
-      "js": ["content/pause-state.js", "content/youtube.js"],
+      "js": ["content/pause-state.js", "content/hints.js", "content/youtube.js"],
       "run_at": "document_start"
     },
     {
       "matches": ["*://www.instagram.com/*", "*://instagram.com/*"],
-      "js": ["content/pause-state.js", "content/instagram.js"],
+      "js": ["content/pause-state.js", "content/hints.js", "content/instagram.js"],
       "run_at": "document_start"
     },
     {
       "matches": ["*://www.linkedin.com/*"],
-      "js": ["content/pause-state.js", "content/linkedin.js"],
+      "js": ["content/pause-state.js", "content/hints.js", "content/linkedin.js"],
       "run_at": "document_start"
     },
     {
@@ -75,7 +75,7 @@
         "*://*.independent.co.uk/*", "*://*.huffpost.com/*", "*://*.latimes.com/*",
         "*://*.nypost.com/*", "*://*.cnbc.com/*"
       ],
-      "js": ["content/pause-state.js", "content/news.js"],
+      "js": ["content/pause-state.js", "content/hints.js", "content/news.js"],
       "run_at": "document_start"
     },
     {

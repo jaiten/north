@@ -50,9 +50,19 @@
   // current URL back through the rules.
   window.addEventListener("pageshow", e => { if (e.persisted) location.reload(); });
 
+  // The feed, sat with for a while, is the moment to mention that Instagram
+  // has a messages-only mode. The card points at settings rather than
+  // switching it on: it's a protection with a challenge behind it.
+  function armHints() {
+    if (!window.northHint) return;
+    const onFeed = () => location.pathname === "/" || location.pathname === "/explore/";
+    if (onFeed()) window.northHint.afterDwell("ig-messages", 12, onFeed);
+  }
+
   chrome.storage.local.get("settings", ({ settings: s }) => {
     settings = s || {};
     apply();
+    armHints();
   });
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === "local" && changes.settings) {

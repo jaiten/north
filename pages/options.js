@@ -303,6 +303,7 @@ function render() {
   $("opt-li-tidy").checked = S.linkedin?.tidyNav !== false;
   $("opt-tw-clean").checked = S.twitch?.cleanHome !== false;
   $("opt-news").checked = !!S.news?.declutter;
+  $("opt-hints").checked = S.hints?.enabled !== false;
 
   // Protections carrying an unspent one-time reversal say so, so the pass is
   // discoverable from the row rather than only from a toast.
@@ -772,6 +773,11 @@ $("opt-news").addEventListener("change", async e => {
   S.news.declutter = e.target.checked;
   await save();
 });
+$("opt-hints").addEventListener("change", async e => {
+  S.hints = S.hints || {};
+  S.hints.enabled = e.target.checked;
+  await save();
+});
 
 // One click sets the YouTube switches most people end up wanting: a quiet
 // home, no related-video rabbit hole, no comment threads, no subs feed.
@@ -1087,10 +1093,17 @@ function renderStats() {
 }
 
 // ---------------------------------------------------------------------------
-// Hash routing: #welcome onboarding, #gate=… from the popup
+// Hash routing: #welcome onboarding, #gate=… from the popup,
+// #section=… from a hint card on a site
 // ---------------------------------------------------------------------------
 
 function handleHash() {
+  const sec = location.hash.match(/section=([\w-]+)/);
+  if (sec) {
+    history.replaceState(null, "", location.pathname);
+    document.querySelector(`.nav-item[data-section="${sec[1]}"]`)?.click();
+    return;
+  }
   if (location.hash === "#welcome") {
     history.replaceState(null, "", location.pathname);
     setWelcomeTheme(S.theme || "light");

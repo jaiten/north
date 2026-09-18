@@ -71,6 +71,23 @@ browser.
 - **Twitch**: calm homepage, no recommended channels or categories, no
   Browse / Following / For You, no notification bell.
 
+### 👋 Introducing itself, quietly
+- North's best switches are off by default and live behind a settings page most
+  people never open, so for the first three weeks it introduces a few of them
+  where they make sense: a card on the YouTube homepage ("this is a lot, isn't
+  it?" → calm the feed), one under a video's comments, one at the foot of a news
+  article, and a pointer to messages-only mode on Instagram and LinkedIn.
+- A card only ever offers a switch that costs **nothing** to reverse, and it
+  carries its own undo. Talking someone into a protection they then need a wait
+  and a journal entry to escape would be a trap, not an introduction — so the
+  two real protections among them open the settings page instead of flipping
+  themselves on.
+- The quotas are the point: each idea is offered **twice at most**, never more
+  than **two cards a day** or **six in total**, never within three minutes of
+  another, and never at all once you act on one. Nothing appears during a pause,
+  a focus session or a lockdown, or after the first 21 days. Every card carries
+  "don't show me tips like this", and Preferences has the same switch.
+
 ### ⏰ Schedules and budgets
 - Per-site blocking windows (overnight windows work) and minutes-per-day
   budgets. Time only counts while the tab is active and focused. A nudge fires
@@ -132,8 +149,11 @@ content/instagram.js   Messages-only UI stripping
 content/linkedin.js    Home + My Network nav hiding
 content/twitch.js      Calm homepage and recommendation stripping
 content/global.js      Page-title keyword reporting + nudge toasts
+content/news.js        Recirculation rail and chum-box stripping on news sites
 content/pause-state.js Shared pause state for the site scripts, so a paused
                        North stops decluttering too (runs before each of them)
+content/hints.js       The introduction cards: picks the moment and draws the
+                       card; the worker owns the copy, the quotas and the switch
 pages/blocked.html     Block page with wait ring + journal unlock flow
 pages/popup.html       Status, focus sessions, the one-minute pause, today's stats
 pages/options.html     Full settings dashboard (gated by the challenge)

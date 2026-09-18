@@ -18,6 +18,9 @@ const DEFAULT_SETTINGS = {
     enabled: true,            // nudges: block-page lines, low-budget warnings, session notes
     tone: "kind"              // "kind" | "tough"
   },
+  hints: {
+    enabled: true             // the introduction cards on YouTube, Instagram and the rest
+  },
   shorts: {
     enabled: true,            // block ALL short-form content everywhere
     blockTikTokEntirely: true,
@@ -957,6 +960,203 @@ async function completeLockdown() {
 }
 
 // ---------------------------------------------------------------------------
+// Discovery hints
+//
+// North's best switches are off by default and live behind a settings page
+// most people never open. A hint is a small card shown on the site it's about,
+// at the moment that site is doing the thing it describes — the YouTube
+// homepage laying out forty thumbnails, the comments loading under a video.
+// The site scripts pick the moment (content/hints.js); everything else is
+// decided here.
+//
+// Two rules keep it from becoming the thing North exists to remove:
+//
+// 1. A card only ever offers a switch that costs nothing to reverse. None of
+//    the settings below go through the challenge on the way out, and the card
+//    carries its own undo. Talking someone into a protection they then need a
+//    wait and a journal entry to undo would be a trap, not an introduction.
+// 2. The quotas are the feature: twice per idea, twice a day, six in a
+//    lifetime, and only in the first three weeks after install. After that
+//    North is silent on the page and features live in settings, where they
+//    belong. Acting on a hint retires it for good.
+// ---------------------------------------------------------------------------
+
+const HINT_MAX_PER_ID = 2;        // first visit, and one more chance later
+const HINT_MAX_PER_DAY = 2;
+const HINT_MAX_TOTAL = 6;
+const HINT_WINDOW_DAYS = 21;      // calendar days from install
+const HINT_REPEAT_GAP_MS = 30 * 60e3;  // between two showings of the same hint
+const HINT_QUIET_MS = 3 * 60e3;        // between any two hints, anywhere
+
+const HINTS = {
+  "yt-home": {
+    title: "This is a lot, isn't it?",
+    body: "North can keep the first few recommendations and clear the rest, so the homepage stops choosing for you. Search and your subscriptions still work.",
+    cta: "Calm the feed",
+    done: "Calmer. It's under YouTube in North's settings when you want the wall back — no wait, no challenge.",
+    set: ["youtube", "calmHomeFeed"],
+    // Nothing to offer when the feed is already gone entirely.
+    skipIf: s => !!s.youtube?.hideHomeFeed
+  },
+  "yt-comments": {
+    title: "Down here for the comments?",
+    body: "They're the part of a video that never ends. North can take them off every video, and leave the video itself alone.",
+    cta: "Hide comments",
+    done: "Comments hidden. Under YouTube in North's settings whenever you want them back.",
+    set: ["youtube", "hideComments"]
+  },
+  "news-quiet": {
+    title: "The article ends. The page doesn't.",
+    body: "North can strip what sits under it — trending and most-read rails, \"more from\", and the paid recommendation blocks at the foot of the page.",
+    cta: "Quiet the page",
+    done: "Quieter, on this site and the other major outlets. Under News in North's settings to switch back.",
+    set: ["news", "declutter"]
+  },
+  // Messages-only is a protection with a challenge behind it, so a card never
+  // switches it on: it points at the setting and lets the settings page do the
+  // explaining, with its free reversal and its warning.
+  "ig-messages": {
+    title: "Here for someone in particular?",
+    body: "North can turn Instagram into messages only: DMs stay open, the feed, Explore and Reels don't. It's a real protection, so it's set up in settings.",
+    cta: "Show me",
+    open: "social",
+    skipIf: s => !!s.messagesOnly?.instagram
+  },
+  "li-messages": {
+    title: "LinkedIn has a feed problem.",
+    body: "North can keep messages and job listings and drop the feed entirely. It's a real protection, so it's set up in settings.",
+    cta: "Show me",
+    open: "social",
+    skipIf: s => !!s.messagesOnly?.linkedin
+  }
+};
+
+const readPath = (obj, path) => path.reduce((o, k) => (o == null ? o : o[k]), obj);
+
+function writePath(obj, path, value) {
+  let o = obj;
+  for (const k of path.slice(0, -1)) o = (o[k] = o[k] || {});
+  o[path[path.length - 1]] = value;
+}
+
+async function getHintState() {
+  const { hintState } = await chrome.storage.local.get("hintState");
+  return {
+    shown: {}, lastShownAt: {}, acted: {}, undo: {},
+    perDay: {}, total: 0, lastAnyAt: 0,
+    ...(hintState || {})
+  };
+}
+
+async function setHintState(state) {
+  // Yesterday's count never needs keeping.
+  state.perDay = { [dateKey()]: state.perDay[dateKey()] || 0 };
+  await chrome.storage.local.set({ hintState: state });
+}
+
+// Two tabs asking at the same moment must not each read the quota before
+// either has spent it, so the answers are handed out one at a time.
+let hintQueue = Promise.resolve();
+
+function hintSerial(fn) {
+  const run = hintQueue.then(fn, fn);
+  hintQueue = run.then(() => {}, () => {});
+  return run;
+}
+
+/**
+ * Decide whether a hint may be shown, and spend a showing if it may. The
+ * content script is told what to say; it never decides for itself.
+ */
+function hintOffer(id) {
+  return hintSerial(() => offerNow(id));
+}
+
+async function offerNow(id) {
+  const hint = HINTS[id];
+  if (!hint) return { show: false };
+
+  const settings = await getSettings();
+  if (!settings.enabled) return { show: false };
+  if (settings.hints?.enabled === false || !settings.buddy?.enabled) return { show: false };
+  if (hint.set && readPath(settings, hint.set) === true) return { show: false };
+  if (hint.skipIf?.(settings)) return { show: false };
+
+  // Paused, in a focus session or in a lockdown: not the moment to be sold a
+  // feature. The pause in particular means "off", and off includes this.
+  if ((await pauseState()).active) return { show: false };
+  if ((await getFocus()).active) return { show: false };
+  if ((await getLockdown()).active) return { show: false };
+
+  const meta = await getMeta();
+  const day = calendarDaysSince(meta.installedAt);
+  if (day < 0 || day >= HINT_WINDOW_DAYS) return { show: false };
+
+  const state = await getHintState();
+  const now = Date.now();
+  if (state.acted[id]) return { show: false };
+  if ((state.shown[id] || 0) >= HINT_MAX_PER_ID) return { show: false };
+  if ((state.total || 0) >= HINT_MAX_TOTAL) return { show: false };
+  if ((state.perDay[dateKey()] || 0) >= HINT_MAX_PER_DAY) return { show: false };
+  if (now - (state.lastAnyAt || 0) < HINT_QUIET_MS) return { show: false };
+  if (now - (state.lastShownAt[id] || 0) < HINT_REPEAT_GAP_MS) return { show: false };
+
+  state.shown[id] = (state.shown[id] || 0) + 1;
+  state.lastShownAt[id] = now;
+  state.lastAnyAt = now;
+  state.perDay[dateKey()] = (state.perDay[dateKey()] || 0) + 1;
+  state.total = (state.total || 0) + 1;
+  await setHintState(state);
+
+  return {
+    show: true,
+    id,
+    title: hint.title,
+    body: hint.body,
+    cta: hint.cta
+  };
+}
+
+/** The card's button: flip the switch, or open settings where it lives. */
+function hintAction(id) {
+  return hintSerial(() => actOnHint(id));
+}
+
+async function actOnHint(id) {
+  const hint = HINTS[id];
+  if (!hint) return { ok: false };
+
+  const state = await getHintState();
+  state.acted[id] = true;                 // taken up, and so retired
+
+  if (hint.open) {
+    await setHintState(state);
+    await chrome.tabs.create({
+      url: chrome.runtime.getURL(`pages/options.html#section=${hint.open}`)
+    });
+    return { ok: true, opened: true };
+  }
+
+  const settings = await getSettings();
+  state.undo[id] = readPath(settings, hint.set) ?? false;
+  writePath(settings, hint.set, true);
+  await saveSettings(settings);
+  await setHintState(state);
+  return { ok: true, done: hint.done, undoable: true };
+}
+
+/** Put it back exactly as it was. Free, because it was free to switch on. */
+async function hintUndo(id) {
+  const hint = HINTS[id];
+  if (!hint?.set) return { ok: false };
+  const state = await getHintState();
+  const settings = await getSettings();
+  writePath(settings, hint.set, state.undo[id] ?? false);
+  await saveSettings(settings);
+  return { ok: true };
+}
+
+// ---------------------------------------------------------------------------
 // Message hub (popup / options / blocked page / content scripts)
 // ---------------------------------------------------------------------------
 
@@ -1059,6 +1259,25 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       }
       case "getUsageFor": {
         sendResponse({ seconds: await getUsageSecondsToday(msg.pattern) });
+        break;
+      }
+      case "hintCheck": {
+        sendResponse(await hintOffer(msg.id));
+        break;
+      }
+      case "hintAction": {
+        sendResponse(await hintAction(msg.id));
+        break;
+      }
+      case "hintUndo": {
+        sendResponse(await hintUndo(msg.id));
+        break;
+      }
+      case "hintOff": {
+        const settings = await getSettings();
+        settings.hints = { ...(settings.hints || {}), enabled: false };
+        await saveSettings(settings);
+        sendResponse({ ok: true });
         break;
       }
       default:

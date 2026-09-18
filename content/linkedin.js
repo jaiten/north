@@ -25,9 +25,18 @@
     (document.head || document.documentElement).appendChild(style);
   }
 
+  // Same idea as Instagram: name the feed while someone is scrolling it, and
+  // send them to settings, where messages-only mode explains its own cost.
+  function armHints() {
+    if (!window.northHint) return;
+    const onFeed = () => location.pathname === "/feed/" || location.pathname === "/";
+    if (onFeed()) window.northHint.afterDwell("li-messages", 12, onFeed);
+  }
+
   chrome.storage.local.get("settings", ({ settings: s }) => {
     settings = s || {};
     apply();
+    armHints();
   });
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === "local" && changes.settings) {

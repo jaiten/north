@@ -194,8 +194,27 @@
     }, 250);
   }
 
+  // --- Discovery hints -------------------------------------------------------
+  // Two moments worth naming: the homepage laying out its wall of thumbnails,
+  // and the comments arriving under a video you were watching. Both offer a
+  // switch that costs nothing to reverse; the worker decides whether either
+  // card has any business appearing at all.
+
+  function armHints() {
+    if (!window.northHint) return;
+    window.northHint.reset();
+    if (location.pathname === "/") {
+      // Eight seconds of actually looking at it, not eight seconds of a tab
+      // opened in the background and forgotten.
+      window.northHint.afterDwell("yt-home", 8, () => location.pathname === "/");
+    } else if (location.pathname === "/watch") {
+      window.northHint.whenSeen("yt-comments", "ytd-comments#comments", 2);
+    }
+  }
+
   function boot() {
     applyStyles();
+    armHints();
     const obs = new MutationObserver(onMutate);
     const start = () => {
       if (!document.body) return requestAnimationFrame(start);
@@ -208,6 +227,7 @@
       // re-check unfiltered renderers after navigation re-renders
       document.querySelectorAll("[data-north-checked]").forEach(el => el.removeAttribute("data-north-checked"));
       onMutate();
+      armHints();
     });
 
     // A back/forward-cache restore can resurrect a page that should be
