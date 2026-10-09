@@ -174,18 +174,12 @@ const ADULT_DOMAINS = [
   "e-hentai.org", "hanime.tv", "f95zone.to", "literotica.com", "fapello.com"
 ];
 
-const ADULT_KEYWORDS = [
-  "porn", "hentai", " xxx", "xxx ", "nsfw", "onlyfans", "camgirl",
-  "blowjob", "milf", "xvideos", "xhamster", "stripchat", "chaturbate"
-];
-
-function isAdult(url, title = "") {
-  const host = hostnameOf(url);
-  if (ADULT_DOMAINS.some(d => domainMatches(host, d))) return true;
-  let hay;
-  try { hay = decodeURIComponent(url).toLowerCase(); } catch { hay = url.toLowerCase(); }
-  hay += " " + title.toLowerCase();
-  return ADULT_KEYWORDS.some(k => hay.includes(k));
+// Domains only. This used to also scan every URL and page title for explicit
+// keywords, which flagged ordinary pages (Google Docs links carry long random
+// ids, and doc titles like "Milford" contain "milf"). A host match can't
+// misfire on someone else's site.
+function isAdult(url) {
+  return ADULT_DOMAINS.some(d => domainMatches(hostnameOf(url), d));
 }
 
 // ---------------------------------------------------------------------------
@@ -538,7 +532,7 @@ async function evaluate(url, { title = "", tabId = null } = {}) {
   if (!host) return null;
 
   // 0. Adult content — always blocked, regardless of any stored flag.
-  if (isAdult(url, title)) {
+  if (isAdult(url)) {
     return { reason: "adult", site: host };
   }
 

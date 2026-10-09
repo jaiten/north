@@ -57,8 +57,9 @@ browser.
   never the same item twice" is the honest approximation.
 
 ### 🔞 Adult content: blocked for everyone
-- A built-in category of known adult sites and explicit keywords, blocked
-  outright. Never unlockable, not even via the challenge.
+- A built-in list of known adult sites, blocked outright by domain. There is
+  no keyword or page-title matching, so ordinary pages (Google Docs, say)
+  are never caught by it. Never unlockable, not even via the challenge.
 
 ### 💬 Messages only
 - Instagram, LinkedIn, Facebook and X can each run in messages-only mode: the
