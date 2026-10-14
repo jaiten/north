@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "North. Focus & Distraction Blocker",
   "short_name": "North",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Blocks everything you don't need to see: short videos, sites, keywords, schedules, daily limits, and an unlock you have to mean.",
   "permissions": [
     "storage",

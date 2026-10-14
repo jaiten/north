@@ -53,7 +53,52 @@ function renderFocus() {
       const left = Math.max(0, f.until - Date.now());
       const m = Math.floor(left / 60e3), sec = Math.floor((left % 60e3) / 1000);
       $("focus-remaining").textContent = `${m}:${String(sec).padStart(2, "0")}`;
-      if (left <= 0) { clearInterval(focusTicker); load(); }
+      if (left <= 0) { clearInterval(focusTicker); // ---------------------------------------------------------------------------
+// Review ask. Shown at most once per 30 days, only to someone who has used
+// North for a week and had it block at least 15 things, never again after
+// they review or say no. Everyone gets the same ask: no routing happy users
+// to the store and unhappy ones elsewhere (the store's policy forbids it).
+// Chrome Web Store only; Firefox and Edge have their own listings.
+// ---------------------------------------------------------------------------
+
+const REVIEW_URL = "https://chromewebstore.google.com/detail/bbfpkfifjmcebiobbmfhdgpnclegaedo/reviews";
+const REVIEW_MIN_DAYS = 7;
+const REVIEW_MIN_BLOCKS = 15;
+const REVIEW_SNOOZE_DAYS = 30;
+
+async function maybeAskForReview() {
+  try {
+    if (/Firefox|Edg\//.test(navigator.userAgent)) return;
+    const { meta = {}, reviewAsk = {} } = await chrome.storage.local.get(["meta", "reviewAsk"]);
+    if (reviewAsk.done) return;
+    if (reviewAsk.snoozeUntil && reviewAsk.snoozeUntil > Date.now()) return;
+    if (!meta.installedAt || Date.now() - meta.installedAt < REVIEW_MIN_DAYS * 86400e3) return;
+    const total = Object.values(dash.allStats || {})
+      .reduce((n, d) => n + Object.values(d.blocks || {}).reduce((a, b) => a + b, 0), 0);
+    if (total < REVIEW_MIN_BLOCKS) return;
+    $("review-card").classList.remove("hidden");
+  } catch { /* storage unavailable, or preview environment */ }
+}
+
+async function setReviewAsk(patch) {
+  const { reviewAsk = {} } = await chrome.storage.local.get("reviewAsk");
+  await chrome.storage.local.set({ reviewAsk: { ...reviewAsk, ...patch } });
+  $("review-card").classList.add("hidden");
+}
+
+$("btn-review").addEventListener("click", async () => {
+  await setReviewAsk({ done: true });
+  chrome.tabs.create({ url: REVIEW_URL });
+});
+$("review-later").addEventListener("click", () =>
+  setReviewAsk({ snoozeUntil: Date.now() + REVIEW_SNOOZE_DAYS * 86400e3 }));
+$("review-never").addEventListener("click", () => setReviewAsk({ done: true }));
+$("review-problem").addEventListener("click", async () => {
+  await setReviewAsk({ snoozeUntil: Date.now() + REVIEW_SNOOZE_DAYS * 86400e3 });
+  chrome.tabs.create({ url: "https://northfocus.app/suggest.html?from=popup" });
+});
+
+load().then(maybeAskForReview); }
     };
     tick();
     focusTicker = setInterval(tick, 1000);

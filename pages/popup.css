@@ -57,6 +57,12 @@ h2 { font-size: 33px; }
 .pause-btn { background: var(--warn-soft); color: var(--warn); border: 1px solid var(--warn-line); }
 .pause-btn:hover { background: var(--warn); color: var(--bg-elev); border-color: var(--warn); }
 .pause-btn:disabled { opacity: .5; cursor: not-allowed; }
+.review-card { border-top: 1px solid var(--line); padding: 15px 0 17px; }
+.review-card h3 { font-size: 13px; margin-bottom: 6px; }
+.review-card .dim { margin-bottom: 10px; }
+.review-links { display: flex; justify-content: space-between; gap: 8px; margin-top: 9px; }
+.link-btn { background: none; border: none; padding: 0; font: inherit; font-size: 10px; color: var(--text-faint); cursor: pointer; text-decoration: underline; }
+.link-btn:hover { color: var(--text-dim); }
 .pause-note { margin: 9px 0 0; font-size: 10px; line-height: 1.55; color: var(--text-faint); }
 .pause-time { font: 400 44px/1.2 var(--font-display); font-variant-numeric: tabular-nums; color: var(--warn); margin: 6px 0 8px; }
 footer { border-top: 1px solid var(--line); display: flex; align-items: center; gap: 10px; padding: 12px 0; }
