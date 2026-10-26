@@ -128,6 +128,7 @@ manifest.json          MV3 manifest (Chrome + Firefox from one build)
 src/background.js      Rules engine: navigation guard, schedules, limits,
                        time tracking, focus sessions, lockdown, unlocks, stats
 content/youtube.js     Shorts removal, sidebar/feed/related/comments hiding,
+                       automatic theatre mode when related videos are hidden,
                        keyword and topic video filtering
 content/instagram.js   Messages-only UI stripping
 content/linkedin.js    Home + My Network nav hiding

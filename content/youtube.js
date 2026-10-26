@@ -1,6 +1,7 @@
 // North — YouTube content script
 // Hides Shorts everywhere, optionally the home feed / related / comments,
-// and hides videos whose title or channel matches blocked keywords.
+// hides videos whose title or channel matches blocked keywords, and opens the
+// player in theatre mode once the related sidebar is gone.
 
 (() => {
   let settings = null;
@@ -26,9 +27,16 @@
     }`;
 
   // A softer alternative to hiding the home feed: keep just the first three
-  // recommendations, drop the All / Gaming / Music chip bar, and shrink the
-  // thumbnails so the page stops shouting. Hiding the continuation sentinel
-  // stops infinite scroll from loading a fourth.
+  // recommendations and drop the All / Gaming / Music chip bar. Hiding the
+  // continuation sentinel stops infinite scroll from loading a fourth.
+  //
+  // Thumbnails stay at their native size on purpose. We used to force
+  // --ytd-rich-grid-items-per-row to shrink them, but YouTube only reads that
+  // variable for each card's width — row height and the grid's vertical
+  // offsets are measured in its own script from its own column count. With
+  // the two disagreeing, cards were laid out over the space above them and
+  // the top of every thumbnail was clipped. Three cards at the size YouTube
+  // picked is quiet enough.
   const CALM_HOME_CSS = `
     ytd-browse[page-subtype="home"] ytd-feed-filter-chip-bar-renderer { display: none !important; }
     ytd-browse[page-subtype="home"] ytd-rich-grid-renderer #contents > ytd-rich-item-renderer:nth-of-type(n+4),
@@ -36,8 +44,14 @@
     ytd-browse[page-subtype="home"] ytd-rich-grid-renderer #contents > ytd-continuation-item-renderer {
       display: none !important;
     }
-    ytd-browse[page-subtype="home"] ytd-rich-grid-renderer {
-      --ytd-rich-grid-items-per-row: 5 !important;
+    /* Layout variant that wraps cards in rows: keep the first row, first three. */
+    ytd-browse[page-subtype="home"] ytd-rich-grid-renderer > #contents > ytd-rich-grid-row:nth-of-type(n+2),
+    ytd-browse[page-subtype="home"] ytd-rich-grid-row #contents > ytd-rich-item-renderer:nth-of-type(n+4) {
+      display: none !important;
+    }
+    /* The chip bar is gone, so nothing should still be pulled up under it. */
+    ytd-browse[page-subtype="home"] ytd-rich-grid-renderer #contents {
+      margin-top: 0 !important;
     }`;
 
   const RELATED_CSS = `
@@ -147,6 +161,26 @@
     grid.parentElement.insertBefore(card, grid);
   }
 
+  // --- Theatre mode when the related rail is hidden -----------------------
+
+  // With "up next" gone, the player sits in a narrow column beside a column
+  // of nothing. Theatre mode gives that width back. Engaged once per video:
+  // if you put the player back to the default size, it stays where you put it.
+  let theatreTried = false;
+
+  function ensureTheatre() {
+    if (!settings?.enabled || window.northPaused?.()) return;
+    if (!settings.youtube?.hideRelated || settings.youtube?.theatreMode === false) return;
+    if (theatreTried || location.pathname !== "/watch") return;
+    const flexy = document.querySelector("ytd-watch-flexy");
+    const sizeButton = document.querySelector(".ytp-size-button");
+    // Player not mounted yet — a later mutation brings us back.
+    if (!flexy || !sizeButton) return;
+    theatreTried = true;
+    // YouTube remembers the choice itself, so most loads are already wide.
+    if (!flexy.hasAttribute("theater")) sizeButton.click();
+  }
+
   // --- Keyword filtering of video renderers --------------------------------
 
   function keywordList() {
@@ -191,6 +225,7 @@
       scheduled = false;
       filterVideos();
       ensureFeedPlaceholder();
+      ensureTheatre();
     }, 250);
   }
 
@@ -207,6 +242,7 @@
     window.addEventListener("yt-navigate-finish", () => {
       // re-check unfiltered renderers after navigation re-renders
       document.querySelectorAll("[data-north-checked]").forEach(el => el.removeAttribute("data-north-checked"));
+      theatreTried = false;
       onMutate();
     });
 
@@ -232,6 +268,7 @@
   // Re-style and re-judge every video card that was already on the page.
   function refresh() {
     applyStyles();
+    theatreTried = false;
     document.querySelectorAll("[data-north-checked]").forEach(el => {
       el.removeAttribute("data-north-checked");
       el.style.removeProperty("display");

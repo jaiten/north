@@ -297,6 +297,7 @@ function render() {
   $("opt-yt-home").checked = S.youtube.hideHomeFeed;
   $("opt-yt-calm").checked = S.youtube.calmHomeFeed;
   $("opt-yt-related").checked = S.youtube.hideRelated;
+  $("opt-yt-theatre").checked = S.youtube.theatreMode !== false;
   $("opt-yt-comments").checked = S.youtube.hideComments;
   $("opt-yt-subs").checked = S.youtube.hideSubscriptions;
   $("opt-yt-topic").checked = S.youtube.topicMode;
@@ -748,6 +749,7 @@ $("opt-yt-sidebar").addEventListener("change", async e => { S.youtube.hideSideba
 $("opt-yt-home").addEventListener("change", async e => { S.youtube.hideHomeFeed = e.target.checked; await save(); });
 $("opt-yt-calm").addEventListener("change", async e => { S.youtube.calmHomeFeed = e.target.checked; await save(); });
 $("opt-yt-related").addEventListener("change", async e => { S.youtube.hideRelated = e.target.checked; await save(); });
+$("opt-yt-theatre").addEventListener("change", async e => { S.youtube.theatreMode = e.target.checked; await save(); });
 $("opt-yt-comments").addEventListener("change", async e => { S.youtube.hideComments = e.target.checked; await save(); });
 $("opt-yt-subs").addEventListener("change", async e => { S.youtube.hideSubscriptions = e.target.checked; await save(); });
 $("opt-yt-topic").addEventListener("change", async e => {

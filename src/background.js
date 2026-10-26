@@ -42,8 +42,9 @@ const DEFAULT_SETTINGS = {
     hideSidebar: true,        // the whole left rail; search stays, direct URLs still work
     hideExplore: true,        // legacy: sidebar Movies & TV, Music, Live links (when sidebar shown)
     hideHomeFeed: false,
-    calmHomeFeed: false,      // keep only the first 3 recs, drop the chip bar, shrink thumbnails
+    calmHomeFeed: false,      // keep only the first 3 recs, drop the chip bar
     hideRelated: false,
+    theatreMode: true,        // with related hidden, open the player wide to fill the gap
     hideComments: false,
     hideSubscriptions: false,
     titleKeywords: [],        // hide videos whose title/channel matches
